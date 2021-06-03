@@ -8,6 +8,7 @@
 - [http Tutorial](https://www.tutorialspoint.com/http/index.htm)
 - [stackoverflow sock & sockstream](https://stackoverflow.com/questions/5815675/what-is-sock-dgram-and-sock-stream)
 - [use of fcntl](https://youtu.be/A5vyIcBMPKo)
+- [GeeksforGeeks](https://www.geeksforgeeks.org/socket-programming-cc/)
 
 ## Vocab:
 - `OSI -> Open Systems Interconnection model`
