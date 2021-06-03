@@ -9,11 +9,11 @@
 
 ## Vocab:
 - `OSI -> Open Systems Interconnection model`
-- ```4th Layer: Transport Layer:
+- `4th Layer: Transport Layer:
 responsible for transporting one point to another reliably and without errors.
-(e.g: TCP, UDP, SPX..)```
+(e.g: TCP, UDP, SPX..)`
 
-### Ref:
+### Ref: Ref of a basic Webserver in CPP
 
 ```
 // Server side C program to demonstrate Socket programming
@@ -75,4 +75,5 @@ int main(int argc, char const *argv[])
         close(new_socket);
     }
     return 0;
-}```
+}
+```
