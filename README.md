@@ -29,8 +29,13 @@ responsible for transporting one point to another reliably and without errors.
 #define PORT 8080
 int main(int argc, char const *argv[])
 {
-    int server_fd, new_socket, valread;
+    int server_fd, new_socket, valread;//declaring a socket and a server fd
     struct sockaddr_in address;
+```
+	the sockaddr_in structure specifies a transport addres and port for the 
+	[AF_INET](https://docs.microsoft.com/en-us/windows-hardware/drivers/network/af-inet)
+
+```
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
