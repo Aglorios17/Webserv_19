@@ -49,6 +49,11 @@ So in this case it will be an IPv4 transport address.
         exit(EXIT_FAILURE);
     }
 ```
+`int socket(int domain, int type, int protocol);` 
+the [socket](https://man7.org/linux/man-pages/man2/socket.2.html) function creates
+an endpoint for communication and returns a file descriptor that refers to that endpoint.
+the `domain` arg spcifies a comunicaiton domain. (in the case of an IPV4 communication
+it would be `AF_INET`).
        
 ```
     // Forcefully attaching socket to the port 8080
