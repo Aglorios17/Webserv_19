@@ -32,8 +32,9 @@ int main(int argc, char const *argv[])
     int server_fd, new_socket, valread;//declaring a socket and a server fd
     struct sockaddr_in address;
 ```
-	the sockaddr_in structure specifies a transport addres and port for the 
-	[AF_INET](https://docs.microsoft.com/en-us/windows-hardware/drivers/network/af-inet)
+the sockaddr_in structure specifies a transport addres and port for the 
+[AF_INET](https://docs.microsoft.com/en-us/windows-hardware/drivers/network/af-inet)
+So in this case it will be an IPv4 transport address.
 
 ```
     int opt = 1;
@@ -47,7 +48,9 @@ int main(int argc, char const *argv[])
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
+```
        
+```
     // Forcefully attaching socket to the port 8080
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
                                                   &opt, sizeof(opt)))
