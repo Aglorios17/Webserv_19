@@ -49,12 +49,15 @@ So in this case it will be an IPv4 transport address.
         exit(EXIT_FAILURE);
     }
 ```
+
 `int socket(int domain, int type, int protocol);` 
 the [socket](https://man7.org/linux/man-pages/man2/socket.2.html) function creates
 an endpoint for communication and returns a file descriptor that refers to that endpoint.
-the `domain` arg spcifies a comunicaiton domain. (in the case of an IPV4 communication
-it would be `AF_INET`).
-       
+the `domain` arg spcifies a comunicaiton domain.  (in the case of an IPV4 communication
+it would be `AF_INET`) and the `type` specifies the type of socket 
+(in this case it will be a SOCK_STREAM, as we want a 2-ways connection that is reliable).
+Finally, the protocol will assigned to 0, so that we get the default one relatif to the address family)
+
 ```
     // Forcefully attaching socket to the port 8080
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,

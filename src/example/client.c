@@ -6,10 +6,11 @@
 /*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/04 14:16:24 by aglorios          #+#    #+#             */
-/*   Updated: 2021/06/04 14:17:27 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/04 16:16:55 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include "header/webserv.h"
 
 int main(int argc, char const *argv[])
