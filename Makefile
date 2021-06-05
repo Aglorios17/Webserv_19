@@ -1,12 +1,14 @@
 TARGET = webserver
 
-DIR = src/
+SRC_DIR = src
 
 CC = clang++
 
-SRCS  = $(DIR)Parser.cpp\
-	$(DIR)Socket.cpp\
-	$(DIR)webServer.cpp
+SRCS  = $(SRC_DIR)/parser.cpp\
+	$(SRC_DIR)/socket.cpp\
+	$(SRC_DIR)/webserver.cpp\
+	$(SRC_DIR)/configure.cpp\
+	$(SRC_DIR)/connect.cpp
 
 
 OBJS  =  $(SRCS:%.cpp=%.o)

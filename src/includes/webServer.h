@@ -22,8 +22,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <sstream>
 
-#include "Socket.h"
+#include "socket.h"
 
 #define PORT 8080
 
@@ -32,7 +33,8 @@ bool	conf_is_valid(std::string &conf_path);
 bool	domain_is_valid(int domain);
 bool	type_is_valid(int type);
 bool	protocol_is_valid(int protocol);
-bool	is_valid(int domain, int type, int protocol);
+bool	port_is_valid(int port);
+bool	is_valid(int domain, int type, int protocol, int port);
 
 /*
  * These functions avoid mutation,
@@ -43,5 +45,19 @@ bool	is_valid(int domain, int type, int protocol);
 int	get_domain(std::string &conf_path);
 int	get_type(std::string &conf_path);
 int	get_protocol(std::string &conf_path);
+void	*get_interface();
+
+/*
+ * CONFIGURE 
+ */
+
+void	configure(Socket &sock, struct sockaddr_in *addr);
+void	configure_adress(Socket &sock, struct sockaddr_in *addr);
+
+/*
+ * CONNECT
+ */
+
+void	run_server(Socket &sock, struct sockaddr *addr);
 
 #endif

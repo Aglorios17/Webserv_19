@@ -1,7 +1,7 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include "webServer.h"
+#include "webserver.h"
 
 class Socket
 {
@@ -13,16 +13,22 @@ class Socket
 		int	_domain;
 		int	_type;
 		int	_protocol;
+		int	_port;
+		int	_interface;
 		int	_socket_fd;
 	public:
 		Socket();
-		Socket(int domain, int type, int protocol);
+		Socket(int domain, int type,
+				int protocol, int port,
+				int interface);
 		~Socket();
 
-		int get_domain();
-		int get_type();
-		int get_protocol();
-		int get_fd();
+		int			get_domain();
+		int			get_type();
+		int			get_protocol();
+		int			get_port();
+		int			get_interface();
+		int			get_fd();
 };
 
 #endif
