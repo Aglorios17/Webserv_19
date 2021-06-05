@@ -1,6 +1,6 @@
 #include <stdio.h>
 #define BUF 10000
-#include "../header/webserv.h"
+#include "../includes/webserv.h"
 
 int main(int argc, char const *argv[])
 {

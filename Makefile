@@ -4,19 +4,22 @@ DIR = src/
 
 CC = clang++
 
-SRCS  = main.cpp\
+SRCS  = $(DIR)Parser.cpp\
+	$(DIR)Socket.cpp\
+	$(DIR)webServer.cpp
 
-OBJS  =  $(DIR)$(SRCS:%.cpp=%.o)
+
+OBJS  =  $(SRCS:%.cpp=%.o)
 
 CFLAG =  -Wall -Wextra -Werror -std=c++98
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $<
+	$(CC) -o $@ $^
 
 %.o: %.cpp
-	$(CC) $(CCFLAGS) -c -o $@ $^
+	$(CC) $(CFLAG) -c -o $@ $^
 
 clean:
 	rm -rf $(OBJS)
