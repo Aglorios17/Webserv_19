@@ -10,6 +10,7 @@
  */
 
 #include <iostream>
+#include <string>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +23,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
-#include <sstream>
+#include <fstream>
 
 #include "socket.h"
 
@@ -59,5 +60,11 @@ void	configure_adress(Socket &sock, struct sockaddr_in *addr);
  */
 
 void	run_server(Socket &sock, struct sockaddr *addr);
+
+/*
+ * I/O File
+ */
+
+int	get_file_size(char const *path);
 
 #endif

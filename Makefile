@@ -8,7 +8,8 @@ SRCS  = $(SRC_DIR)/parser.cpp\
 	$(SRC_DIR)/socket.cpp\
 	$(SRC_DIR)/webserver.cpp\
 	$(SRC_DIR)/configure.cpp\
-	$(SRC_DIR)/connect.cpp
+	$(SRC_DIR)/connect.cpp\
+	$(SRC_DIR)/file.cpp
 
 
 OBJS  =  $(SRCS:%.cpp=%.o)
