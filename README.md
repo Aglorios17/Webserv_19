@@ -16,39 +16,23 @@
 responsible for transporting one point to another reliably and without errors.
 (e.g: TCP, UDP, SPX..)`
 
+## Variables to add in .conf:
+
+- index
+- timeout
+- queue
+- listen port
+- host address
+- access log (not mandatory)
+- server name
+- #comments
+
 ### Ref: Ref of a basic Webserver in CPP
 
-```
-// Server side C/C++ program to demonstrate Socket programming
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <string.h>
-#define PORT 8080
-int main(int argc, char const *argv[])
-{
-    int server_fd, new_socket, valread;//declaring a socket and a server fd
-    struct sockaddr_in address;
-```
 the sockaddr_in structure specifies a transport addres and port for the 
 [AF_INET](https://docs.microsoft.com/en-us/windows-hardware/drivers/network/af-inet)
 So in this case it will be an IPv4 transport address.
 
-```
-    int opt = 1;
-    int addrlen = sizeof(address);
-    char buffer[1024] = {0};
-    char *hello = "Hello from server";
-       
-    // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-    {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
-    }
-```
 
 `int socket(int domain, int type, int protocol);` 
 the [socket](https://man7.org/linux/man-pages/man2/socket.2.html) function creates
