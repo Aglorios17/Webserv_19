@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <poll.h>
+//#include <sys/epoll.h> /*epoll is not supported on macosx*/
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>

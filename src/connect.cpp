@@ -37,19 +37,27 @@ void send_html(int fd, const char *path)
 
 void run_server(Socket &sock, struct sockaddr *addr)
 {
+	/*
+	 * It is to be noted that fd multiplexing
+	 * will be implemented.
+	 * So far, we can see that we have an 
+	 * fd for our socket and an fd for 
+	 * any new accepted connection.
+	 */
+
 	int fd;
 	int ret;
 	int len;
 	char buffer[BUFFER_SIZE] = {0};
 
 	len = sizeof((sockaddr_in*)addr);
+	if (listen(sock.get_fd(), QUEUE) < 0)
+		exit (EXIT_FAILURE);
+	if ((fd = accept(sock.get_fd(),
+			addr, (socklen_t*)&len)) < 0)
+		exit (EXIT_FAILURE);
 	while (1)
 	{
-		if (listen(sock.get_fd(), QUEUE) < 0)
-			exit (EXIT_FAILURE);
-		if ((fd = accept(sock.get_fd(),
-				addr, (socklen_t*)&len)) < 0)
-			exit (EXIT_FAILURE);
 		ret = read(fd, buffer, BUFFER_SIZE);
 		send_html(fd, "src/includes/static/index.html");
 	}

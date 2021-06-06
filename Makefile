@@ -29,5 +29,4 @@ clean:
 
 fclean: clean
 	rm -rf $(TARGET)
-re:
-	fclean all
+re:	fclean all
