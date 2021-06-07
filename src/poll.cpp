@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 16:08:18 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/07 19:22:13 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/07 20:32:45 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,9 @@ POLLFD set_poll(int fd, int event)
 	POLLFD ret;
 	
 	ret.fd = fd;
+	ret.revents = 0;
 	ret.events = event;
-	ret.events |= POLLIN;
+	//ret.events |= POLLIN;
 
 	return (ret);
 }	

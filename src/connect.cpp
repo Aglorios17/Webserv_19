@@ -58,18 +58,14 @@ void run_server(Socket &sock, struct sockaddr *addr, POLLFD** fds)
 		exit (EXIT_FAILURE);
 	add_fd_to_poll(
 					fds,
-					set_poll(fd, 0));
+					set_poll(fd, POLLIN));
 	while (1)
 	{
+			ret = read(fd, buffer, BUFFER_SIZE);
 			int pret = poll(*fds, 3, sock.get_timeout()); /*find out where to put this thing*/
 			if (pret == 0)
-			{
-				printf("\n/!\\TIMEOUT/!\\\n");
-				fflush(stdout);
-				ret = read(fd, buffer, BUFFER_SIZE);
 				send_html(fd, "src/includes/static/error.html");
-			}
-			ret = read(fd, buffer, BUFFER_SIZE);
-			send_html(fd, "src/includes/static/index.html");
+			else 
+				send_html(fd, "src/includes/static/index.html");
 	}
 }

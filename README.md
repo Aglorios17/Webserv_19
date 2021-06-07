@@ -24,6 +24,8 @@ retrieving variables and sending it to try/catch, no need to store them temporar
 - [use of fcntl](https://youtu.be/A5vyIcBMPKo)
 - [overview](https://www.geeksforgeeks.org/socket-programming-cc/)
 - [poll/epoll/kqeue](https://copyconstruct.medium.com/the-method-to-epolls-madness-d9d2d6378642)
+- [poll/epoll/select](https://www.softprayog.in/programming/io-multiplexing-select-poll-epoll-in-linux)
+- [more onto poll](https://www.reddit.com/r/C_Programming/comments/eeqi8r/understanding_how_to_use_poll_in_socket/)
 
 ## Variables to add in .conf:
 
