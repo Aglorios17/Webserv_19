@@ -59,6 +59,8 @@ void run_server(Socket &sock, struct sockaddr *addr)
 	while (1)
 	{
 		ret = read(fd, buffer, BUFFER_SIZE);
+		printf("=====\n%s\n==========", buffer);
+		fflush(stdout);
 		send_html(fd, "src/includes/static/index.html");
 	}
 }
