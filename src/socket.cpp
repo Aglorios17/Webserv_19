@@ -2,16 +2,18 @@
 
 Socket::Socket() :
        	_domain(AF_INET), _type(SOCK_STREAM),
-	_protocol(0), _port(8080), _interface(INADDR_ANY)
+	_protocol(0), _port(8080), _interface(INADDR_ANY),
+	_timeout(5000)
 {
 	is_valid(_domain, _type, _protocol, _port);
 	_socket_fd = socket(_domain, _type, _protocol);
 }
 
 Socket::Socket(int domain, int type, int protocol,
-	       	int port, int interface) : 
+	       	int port, int interface, int timeout) : 
 	_domain(domain), _type(type),
-	_protocol(protocol), _port(port), _interface(interface)
+	_protocol(protocol), _port(port), _interface(interface), 
+	_timeout(timeout)
 {
 	is_valid(_domain, _type, _protocol, _port);
 	_socket_fd = socket(_domain, _type, _protocol);
@@ -29,5 +31,6 @@ int Socket::get_interface(){return _interface;}
 
 int Socket::get_fd(){return _socket_fd;}
 
+int Socket::get_timeout(){return _timeout;}
 
 Socket::~Socket(){}

@@ -24,10 +24,13 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <fstream>
+#include <poll.h>
 
 #include "socket.h"
 
+#define POLLFD struct pollfd
 #define PORT 8080
+#define MAX_FD 100 /*shoudl find it through limits.h or something*/
 
 
 bool	conf_is_valid(std::string &conf_path);
@@ -59,12 +62,20 @@ void	configure_adress(Socket &sock, struct sockaddr_in *addr);
  * CONNECT
  */
 
-void	run_server(Socket &sock, struct sockaddr *addr);
+void	run_server(Socket &sock, struct sockaddr *addr, POLLFD** fds);
 
 /*
  * I/O File
  */
 
-int	get_file_size(char const *path);
+int		get_file_size(char const *path);
+
+/*
+ * poll handlers
+ */
+
+int		sizeof_fds(POLLFD* fds);
+POLLFD	set_poll(int fd, int event);
+void	add_fd_to_poll(POLLFD** fds, POLLFD fd);
 
 #endif

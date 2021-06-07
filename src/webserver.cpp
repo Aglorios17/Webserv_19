@@ -1,17 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   webserver.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/06/07 16:09:09 by elajimi           #+#    #+#             */
+/*   Updated: 2021/06/07 17:49:21 by elajimi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/webserver.h"
 
-int main()
+int		main()
 {
-	Socket			defaultSocket;
-	struct sockaddr_in	*address;
-	
-	address = new struct sockaddr_in;
-	configure(defaultSocket, address);
+	Socket				socket;	
+	struct sockaddr_in*	address;/*refactoring this and fds into one struct*/
+	POLLFD*				fds;
 
-	bind(defaultSocket.get_fd(),
+	fds = NULL;
+	address = new struct sockaddr_in;
+
+	add_fd_to_poll(
+			&fds,
+			set_poll(socket.get_fd(), 0));
+
+	configure(socket, address);
+
+	bind(socket.get_fd(),
 			(struct sockaddr *)address,
 			sizeof(struct sockaddr_in));
 
-	run_server(defaultSocket, (struct sockaddr*)address);
+	run_server(socket, (struct sockaddr*)address, &fds);
 	return (0);
 }

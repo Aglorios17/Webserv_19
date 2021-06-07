@@ -35,7 +35,7 @@ void send_html(int fd, const char *path)
 	}
 }
 
-void run_server(Socket &sock, struct sockaddr *addr)
+void run_server(Socket &sock, struct sockaddr *addr, POLLFD** fds)
 {
 	/*
 	 * It is to be noted that fd multiplexing
@@ -45,10 +45,10 @@ void run_server(Socket &sock, struct sockaddr *addr)
 	 * any new accepted connection.
 	 */
 
-	int fd;
-	int ret;
-	int len;
-	char buffer[BUFFER_SIZE] = {0};
+	int		fd;
+	int		ret;
+	int		len;
+	char	buffer[BUFFER_SIZE] = {0};
 
 	len = sizeof((sockaddr_in*)addr);
 	if (listen(sock.get_fd(), QUEUE) < 0)
@@ -56,11 +56,20 @@ void run_server(Socket &sock, struct sockaddr *addr)
 	if ((fd = accept(sock.get_fd(),
 			addr, (socklen_t*)&len)) < 0)
 		exit (EXIT_FAILURE);
+	add_fd_to_poll(
+					fds,
+					set_poll(fd, 0));
 	while (1)
 	{
-		ret = read(fd, buffer, BUFFER_SIZE);
-		printf("=====\n%s\n==========", buffer);
-		fflush(stdout);
-		send_html(fd, "src/includes/static/index.html");
+			int pret = poll(*fds, 3, sock.get_timeout()); /*find out where to put this thing*/
+			if (pret == 0)
+			{
+				printf("\n/!\\TIMEOUT/!\\\n");
+				fflush(stdout);
+				ret = read(fd, buffer, BUFFER_SIZE);
+				send_html(fd, "src/includes/static/error.html");
+			}
+			ret = read(fd, buffer, BUFFER_SIZE);
+			send_html(fd, "src/includes/static/index.html");
 	}
 }
