@@ -1,9 +1,118 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/06/07 15:19:04 by aglorios          #+#    #+#             */
+/*   Updated: 2021/06/07 19:31:08 by aglorios         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/webserver.h"
 
 /* It could be possible to implement 
  * more compatibilities see:
  * https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/aixprggd/progcomc/skt_types.htm
  */
+/////////////////////////////////////////////////////////////// Parser
+
+int Parser::int_val(std::string cmp, std::string cmd)
+{
+	int i = 0;
+	while (cmp[i] && (cmp[i] == ' ' || cmp[i] == '\t'))
+		i++;
+	if (strncmp(&cmp[i], &cmd[0], cmd.length()))
+		return (0);
+	i += cmd.length();
+	while (cmp[i] && (cmp[i] == ' ' || cmp[i] == '\t'))
+		i++;
+	int add = atoi(&cmp[i]);
+	if (add <= 0)
+		return (0);
+	int end = 0;
+	while (cmp[i++])
+	{
+		if (cmp[i] == ';')
+			end++;
+		if (cmp[i] && !isdigit(cmp[i]) && cmp[i] != ';' && (cmp[i] != ' ' || cmp[i] != '\t'))
+			return (0);
+	}
+	if (end != 1)
+		return (0);
+	return (add);
+}
+
+std::string *Parser::stotab(void)
+{
+	std::string *tab_conf = new std::string[size_file];
+	int	put_int_tab = 0;
+	for (int i = 0; _conf_file[i]; i++)
+	{
+		if (_conf_file[i] == '\n')
+		{
+			put_int_tab++;
+			if (_conf_file[i + 1])
+				i++;
+			else
+				break;	
+		}
+		tab_conf[put_int_tab] += _conf_file[i];
+	}
+	return (tab_conf);
+}
+
+bool Parser::save_data(void)
+{
+	std::string *tab_conf = stotab();
+	for (int y = 0; y < size_file; y++)
+	{
+		if (tab_conf[y].find("listen") != std::string::npos)
+		{	
+			if (_listen_port != 0 || !(_listen_port = int_val(tab_conf[y], "listen")))
+				return (0);
+		}
+		else if (tab_conf[y].find("timeout") != std::string::npos)
+			if (_timeout != 0 || !(_timeout = int_val(tab_conf[y], "timeout")))
+				return (0);
+	}
+//	std::cout << "PORT : "<< _listen_port << std::endl;
+//	std::cout << "Timeout : "<< _timeout << std::endl;
+	delete[] tab_conf;
+	return (1);
+}
+
+bool Parser::copy_file(char *file)
+{
+	std::ifstream copy(file);
+	std::string line;
+	size_file = 0;
+
+	if (!copy.is_open())
+		return (0);
+	while (std::getline(copy, line))
+	{
+		int i = 0;
+		while (line[i] && (line[i] == ' ' || line[i] == '\t')) 
+			i++;
+		if (line[i] != '#' && line[i] != '\0')
+		{
+			for (int a = 0;line[a] && line[a] != '#'; a++)
+				_conf_file += line[a];
+			_conf_file += "\n";
+			size_file++;
+		}
+	}
+	copy.close();
+//	std::cout << size_file << std::endl;
+//	std::cout << _conf_file;
+	if (!save_data())
+		return (0);
+	return (1);
+}
+
+////////////////////////////////////////////////////////////////
 
 bool	domain_is_valid(int domain)
 {

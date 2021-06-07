@@ -26,6 +26,7 @@
 #include <fstream>
 
 #include "socket.h"
+#include "parser.hpp"
 
 #define PORT 8080
 

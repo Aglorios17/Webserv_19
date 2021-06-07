@@ -29,4 +29,7 @@ clean:
 
 fclean: clean
 	rm -rf $(TARGET)
+
+run: all
+	./webserver src/conf/server1.conf
 re:	fclean all
