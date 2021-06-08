@@ -6,7 +6,7 @@
 /*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 14:48:27 by aglorios          #+#    #+#             */
-/*   Updated: 2021/06/07 19:21:38 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/08 15:22:03 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,14 @@ class Parser
 		int _timeout;
 		std::string	_host_address;
 		std::string	_server_name;
+		std::string _client_max_body_size;
 	public:
 		Parser(void) {}
 		~Parser(void) {}
 		bool copy_file(char *file);
 		bool save_data(void);
 		int int_val(std::string cmp, std::string cmd);
+		std::string str_val(std::string cmp, std::string cmd);
 		std::string *stotab(void);
 };
 

@@ -6,7 +6,7 @@
 /*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 15:19:04 by aglorios          #+#    #+#             */
-/*   Updated: 2021/06/07 19:31:08 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/08 15:22:10 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,40 @@ int Parser::int_val(std::string cmp, std::string cmd)
 	if (add <= 0)
 		return (0);
 	int end = 0;
-	while (cmp[i++])
+	while (cmp[i])
 	{
 		if (cmp[i] == ';')
 			end++;
 		if (cmp[i] && !isdigit(cmp[i]) && cmp[i] != ';' && (cmp[i] != ' ' || cmp[i] != '\t'))
 			return (0);
+		i++;
+	}
+	if (end != 1)
+		return (0);
+	return (add);
+}
+
+std::string Parser::str_val(std::string cmp, std::string cmd)
+{
+	int i = 0;
+	while (cmp[i] && (cmp[i] == ' ' || cmp[i] == '\t'))
+		i++;
+	if (strncmp(&cmp[i], &cmd[0], cmd.length()))
+		return (0);
+	i += cmd.length();
+	while (cmp[i] && (cmp[i] == ' ' || cmp[i] == '\t'))
+		i++;
+	std::string add;
+	while (cmp[i]  && cmp[i] != ';' && (cmp[i] != ' ' || cmp[i] !='\t'))
+		add += cmp[i++];
+	int end = 0;
+	while (cmp[i])
+	{
+		if (cmp[i] == ';')
+			end++;
+		if (cmp[i] && cmp[i] != ';' && (cmp[i] != ' ' || cmp[i] != '\t'))
+			return (0);
+		i++;
 	}
 	if (end != 1)
 		return (0);
@@ -63,10 +91,58 @@ std::string *Parser::stotab(void)
 	return (tab_conf);
 }
 
+bool server_norme(std::string *tab, int size)
+{
+	std::string check; 
+	check = tab[size - 1];
+	int i = 0;
+	int end = 0;
+	while (check[i] && (check[i] == ' ' ||check[i] == '\t'))
+		i++;
+	while (check[i] && check[i] == '}')
+	{
+		if (check[i++] == '}')
+			end++;
+	}
+	while (check[i] && (check[i] == ' ' ||check[i] == '\t'))
+		i++;
+	if (end != 1 || check[i] != '\0')
+		return (0);
+	check = tab[0];
+	i = 0;
+	end = 0;
+	if (check.find("server") != std::string::npos)
+	{
+		while (check[i] && (check[i] == ' ' ||check[i] == '\t'))
+			i++;
+		if (strncmp(&check[i], "server", 6))
+			return (0);
+		i += 6;
+		while (check[i] && (check[i] == ' ' ||check[i] == '\t'))
+			i++;
+		while (check[i] && check[i] == '{')
+		{
+			if (check[i++] == '{')
+				end++;
+		}
+		while (check[i] && (check[i] == ' ' ||check[i] == '\t'))
+			i++;
+		if (end != 1 || check[i] != '\0')
+			return (0);
+	}
+	else
+		return (0);
+	return (1);
+}
+
 bool Parser::save_data(void)
 {
 	std::string *tab_conf = stotab();
-	for (int y = 0; y < size_file; y++)
+	_listen_port = 0;
+	_timeout = 0;
+	if (!server_norme(tab_conf, size_file))
+		return (0);
+	for (int y = 1; y < size_file - 1; y++)
 	{
 		if (tab_conf[y].find("listen") != std::string::npos)
 		{	
@@ -74,11 +150,31 @@ bool Parser::save_data(void)
 				return (0);
 		}
 		else if (tab_conf[y].find("timeout") != std::string::npos)
+		{	
 			if (_timeout != 0 || !(_timeout = int_val(tab_conf[y], "timeout")))
 				return (0);
+		}
+		else if (tab_conf[y].find("server_name") != std::string::npos)
+		{	
+			if (_server_name != "" || (_server_name = str_val(tab_conf[y], "server_name")) == "")
+				return (0);
+		}
+		else if (tab_conf[y].find("client_max_body_size") != std::string::npos)
+		{	
+			if (_client_max_body_size != "" || (_client_max_body_size = str_val(tab_conf[y], "client_max_body_size")) == "")
+				return (0);
+		}
+		else if (tab_conf[y].find("index") != std::string::npos)
+		{	
+			if (_index != "" || (_index = str_val(tab_conf[y], "index")) == "")
+				return (0);
+		}
 	}
-//	std::cout << "PORT : "<< _listen_port << std::endl;
-//	std::cout << "Timeout : "<< _timeout << std::endl;
+	std::cout << "PORT : "<< _listen_port << std::endl;
+	std::cout << "Timeout : "<< _timeout << std::endl;
+	std::cout << "Server_name : "<< _server_name << std::endl;
+	std::cout << "client_max_body_size : "<< _client_max_body_size << std::endl;
+	std::cout << "index : "<< _index << std::endl;
 	delete[] tab_conf;
 	return (1);
 }
