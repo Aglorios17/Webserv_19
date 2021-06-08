@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 16:09:09 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/08 14:40:56 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/08 16:51:12 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,10 @@ int		main()
 
 	add_fd_to_poll(
 					&poll,
-					set_poll(socket.get_fd(), POLLIN));
+					set_poll(
+							socket.get_fd(),
+							POLLIN,
+							NO_STATUS_FLAG));
 
 	configure(socket, address);
 

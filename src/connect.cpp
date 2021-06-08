@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   connect.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/06/08 16:40:44 by elajimi           #+#    #+#             */
+/*   Updated: 2021/06/08 17:56:30 by elajimi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/webserver.h"
 /*
  * queue should be defined in the conf and store in a class
@@ -48,47 +60,80 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 	 * 
 	 */
 
+	int		ret;
 	int		fd;
+	int		sock_fd;
 	int		len;
 	char	buffer[BUFFER_SIZE] = {0};
 
+	ret = 0;
 	len = sizeof((sockaddr_in*)addr);
 
+	int listener = sock.get_fd();
 	if (listen(sock.get_fd(), QUEUE) < 0)
 		exit (EXIT_FAILURE);
 
-	if ((fd = accept(sock.get_fd(),
+	if ((sock_fd = accept(sock.get_fd(),
 			addr, (socklen_t*)&len)) < 0)
 		exit (EXIT_FAILURE);
 
 	add_fd_to_poll(
 					s_poll,
-					set_poll(fd, POLLIN));
+					set_poll(
+							sock_fd,
+							POLLIN,
+							NO_STATUS_FLAG));
 
-	while (poll(s_poll->fds, s_poll->nfds, sock.get_timeout()) != -1)
+	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) != -1)
 	{
+
+		/*
+		 * This while loop should be refactored into 
+		 * a proper functin
+		 */
+
 		printf("...\n");
 		fflush(stdout);
 
-		if (s_poll->fds[1].revents & POLLIN) /*data from read and sent to socket*/
+		for(int i = 0; i < s_poll->nfds ; i++)
 		{
-			printf("read from fd:%d and send data\n", s_poll->fds[1].fd);
-			fflush(stdout);
+			fd = s_poll->fds[i].fd; 
 
-			read(s_poll->fds[1].fd, buffer, BUFFER_SIZE);
-			send_html(s_poll->fds[1].fd, "src/includes/static/index.html");
+			if ((s_poll->fds[i].revents & POLLIN) == POLLIN) /*data from read and sent to socket*/
+			{
+				if (fd == listener)
+				{
+					printf("adding new connection\n");
+					add_fd_to_poll(
+									s_poll,
+									set_poll(
+											accept(
+												listener,
+												addr, (socklen_t*)&len),
+											POLLIN,
+											NO_STATUS_FLAG));
+				}
+				printf("read from fd:%d and send data\n", s_poll->fds[1].fd);
+				fflush(stdout);
 
-			printf("Done\n");
-			fflush(stdout);
+				read(fd, buffer, BUFFER_SIZE);
+				send_html(fd, "src/includes/static/index.html");
+
+				printf("Done\n");
+				fflush(stdout);
+			}
+			else if (ret == 0) 
+			{
+				printf("timeout was reached\n");
+				printf("-->fd:    %d\n", fd);	
+				printf("-->revent:%d\n", s_poll->fds[i].revents);
+				printf("-->nfds:  %d\n", i);
+			
+			}
+			else
+				printf("return event for fd: %d, was %d\n", s_poll->fds[i].fd,
+					   	s_poll->fds[i].revents);
 		}
-		if (s_poll->fds[0].revents & POLLIN)
-		{
-			printf("data recieved");
-			fflush(stdout);
-		}
-		//	read(s_poll->fds[].fd, buffer, BUFFER_SIZE);
-		//	send_html(fd, "src/includes/static/error.html");
-			//if (pret == 0)
-			//else 
+		usleep(500);
 	}
 }

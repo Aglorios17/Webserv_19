@@ -3,7 +3,7 @@
 Socket::Socket() :
        	_domain(AF_INET), _type(SOCK_STREAM),
 	_protocol(0), _port(8080), _interface(INADDR_ANY),
-	_timeout(2000)
+	_timeout(1000)
 {
 	is_valid(_domain, _type, _protocol, _port);
 	_socket_fd = socket(_domain, _type, _protocol);

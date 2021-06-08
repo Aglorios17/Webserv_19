@@ -31,6 +31,7 @@
 #define POLLFD struct pollfd
 #define PORT 8080
 #define MAX_FD 100 /*shoudl find it through limits.h or something*/
+#define NO_STATUS_FLAG 0
 
 
 bool	conf_is_valid(std::string &conf_path);
@@ -74,6 +75,11 @@ int		get_file_size(char const *path);
  * poll handlers
  */
 
+/*
+ * FD_STATUS refers to the fcntl SETFL
+ * if set to 0, no flag is passed
+ */
+
 struct poll
 {
 	POLLFD *fds;
@@ -83,7 +89,7 @@ struct poll
 
 int		init_poll_struct(struct poll *poll);
 int		sizeof_fds(POLLFD* fds);
-POLLFD	set_poll(int fd, int event);
+POLLFD	set_poll(int fd, int event, int FD_STATUS);
 void	add_fd_to_poll(struct poll* poll, POLLFD fd);
 
 #endif
