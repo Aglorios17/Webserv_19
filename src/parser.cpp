@@ -6,7 +6,7 @@
 /*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 15:19:04 by aglorios          #+#    #+#             */
-/*   Updated: 2021/06/08 15:22:10 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/08 16:54:32 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,26 @@
  * https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/aixprggd/progcomc/skt_types.htm
  */
 /////////////////////////////////////////////////////////////// Parser
+
+int	end_line(int i, std::string cmp)
+{
+	int end = 0;
+	while (cmp[i])
+	{
+		if (cmp[i] != ' ' && cmp[i] != '\t')
+		{
+			if (cmp[i] == ';' && end)
+			{
+				if (end)
+					return (0);
+				else
+					end++;
+			}
+		}
+		i++;
+	}
+	return (1);
+}
 
 int Parser::int_val(std::string cmp, std::string cmd)
 {
@@ -31,16 +51,9 @@ int Parser::int_val(std::string cmp, std::string cmd)
 	int add = atoi(&cmp[i]);
 	if (add <= 0)
 		return (0);
-	int end = 0;
-	while (cmp[i])
-	{
-		if (cmp[i] == ';')
-			end++;
-		if (cmp[i] && !isdigit(cmp[i]) && cmp[i] != ';' && (cmp[i] != ' ' || cmp[i] != '\t'))
-			return (0);
+	while (isdigit(cmp[i]))
 		i++;
-	}
-	if (end != 1)
+	if (!end_line(i, cmp))
 		return (0);
 	return (add);
 }
@@ -56,18 +69,9 @@ std::string Parser::str_val(std::string cmp, std::string cmd)
 	while (cmp[i] && (cmp[i] == ' ' || cmp[i] == '\t'))
 		i++;
 	std::string add;
-	while (cmp[i]  && cmp[i] != ';' && (cmp[i] != ' ' || cmp[i] !='\t'))
+	while (cmp[i]  && cmp[i] != ';' && cmp[i] != ' ' && cmp[i] !='\t')
 		add += cmp[i++];
-	int end = 0;
-	while (cmp[i])
-	{
-		if (cmp[i] == ';')
-			end++;
-		if (cmp[i] && cmp[i] != ';' && (cmp[i] != ' ' || cmp[i] != '\t'))
-			return (0);
-		i++;
-	}
-	if (end != 1)
+	if (!end_line(i, cmp))
 		return (0);
 	return (add);
 }
@@ -135,6 +139,30 @@ bool server_norme(std::string *tab, int size)
 	return (1);
 }
 
+bool Parser::client_body_size_check(std::string tab)
+{
+	std::string add;
+	if (_client_max_body_size != 0 || (add = str_val(tab, "client_max_body_size")) == "")
+		return (0);
+	if (!isdigit(add[0]))
+		return (0);
+	int i = 0;
+	while (add[i])
+	{
+		if (!isdigit(add[i]))
+		{
+			if (add[i] == 'M' && !add[i + 1])
+			{	
+				if (!(_client_max_body_size = atoi(&add[0])))
+					return (0);
+			}
+			else
+				return (0);
+		}
+		i++;
+	}
+	return (1);
+}
 bool Parser::save_data(void)
 {
 	std::string *tab_conf = stotab();
@@ -160,8 +188,8 @@ bool Parser::save_data(void)
 				return (0);
 		}
 		else if (tab_conf[y].find("client_max_body_size") != std::string::npos)
-		{	
-			if (_client_max_body_size != "" || (_client_max_body_size = str_val(tab_conf[y], "client_max_body_size")) == "")
+		{
+			if (!client_body_size_check(tab_conf[y]))
 				return (0);
 		}
 		else if (tab_conf[y].find("index") != std::string::npos)
