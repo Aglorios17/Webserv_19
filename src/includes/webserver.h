@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <sys/epoll.h> /*epoll is not supported on macosx*/
+//#include <sys/epoll.h> /*epoll is not supported on macos*/
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -62,7 +62,7 @@ void	configure_adress(Socket &sock, struct sockaddr_in *addr);
  * CONNECT
  */
 
-void	run_server(Socket &sock, struct sockaddr *addr, POLLFD** fds);
+void	run_server(Socket &sock, struct sockaddr *addr, struct poll* poll);
 
 /*
  * I/O File
@@ -74,8 +74,16 @@ int		get_file_size(char const *path);
  * poll handlers
  */
 
+struct poll
+{
+	POLLFD *fds;
+	int		nfds;
+	int		timeout;
+};
+
+int		init_poll_struct(struct poll *poll);
 int		sizeof_fds(POLLFD* fds);
 POLLFD	set_poll(int fd, int event);
-void	add_fd_to_poll(POLLFD** fds, POLLFD fd);
+void	add_fd_to_poll(struct poll* poll, POLLFD fd);
 
 #endif

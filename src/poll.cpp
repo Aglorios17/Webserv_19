@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 16:08:18 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/07 20:32:45 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/08 14:44:44 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,14 @@
  * These functions will be part of a poll.cpp
  * handling all poll settings
  */
+
+int init_poll_struct(struct poll* poll)
+{
+	poll->fds = NULL;
+	poll->timeout = 0;
+	poll->nfds = 0;
+	return (0);
+}
 
 int		sizeof_fds(POLLFD* fds)
 {
@@ -34,20 +42,17 @@ POLLFD set_poll(int fd, int event)
 	ret.fd = fd;
 	ret.revents = 0;
 	ret.events = event;
-	//ret.events |= POLLIN;
-
 	return (ret);
 }	
 
-void	add_fd_to_poll(POLLFD** fds, POLLFD fd)
+void	add_fd_to_poll(struct poll* poll, POLLFD fd)
 {
-	int			size = 0; 
-
-	POLLFD * tmp = new POLLFD [size + 1];
-	for (int i = 0 ; i < size; i++)
-		tmp[i] = *fds[i];
-	tmp[size] = fd;
-	*fds = tmp;
+	POLLFD * tmp = new POLLFD [poll->nfds + 1];
+	for (int i = 0 ; i < poll->nfds; i++)
+		tmp[i] = poll->fds[i];
+	tmp[poll->nfds] = fd;
+	poll->fds = tmp;
+	poll->nfds += 1;
 	free(tmp);
 }
 

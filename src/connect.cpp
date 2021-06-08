@@ -35,37 +35,60 @@ void send_html(int fd, const char *path)
 	}
 }
 
-void run_server(Socket &sock, struct sockaddr *addr, POLLFD** fds)
+void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
 	/*
-	 * It is to be noted that fd multiplexing
-	 * will be implemented.
-	 * So far, we can see that we have an 
-	 * fd for our socket and an fd for 
-	 * any new accepted connection.
+	 * fd[0] is the socket fd
+	 *
+	 * fd[1] is the connection
+	 * with which the socket is made
+	 * 
+	 * Added fd will be for additional
+	 * connections 
+	 * 
 	 */
 
 	int		fd;
-	int		ret;
 	int		len;
 	char	buffer[BUFFER_SIZE] = {0};
 
 	len = sizeof((sockaddr_in*)addr);
+
 	if (listen(sock.get_fd(), QUEUE) < 0)
 		exit (EXIT_FAILURE);
+
 	if ((fd = accept(sock.get_fd(),
 			addr, (socklen_t*)&len)) < 0)
 		exit (EXIT_FAILURE);
+
 	add_fd_to_poll(
-					fds,
+					s_poll,
 					set_poll(fd, POLLIN));
-	while (1)
+
+	while (poll(s_poll->fds, s_poll->nfds, sock.get_timeout()) != -1)
 	{
-			ret = read(fd, buffer, BUFFER_SIZE);
-			int pret = poll(*fds, 3, sock.get_timeout()); /*find out where to put this thing*/
-			if (pret == 0)
-				send_html(fd, "src/includes/static/error.html");
-			else 
-				send_html(fd, "src/includes/static/index.html");
+		printf("...\n");
+		fflush(stdout);
+
+		if (s_poll->fds[1].revents & POLLIN) /*data from read and sent to socket*/
+		{
+			printf("read from fd:%d and send data\n", s_poll->fds[1].fd);
+			fflush(stdout);
+
+			read(s_poll->fds[1].fd, buffer, BUFFER_SIZE);
+			send_html(s_poll->fds[1].fd, "src/includes/static/index.html");
+
+			printf("Done\n");
+			fflush(stdout);
+		}
+		if (s_poll->fds[0].revents & POLLIN)
+		{
+			printf("data recieved");
+			fflush(stdout);
+		}
+		//	read(s_poll->fds[].fd, buffer, BUFFER_SIZE);
+		//	send_html(fd, "src/includes/static/error.html");
+			//if (pret == 0)
+			//else 
 	}
 }
