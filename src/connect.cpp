@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:40:44 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/08 17:56:30 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/09 18:36:01 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,46 +47,57 @@ void send_html(int fd, const char *path)
 	}
 }
 
-void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
+int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
-	/*
-	 * fd[0] is the socket fd
-	 *
-	 * fd[1] is the connection
-	 * with which the socket is made
-	 * 
-	 * Added fd will be for additional
-	 * connections 
-	 * 
-	 */
 
-	int		ret;
-	int		fd;
-	int		sock_fd;
-	int		len;
-	char	buffer[BUFFER_SIZE] = {0};
+	int	len;
+	int sender;
+	int optval = 1;
 
-	ret = 0;
 	len = sizeof((sockaddr_in*)addr);
-
-	int listener = sock.get_fd();
-	if (listen(sock.get_fd(), QUEUE) < 0)
-		exit (EXIT_FAILURE);
-
-	if ((sock_fd = accept(sock.get_fd(),
+	if ((sender = accept(sock.get_fd(),
 			addr, (socklen_t*)&len)) < 0)
 		exit (EXIT_FAILURE);
 
+	setsockopt(sender, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
 	add_fd_to_poll(
 					s_poll,
 					set_poll(
-							sock_fd,
-							POLLIN,
-							NO_STATUS_FLAG));
+							sender,
+							POLLIN|POLLNVAL,
+							O_NOFLAG));
 
-	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) != -1)
+	return sender;
+}
+
+void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
+{
+	int		ret;
+	int		fd;
+	int		sender;
+	char	buffer[BUFFER_SIZE] = {0};
+
+	ret = 0;
+
+	int listener = sock.get_fd();
+
+	if (listen(sock.get_fd(), 1) < 0)//should add that in socket constructor
+		exit (EXIT_FAILURE);
+
+	sender = add_connection(sock, addr, s_poll);
+
+	//========select
+	//fd_set fds[s_poll->nfds];
+	//for (int i = 0; i < s_poll->nfds; i++)
+	//{
+	//	FD_ZERO(&s_poll->fds[i].fd);
+	//	FD_SET(s_poll->fds[i].fd, &fds[i]);
+	//}
+	//========
+
+	while (1)
 	{
-
+		ret = poll(s_poll->fds, s_poll->nfds, -1);
 		/*
 		 * This while loop should be refactored into 
 		 * a proper functin
@@ -98,42 +109,23 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 		for(int i = 0; i < s_poll->nfds ; i++)
 		{
 			fd = s_poll->fds[i].fd; 
-
-			if ((s_poll->fds[i].revents & POLLIN) == POLLIN) /*data from read and sent to socket*/
+			printf("sender %d\nfd %d\n", sender, fd);
+			fflush(stdout);
+			if ((s_poll->fds[i].revents & POLLIN) == POLLIN)
+				/*data from read and sent to socket*/
 			{
-				if (fd == listener)
+				//(void)listener;
+				if (fd == listener && (s_poll->fds[i].revents & POLLHUP))
 				{
-					printf("adding new connection\n");
-					add_fd_to_poll(
-									s_poll,
-									set_poll(
-											accept(
-												listener,
-												addr, (socklen_t*)&len),
-											POLLIN,
-											NO_STATUS_FLAG));
+					s_poll->fds[i].fd = -1;//disreagarding closed connection
+					sender = add_connection(sock, addr, s_poll);
 				}
-				printf("read from fd:%d and send data\n", s_poll->fds[1].fd);
-				fflush(stdout);
-
-				read(fd, buffer, BUFFER_SIZE);
-				send_html(fd, "src/includes/static/index.html");
-
-				printf("Done\n");
-				fflush(stdout);
+				if (fd == sender)
+				{
+					read(fd, buffer, BUFFER_SIZE);
+					send_html(fd, "src/includes/static/index.html");
+				}
 			}
-			else if (ret == 0) 
-			{
-				printf("timeout was reached\n");
-				printf("-->fd:    %d\n", fd);	
-				printf("-->revent:%d\n", s_poll->fds[i].revents);
-				printf("-->nfds:  %d\n", i);
-			
-			}
-			else
-				printf("return event for fd: %d, was %d\n", s_poll->fds[i].fd,
-					   	s_poll->fds[i].revents);
 		}
-		usleep(500);
 	}
 }

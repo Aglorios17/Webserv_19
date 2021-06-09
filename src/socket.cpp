@@ -5,8 +5,11 @@ Socket::Socket() :
 	_protocol(0), _port(8080), _interface(INADDR_ANY),
 	_timeout(1000)
 {
+	int optval = 1;
+
 	is_valid(_domain, _type, _protocol, _port);
 	_socket_fd = socket(_domain, _type, _protocol);
+	setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
 }
 
 Socket::Socket(int domain, int type, int protocol,
@@ -15,8 +18,11 @@ Socket::Socket(int domain, int type, int protocol,
 	_protocol(protocol), _port(port), _interface(interface), 
 	_timeout(timeout)
 {
+	int optval = 1;
+
 	is_valid(_domain, _type, _protocol, _port);
 	_socket_fd = socket(_domain, _type, _protocol);
+	setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
 }
 
 int Socket::get_domain(){return _domain;}

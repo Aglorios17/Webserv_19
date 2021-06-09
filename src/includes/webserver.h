@@ -31,7 +31,7 @@
 #define POLLFD struct pollfd
 #define PORT 8080
 #define MAX_FD 100 /*shoudl find it through limits.h or something*/
-#define NO_STATUS_FLAG 0
+#define O_NOFLAG 0
 
 
 bool	conf_is_valid(std::string &conf_path);
