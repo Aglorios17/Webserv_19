@@ -29,7 +29,7 @@ int		main()
 					set_poll(
 							socket.get_fd(),
 							POLLIN,
-							NO_STATUS_FLAG));
+							O_NOFLAG));
 
 	configure(socket, address);
 

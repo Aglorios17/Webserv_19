@@ -64,8 +64,8 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 					s_poll,
 					set_poll(
 							sender,
-							POLLIN|POLLNVAL,
-							O_NOFLAG));
+							POLLIN|POLLPRI,
+							O_NONBLOCK));
 
 	return sender;
 }
@@ -97,6 +97,8 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 
 	while (1)
 	{
+		
+
 		ret = poll(s_poll->fds, s_poll->nfds, -1);
 		/*
 		 * This while loop should be refactored into 
@@ -122,10 +124,18 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 				}
 				if (fd == sender)
 				{
-					read(fd, buffer, BUFFER_SIZE);
-					send_html(fd, "src/includes/static/index.html");
+					recv(fd, buffer, BUFFER_SIZE, 0);
+					printf("[%s]\n", buffer);
+					//send_html(fd, "src/includes/static/index.html");
+					for (int i = 0; i < s_poll->nfds; i++)
+					{
+						printf("fd%d -> %d\n", i, s_poll->fds[i].fd);
+						fflush(stdout);
+					}
 				}
 			}
 		}
+		printf("done\n");
+		fflush(stdout);
 	}
 }
