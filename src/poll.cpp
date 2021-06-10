@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 16:08:18 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/08 16:50:02 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/10 17:47:18 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ POLLFD set_poll(int fd, int event, int FLAG)
 	
 	ret.fd = fd;
 	ret.revents = 0;
-	ret.events = event;
+	ret.events = 0;
+	ret.events |= event;
 
 	/*setting FLAG for the new fd*/
 	if (FLAG)

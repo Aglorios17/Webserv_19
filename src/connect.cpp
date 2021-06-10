@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:40:44 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/09 18:36:01 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/10 18:29:41 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
  * queue should be defined in the conf and store in a class
  */
 # define QUEUE 3
-# define BUFFER_SIZE 1000
+# define BUFFER_SIZE 10000
 
 
 void send_header(int fd, int size)
@@ -37,13 +37,21 @@ void send_html(int fd, const char *path)
 	if (file.is_open())
 	{
 
+		printf("1[[[fd=>%d]]\n", fd);
+		fflush(stdout);
 		send_header(fd, get_file_size(path));
+		printf("2[[[fd=>%d]]\n", fd);
+		fflush(stdout);
 		while(std::getline(file, line))
 		{
 			s1 = &line[0];
 			send(fd, s1, strlen(s1), 0);
+			printf("3[[[fd=>%d]]\n", fd);
+			fflush(stdout);
 		}
 		file.close();
+			printf("4[[[fd=>%d]]\n", fd);
+			fflush(stdout);
 	}
 }
 
@@ -64,7 +72,7 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 					s_poll,
 					set_poll(
 							sender,
-							POLLIN|POLLPRI,
+							POLLIN|POLLOUT|POLLWRBAND|POLLHUP,
 							O_NONBLOCK));
 
 	return sender;
@@ -74,68 +82,110 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
 	int		ret;
 	int		fd;
-	int		sender;
 	char	buffer[BUFFER_SIZE] = {0};
 
-	ret = 0;
-
-	int listener = sock.get_fd();
-
-	if (listen(sock.get_fd(), 1) < 0)//should add that in socket constructor
+	if (listen(sock.get_fd(), 1) < 0)
 		exit (EXIT_FAILURE);
 
-	sender = add_connection(sock, addr, s_poll);
+	add_connection(sock, addr, s_poll);
 
-	//========select
-	//fd_set fds[s_poll->nfds];
-	//for (int i = 0; i < s_poll->nfds; i++)
-	//{
-	//	FD_ZERO(&s_poll->fds[i].fd);
-	//	FD_SET(s_poll->fds[i].fd, &fds[i]);
-	//}
-	//========
-
-	while (1)
+	while ((ret = poll(s_poll->fds, s_poll->nfds, 1000000)) != -1)
 	{
-		
-
-		ret = poll(s_poll->fds, s_poll->nfds, -1);
-		/*
-		 * This while loop should be refactored into 
-		 * a proper functin
-		 */
-
 		printf("...\n");
 		fflush(stdout);
+
+		int fd_sock = s_poll->fds[0].fd;
+		//int fd_subsock = s_poll->fds[1].fd;
 
 		for(int i = 0; i < s_poll->nfds ; i++)
 		{
 			fd = s_poll->fds[i].fd; 
-			printf("sender %d\nfd %d\n", sender, fd);
-			fflush(stdout);
+			
 			if ((s_poll->fds[i].revents & POLLIN) == POLLIN)
-				/*data from read and sent to socket*/
 			{
-				//(void)listener;
-				if (fd == listener && (s_poll->fds[i].revents & POLLHUP))
+				if (fd == fd_sock)
 				{
-					s_poll->fds[i].fd = -1;//disreagarding closed connection
-					sender = add_connection(sock, addr, s_poll);
+					printf("read from sock \n");
+					fflush(stdout);
+					ret = recv(fd, buffer, BUFFER_SIZE, 0);
+					printf("%s", buffer);
+					printf("==========\n");
+					//sleep(2);
 				}
-				if (fd == sender)
+				if (fd != fd_sock)
 				{
+					printf("read from subsock\n");
+					fflush(stdout);
 					recv(fd, buffer, BUFFER_SIZE, 0);
-					printf("[%s]\n", buffer);
-					//send_html(fd, "src/includes/static/index.html");
-					for (int i = 0; i < s_poll->nfds; i++)
-					{
-						printf("fd%d -> %d\n", i, s_poll->fds[i].fd);
-						fflush(stdout);
-					}
+					printf("%s", buffer);
+					printf("==========\n");
+					//sleep(2);
 				}
 			}
+			if ((s_poll->fds[i].revents & POLLOUT) == POLLOUT)
+			{
+				if (fd == fd_sock)
+				{
+					printf("writing to sock\n");
+					fflush(stdout);
+					printf("==========\n");
+					//sleep(2);
+				}
+				if (fd != fd_sock)
+				{
+					printf("writing to subsock htlml\n");
+					fflush(stdout);
+
+					send_html(s_poll->fds[i].fd, "src/includes/static/index.html");
+					//s_poll->fds[i].fd;
+					close(fd);
+					add_connection(sock, addr, s_poll);
+					printf("==========\n");
+					fflush(stdout);
+				}
+			}
+			if ((s_poll->fds[i].revents & POLLHUP) == POLLHUP)
+			{
+				if (fd == fd_sock)
+				{
+					printf("SOCK CONNECTION INTERRUPTEd\n");
+					fflush(stdout);
+					exit(0);
+				}
+				if (fd != fd_sock)
+				{
+					printf("SUBSOCK CONNECTION INTERRUPTEd\n");
+					fflush(stdout);
+					exit(0);
+				}
+			}
+		for (int i = 0; i < s_poll->nfds; i++)
+		{
+			printf("fd%d -> %d\n", i, s_poll->fds[i].fd);
+			fflush(stdout);
 		}
-		printf("done\n");
-		fflush(stdout);
+			//if ((s_poll->fds[i].revents & POLLIN) == POLLIN)
+			//	/*data from read and sent to socket*/
+			//{
+			//	recv(fd, buffer, BUFFER_SIZE, 0); 
+			//	printf("[%s]\n", buffer);
+			//	fflush(stdout);
+			//}
+			//if ((s_poll->fds[i].revents & POLLOUT) == POLLOUT)
+			//{
+			//		//send_html(fd, "src/includes/static/index.html");
+
+			//		for (int i = 0; i < s_poll->nfds; i++)
+			//		{
+			//			printf("fd%d -> %d\n", i, s_poll->fds[i].fd);
+			//			fflush(stdout);
+			//		}
+			//}
+			
+			printf("done\n");
+			printf("~~~~~~~~~~~~~~~~~~~\n");
+			fflush(stdout);
+			//sleep(1);
+		}
 	}
 }

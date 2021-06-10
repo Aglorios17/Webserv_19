@@ -9,7 +9,7 @@ Socket::Socket() :
 
 	is_valid(_domain, _type, _protocol, _port);
 	_socket_fd = socket(_domain, _type, _protocol);
-	setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
+	setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&optval, sizeof(optval));
 }
 
 Socket::Socket(int domain, int type, int protocol,
