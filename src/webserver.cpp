@@ -15,29 +15,23 @@
 int		main()
 {
 	Socket				socket;	
-	struct sockaddr_in*	address;/*refactoring this and fds into one struct*/
+	struct sockaddr_in*		address;
 	POLLFD*				fds;
 	struct poll			poll;
 
 	fds = NULL;
 	address = new struct sockaddr_in;
-
 	init_poll_struct(&poll);
-
 	add_fd_to_poll(
 					&poll,
 					set_poll(
 							socket.get_fd(),
 							POLLIN,
 							O_NOFLAG));
-
 	configure(socket, address);
-
 	bind(socket.get_fd(),
 			(struct sockaddr *)address,
 			sizeof(struct sockaddr_in));
-
 	run_server(socket, (struct sockaddr*)address, &poll);
-
 	return (0);
 }

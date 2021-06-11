@@ -41,8 +41,7 @@ POLLFD set_poll(int fd, int event, int FLAG)
 	
 	ret.fd = fd;
 	ret.revents = 0;
-	ret.events = 0;
-	ret.events |= event;
+	ret.events = event;
 
 	/*setting FLAG for the new fd*/
 	if (FLAG)

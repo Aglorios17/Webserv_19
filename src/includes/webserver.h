@@ -32,6 +32,7 @@
 #define PORT 8080
 #define MAX_FD 100 /*shoudl find it through limits.h or something*/
 #define O_NOFLAG 0
+#define BUFFER_SIZE 2048 
 
 
 bool	conf_is_valid(std::string &conf_path);
@@ -69,7 +70,7 @@ void	run_server(Socket &sock, struct sockaddr *addr, struct poll* poll);
  * I/O File
  */
 
-int		get_file_size(char const *path);
+int	get_file_size(char const *path);
 
 /*
  * poll handlers
@@ -87,9 +88,19 @@ struct poll
 	int		timeout;
 };
 
-int		init_poll_struct(struct poll *poll);
-int		sizeof_fds(POLLFD* fds);
+int	init_poll_struct(struct poll *poll);
+int	sizeof_fds(POLLFD* fds);
 POLLFD	set_poll(int fd, int event, int FD_STATUS);
 void	add_fd_to_poll(struct poll* poll, POLLFD fd);
+
+
+void	pollin_handler(int fd, int server);
+void	pollout_handler(int fd, int server);
+void	poller_handler(int fd, int server, struct poll* s_poll,
+	struct sockaddr *addr, Socket &sock);
+
+int	add_connection(Socket &sock, struct sockaddr *addr,
+	struct poll* s_poll);
+void	delete_last(struct poll * poll);
 
 #endif
