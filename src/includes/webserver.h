@@ -27,6 +27,7 @@
 
 #include "socket.h"
 #include "parser.hpp"
+#include "request.hpp"
 
 #define PORT 8080
 

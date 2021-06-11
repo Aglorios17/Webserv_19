@@ -49,6 +49,9 @@ void run_server(Socket &sock, struct sockaddr *addr)
 	int ret;
 	int len;
 	char buffer[BUFFER_SIZE] = {0};
+	////////////////////////////////////////////////////// init request parser
+	Request request;	
+	//////////////////////////////////////////////////////
 
 	len = sizeof((sockaddr_in*)addr);
 	if (listen(sock.get_fd(), QUEUE) < 0)
@@ -62,5 +65,9 @@ void run_server(Socket &sock, struct sockaddr *addr)
 		printf("=====\n%s\n==========", buffer);
 		fflush(stdout);
 		send_html(fd, "src/includes/static/index.html");
+		////////////////////////////// take buffer for request parser
+		request.add(buffer);
+		request.request_data(); 
+		//////////////////////////////
 	}
 }
