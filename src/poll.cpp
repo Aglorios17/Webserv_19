@@ -39,30 +39,29 @@ POLLFD set_poll(int fd, int event, int FLAG)
 {
 	POLLFD	ret;
 	
+	memset(&ret, 0, sizeof(ret));
 	ret.fd = fd;
 	ret.revents = 0;
 	ret.events = event;
 
-	/*setting FLAG for the new fd*/
 	if (FLAG)
-		fcntl(
-			ret.fd,
-			F_SETFL,
-			fcntl(
-				ret.fd,
-				F_GETFL)|FLAG);
-
+		fcntl(ret.fd, F_SETFL, O_NONBLOCK);
 	return (ret);
 }	
 
 void	add_fd_to_poll(struct poll* poll, POLLFD fd)
 {
-	POLLFD * tmp = new POLLFD [poll->nfds + 1];
+	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));//new POLLFD [poll->nfds];
+	POLLFD tmp_fd; 
+
+	memcpy(&tmp_fd, &fd, sizeof(fd));
+
 	for (int i = 0 ; i < poll->nfds; i++)
 		tmp[i] = poll->fds[i];
+
 	tmp[poll->nfds] = fd;
+	free(poll->fds);
 	poll->fds = tmp;
 	poll->nfds += 1;
-	free(tmp);
 }
 

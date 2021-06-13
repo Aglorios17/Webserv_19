@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "includes/webserver.h"
+
 /*
  * queue should be defined in the conf and store in a class
  */
@@ -23,7 +24,7 @@ int	send_header(int fd, int size)
 	std::string	buf;
 	int		ret;
 
-	buf = "HTTP/1.1 200 OK\nContent-Type:text/html\nContent-Length: "
+	buf = "HTTP/1.0 OK\nContent-Type:text/html\nContent-Length: "
 		+ std::to_string(size) + "\n\n";
 	s1 = &buf[0];
 	ret = send(fd, s1, strlen(s1), 0);
@@ -61,7 +62,7 @@ void delete_last(struct poll * poll)
 int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
 
-	int	len;
+	int len;
 	int sender;
 	int optval = 1;
 
@@ -71,6 +72,7 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 		exit (EXIT_FAILURE);
 
 	setsockopt(sender, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
+
 	add_fd_to_poll(
 					s_poll,
 					set_poll(
@@ -92,29 +94,36 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 
 	if (listen(sock.get_fd(), 1) < 0)
 		exit (EXIT_FAILURE);
-	add_connection(sock, addr, s_poll);
-	while ((ret = poll(s_poll->fds, s_poll->nfds, -1)) >= 0)
+
+	server = s_poll->fds[0].fd;
+
+	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
 	{
 		printf("...\n");
 		fflush(stdout);
-		server = s_poll->fds[0].fd;
+
 		for(int i = 0; i < s_poll->nfds ; i++)
 		{
 			fd = s_poll->fds[i].fd;
+			printf("~[fd: %d]~\n", fd);
 			if (s_poll->fds[i].revents&POLLIN)
-				pollin_handler(fd, server);
+				pollin_handler(fd, server, s_poll,
+							addr, sock);
+
 			if (s_poll->fds[i].revents&POLLOUT)
-				pollout_handler(fd, server);
+				pollout_handler(fd, server, s_poll,
+							addr, sock);
+
 			if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
+			{
 				poller_handler(fd, server, s_poll,
 							addr, sock);
-		}
-		for (int i = 0; i < s_poll->nfds; i++)
-		{
-			printf("fd %d -> %d\n", i, s_poll->fds[i].fd);
-			fflush(stdout);
+				s_poll->fds[i].fd = -1;
+			}
 		}
 		printf("~~~~~~~~~~~~~~~~~~~\n");
 		fflush(stdout);
 	}
+	printf("ret--->%d\n", ret);
+	fflush(stdout);
 }

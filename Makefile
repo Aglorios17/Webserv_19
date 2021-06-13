@@ -28,7 +28,7 @@ SRCS  = $(SRC_DIR)/parser.cpp\
 
 OBJS  =  $(SRCS:%.cpp=%.o)
 
-CFLAG =  -Wall -Wextra -Werror -std=c++98
+CFLAG =  -g -Wall -Wextra -Werror -std=c++98
 
 all: $(TARGET)
 
