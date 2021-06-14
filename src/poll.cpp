@@ -51,7 +51,7 @@ POLLFD set_poll(int fd, int event, int FLAG)
 
 void	add_fd_to_poll(struct poll* poll, POLLFD fd)
 {
-	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));//new POLLFD [poll->nfds];
+	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds + 1));//new POLLFD [poll->nfds];
 	POLLFD tmp_fd; 
 
 	memcpy(&tmp_fd, &fd, sizeof(fd));

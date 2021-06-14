@@ -51,12 +51,13 @@ void send_html(int fd, const char *path)
 
 void delete_last(struct poll * poll)
 {
-	POLLFD * tmp = new POLLFD [poll->nfds - 1];
+	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));
+
 	for (int i = 0 ; i < poll->nfds - 1; i++)
 		tmp[i] = poll->fds[i];
+	delete poll->fds;
 	poll->fds = tmp;
 	poll->nfds--;
-	delete [] tmp;
 }
 
 int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
