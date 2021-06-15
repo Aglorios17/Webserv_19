@@ -26,6 +26,8 @@ retrieving variables and sending it to try/catch, no need to store them temporar
 - [poll/epoll/kqeue](https://copyconstruct.medium.com/the-method-to-epolls-madness-d9d2d6378642)
 - [I/O multiplexing poll vs select](http://byteliu.com/2019/05/08/LINUX-%E2%80%93-IO-MULTIPLEXING-%E2%80%93-SELECT-VS-POLL-VS-EPOLL/)
 - [Overview sockets http](http://www.cs.columbia.edu/~jae/3157/files/overview-sockets-http.pdf)
+- [poll/epoll/select](https://www.softprayog.in/programming/io-multiplexing-select-poll-epoll-in-linux)
+- [more onto poll](https://www.reddit.com/r/C_Programming/comments/eeqi8r/understanding_how_to_use_poll_in_socket/)
 
 ## Variables to add in .conf:
 

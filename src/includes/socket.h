@@ -16,11 +16,13 @@ class Socket
 		int	_port;
 		int	_interface;
 		int	_socket_fd;
+		int _timeout;
+
 	public:
 		Socket();
 		Socket(int domain, int type,
 				int protocol, int port,
-				int interface);
+				int interface, int timeout);
 		~Socket();
 
 		int			get_domain();
@@ -29,6 +31,7 @@ class Socket
 		int			get_port();
 		int			get_interface();
 		int			get_fd();
+		int			get_timeout();
 };
 
 #endif

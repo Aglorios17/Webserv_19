@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   webserver.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/06/15 12:08:16 by elajimi           #+#    #+#             */
+/*   Updated: 2021/06/15 12:08:18 by elajimi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef WEBSERVER_H
 #define WEBSERVER_H
 
@@ -14,7 +26,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <sys/epoll.h> /*epoll is not supported on macosx*/
+//#include <sys/epoll.h> /*epoll is not supported on macos*/
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -24,12 +36,17 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <fstream>
+#include <poll.h>
 
 #include "socket.h"
 #include "parser.hpp"
 #include "request.hpp"
 
+#define POLLFD struct pollfd
 #define PORT 8080
+#define MAX_FD 100 /*shoudl find it through limits.h or something*/
+#define O_NOFLAG 0
+#define BUFFER_SIZE 1024 
 
 
 bool	conf_is_valid(std::string &conf_path);
@@ -61,12 +78,47 @@ void	configure_adress(Socket &sock, struct sockaddr_in *addr);
  * CONNECT
  */
 
-void	run_server(Socket &sock, struct sockaddr *addr);
+void	run_server(Socket &sock, struct sockaddr *addr, struct poll* poll);
 
 /*
  * I/O File
  */
 
 int	get_file_size(char const *path);
+int	send_header(int fd, int size);
+void	send_html(int fd, const char *path);
+
+/*
+ * poll handlers
+ */
+
+/*
+ * FD_STATUS refers to the fcntl SETFL
+ * if set to 0, no flag is passed
+ */
+
+struct poll
+{
+	POLLFD *fds;
+	int		nfds;
+	int		timeout;
+};
+
+int	init_poll_struct(struct poll *poll);
+int	sizeof_fds(POLLFD* fds);
+POLLFD	set_poll(int fd, int event, int FD_STATUS);
+void	add_fd_to_poll(struct poll* poll, POLLFD fd);
+
+
+void	pollin_handler(int *fd, int server, struct poll* s_poll,
+	struct sockaddr *addr, Socket &sock);
+void pollout_handler(int *fd, int server, struct poll* s_poll,
+		struct sockaddr *addr, Socket &sock);
+void	poller_handler(int *fd, int server, struct poll* s_poll,
+	struct sockaddr *addr, Socket &sock);
+
+int	add_connection(Socket &sock, struct sockaddr *addr,
+	struct poll* s_poll);
+void	delete_last(struct poll * poll);
 
 #endif
