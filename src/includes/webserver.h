@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   webserver.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/06/15 12:08:16 by elajimi           #+#    #+#             */
+/*   Updated: 2021/06/15 12:08:18 by elajimi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef WEBSERVER_H
 #define WEBSERVER_H
 
@@ -96,11 +108,11 @@ POLLFD	set_poll(int fd, int event, int FD_STATUS);
 void	add_fd_to_poll(struct poll* poll, POLLFD fd);
 
 
-void	pollin_handler(int fd, int server, struct poll* s_poll,
+void	pollin_handler(int *fd, int server, struct poll* s_poll,
 	struct sockaddr *addr, Socket &sock);
-void pollout_handler(int fd, int server, struct poll* s_poll,
+void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock);
-void	poller_handler(int fd, int server, struct poll* s_poll,
+void	poller_handler(int *fd, int server, struct poll* s_poll,
 	struct sockaddr *addr, Socket &sock);
 
 int	add_connection(Socket &sock, struct sockaddr *addr,

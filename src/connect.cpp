@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:40:44 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/10 18:29:41 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/15 14:29:45 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,11 @@ void delete_last(struct poll * poll)
 	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));
 
 	for (int i = 0 ; i < poll->nfds - 1; i++)
+	{
 		tmp[i] = poll->fds[i];
+		printf("[--|%d|--]\n", poll->fds[i].fd);
+		fflush(stdout);
+	}
 	delete poll->fds;
 	poll->fds = tmp;
 	poll->nfds--;
@@ -86,27 +90,19 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 
 	return sender;
 }
-
-void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
+void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
-	int	ret;
-	int	fd;
-	int	server;
+		int	*fd;
+		int	server;
 
-	if (listen(sock.get_fd(), 1) < 0)
-		exit (EXIT_FAILURE);
-
-	server = s_poll->fds[0].fd;
-
-	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
-	{
 		printf("...\n");
 		fflush(stdout);
 
+		server = s_poll->fds[0].fd;
 		for(int i = 0; i < s_poll->nfds ; i++)
 		{
-			fd = s_poll->fds[i].fd;
-			printf("~[fd: %d]~\n", fd);
+			fd = &s_poll->fds[i].fd;
+			printf("~[fd: %d]~\n", *fd);
 			if (s_poll->fds[i].revents&POLLIN)
 				pollin_handler(fd, server, s_poll,
 							addr, sock);
@@ -116,15 +112,44 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 							addr, sock);
 
 			if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
-			{
 				poller_handler(fd, server, s_poll,
 							addr, sock);
-				s_poll->fds[i].fd = -1;
-			}
 		}
 		printf("~~~~~~~~~~~~~~~~~~~\n");
 		fflush(stdout);
-	}
+}
+
+void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
+{
+	int	ret;
+
+	if (listen(sock.get_fd(), 1) < 0)
+		exit (EXIT_FAILURE);
+
+
+	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
+		direct_request(sock, addr, s_poll);
+	//	printf("...\n");
+	//	fflush(stdout);
+
+	//	for(int i = 0; i < s_poll->nfds ; i++)
+	//	{
+	//		fd = s_poll->fds[i].fd;
+	//		printf("~[fd: %d]~\n", fd);
+	//		if (s_poll->fds[i].revents&POLLIN)
+	//			pollin_handler(&fd, server, s_poll,
+	//						addr, sock);
+
+	//		if (s_poll->fds[i].revents&POLLOUT)
+	//			pollout_handler(&fd, server, s_poll,
+	//						addr, sock);
+
+	//		if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
+	//			poller_handler(&fd, server, s_poll,
+	//						addr, sock);
+	//	}
+	//	printf("~~~~~~~~~~~~~~~~~~~\n");
+	//	fflush(stdout);
 	printf("ret--->%d\n", ret);
 	fflush(stdout);
 }
