@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 11:40:42 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/16 17:18:25 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/16 18:01:13 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 {
 	int ret;
 	char buffer[BUFFER_SIZE];
+	Request request;
 
 	printf("[POLLIN] read from %s(%d)\n", *fd == server ? "server" : "client", *fd);
 	fflush(stdout);
@@ -33,6 +34,8 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0)
 		printf("---%s---\n", buffer);
 		fflush(stdout);
+		request.add(buffer);
+		request.request_data();
 	}
 	else
 	{
