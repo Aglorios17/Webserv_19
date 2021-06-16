@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 11:40:42 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/16 17:15:05 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/16 17:18:25 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,6 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)
 {
-	char buffer[BUFFER_SIZE];
-	(void)s_poll;
-	(void)addr;
-	(void)sock;
-
-	memset(&buffer, 0, BUFFER_SIZE);
 	printf("[POLLOUT] send to %s(%d)\n", *fd == server ? "server" : "client", *fd);
 	fflush(stdout);
 
@@ -70,7 +64,6 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 {
 	printf("%s CONNECTION INTERRUPTED\n", *fd == server ? "SERVER" : "CLIENT");
 	fflush(stdout);
-	(void)s_poll;
 	(void)sock;
 	(void)addr;
 	if (*fd != server)
