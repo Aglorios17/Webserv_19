@@ -6,66 +6,63 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 11:40:42 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/15 14:47:43 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/16 17:15:05 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/webserver.h"
 
-void pollin_handler(int *fd, int server, struct poll* s_poll,
+void msleep(int tms)
+{
+    struct timeval tv;
+    tv.tv_sec  = tms / 1000;
+    tv.tv_usec = (tms % 1000) * 1000;
+    select (0, NULL, NULL, NULL, &tv);
+}
+
+int pollin_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)
 {
+	int ret;
 	char buffer[BUFFER_SIZE];
 
-	printf("read from %s(%d)\n", *fd == server ? "server" : "client", *fd);
+	printf("[POLLIN] read from %s(%d)\n", *fd == server ? "server" : "client", *fd);
 	fflush(stdout);
-	(void)s_poll;
-	(void)addr;
-	(void)sock;
 	if (*fd != server)
 	{
-	      if (recv(*fd, buffer, BUFFER_SIZE, 0) == 0)
-		  {
-			poller_handler(fd, server, s_poll, addr, sock);
-			*fd = -1;
-		  }
-	      printf("__%s__\n", buffer);
-		  fflush(stdout);
+		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0)
+		printf("---%s---\n", buffer);
+		fflush(stdout);
 	}
 	else
 	{
 		printf("adding new connection.\n");
-		while (recv(server, buffer, BUFFER_SIZE, 0) > 0)
-			printf("~~%s~~\n", buffer);
 		add_connection(sock, addr, s_poll);
+		return 1;
 	}
-
 	printf("==========\n");
+	return 0;
 }
 
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)
 {
 	char buffer[BUFFER_SIZE];
+	(void)s_poll;
+	(void)addr;
+	(void)sock;
 
 	memset(&buffer, 0, BUFFER_SIZE);
-	printf("send to %s(%d)\n", *fd == server ? "server" : "client", *fd);
+	printf("[POLLOUT] send to %s(%d)\n", *fd == server ? "server" : "client", *fd);
 	fflush(stdout);
 
 	if (*fd != server)
 	{
 		send_html(*fd, "src/includes/static/index.html");
-
-		int ret = recv(server, buffer, BUFFER_SIZE, 0);
-		
-	    printf("__%s__\n", buffer);
-		fflush(stdout);
-
-		if (ret == 0)
-			poller_handler(fd, server, s_poll, addr, sock);
-		*fd = -1;
+		poller_handler(fd, server, s_poll, addr, sock);
 	}
 	printf("==========\n");
+	msleep(150);
 }
 
 void poller_handler(int *fd, int server, struct poll* s_poll,
@@ -80,7 +77,6 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	{
 	    close(*fd);
 	    delete_last(s_poll);
-	    //add_connection(sock, addr, s_poll);
 		*fd = -1;
 	}
 	printf("==========\n");

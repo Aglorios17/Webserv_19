@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 12:08:16 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/15 12:08:18 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/16 16:43:36 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ POLLFD	set_poll(int fd, int event, int FD_STATUS);
 void	add_fd_to_poll(struct poll* poll, POLLFD fd);
 
 
-void	pollin_handler(int *fd, int server, struct poll* s_poll,
+int pollin_handler(int *fd, int server, struct poll* s_poll,
 	struct sockaddr *addr, Socket &sock);
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock);

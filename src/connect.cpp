@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:40:44 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/15 15:01:46 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/16 17:14:19 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,7 @@ void delete_last(struct poll * poll)
 	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));
 
 	for (int i = 0 ; i < poll->nfds - 1; i++)
-	{
 		tmp[i] = poll->fds[i];
-		printf("[--|%d|--]\n", poll->fds[i].fd);
-		fflush(stdout);
-	}
 	delete poll->fds;
 	poll->fds = tmp;
 	poll->nfds--;
@@ -93,35 +89,33 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
 		int		*fd;
-		Request request;
 		int		server;
-
-		printf("...\n");
-		fflush(stdout);
-//		////////////////////////////// take buffer for request parser
-//		request.add(buffer);
-//		request.request_data(); 
-//		//////////////////////////////
 
 		server = s_poll->fds[0].fd;
 		for(int i = 0; i < s_poll->nfds ; i++)
 		{
 			fd = &s_poll->fds[i].fd;
-			printf("~[fd: %d]~\n", *fd);
+
 			if (s_poll->fds[i].revents&POLLIN)
-				pollin_handler(fd, server, s_poll,
-							addr, sock);
+			{
+				if (pollin_handler(fd, server, s_poll,
+							addr, sock))
+					return ;
+			}
 
-			if (s_poll->fds[i].revents&POLLOUT)
+			else if (s_poll->fds[i].revents&POLLOUT)
+			{
 				pollout_handler(fd, server, s_poll,
-							addr, sock);
+							addr, sock);/*remove client*/
+			}
 
-			if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
+
+			else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
+			{
 				poller_handler(fd, server, s_poll,
-							addr, sock);
+							addr, sock);/*sometimes*/
+			}
 		}
-		printf("~~~~~~~~~~~~~~~~~~~\n");
-		fflush(stdout);
 }
 
 void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
