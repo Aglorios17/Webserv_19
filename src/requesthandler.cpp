@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 11:40:42 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/17 16:36:42 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/17 16:47:05 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,18 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	return 0;
 }
 
+void clean_substring(std::string main, std::string to_delete)
+{
+	size_t pos = main.find(to_delete);	
+	if (pos != std::string::npos)
+		main.erase(pos, to_delete.length());
+}
+
+void clean_path(std::string path)
+{
+	clean_substring(path, "http://localhost:8080/");
+}
+
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)
 {
@@ -56,7 +68,9 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 
 	if (*fd != server)
 	{
-		std::cout << "REFERER :"<< sock.get_request().get_referer() << std::endl;
+		std::string path = sock.get_request().get_referer();
+		//clean_path(path);
+		//std::cout<<"------->"<<path<<std::endl;
 		send_html(*fd, "src/includes/static/index.html");
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
