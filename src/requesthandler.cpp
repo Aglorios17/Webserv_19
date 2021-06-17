@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 11:40:42 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/16 18:01:13 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/17 16:36:42 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 		fflush(stdout);
 		request.add(buffer);
 		request.request_data();
+		sock.set_request(request);
 	}
 	else
 	{
@@ -55,6 +56,7 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 
 	if (*fd != server)
 	{
+		std::cout << "REFERER :"<< sock.get_request().get_referer() << std::endl;
 		send_html(*fd, "src/includes/static/index.html");
 		poller_handler(fd, server, s_poll, addr, sock);
 	}

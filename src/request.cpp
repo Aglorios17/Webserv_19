@@ -6,7 +6,7 @@
 /*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 15:19:04 by aglorios          #+#    #+#             */
-/*   Updated: 2021/06/16 17:59:21 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/17 16:21:42 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,6 @@ bool Request::request_data(void)
 			if (_connection != "" || (_connection = str_ret(tab[y], "Connection:")) == "")
 				return (0);
 	}
-	std::cout << "_host : "<< _host << std::endl;
-	std::cout << "_referer : "<< _referer << std::endl;
-	std::cout << "_connection : "<< _connection << std::endl;
-	std::cout << "_method : "<< _method << std::endl;
-	std::cout << "_arg_method : "<< _arg_method << std::endl;
-	std::cout << "_http_method : "<< _http_method << std::endl;
 	delete[] tab;
 	return (1);
 }

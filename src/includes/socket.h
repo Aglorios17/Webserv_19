@@ -2,6 +2,7 @@
 #define SOCKET_H
 
 #include "webserver.h"
+#include "request.hpp"
 
 class Socket
 {
@@ -17,6 +18,7 @@ class Socket
 		int	_interface;
 		int	_socket_fd;
 		int _timeout;
+		Request _request;
 
 	public:
 		Socket();
@@ -32,6 +34,8 @@ class Socket
 		int			get_interface();
 		int			get_fd();
 		int			get_timeout();
+		void		set_request(Request & ref) {_request = ref;}
+		Request		get_request(void) {return (_request);}
 };
 
 #endif
