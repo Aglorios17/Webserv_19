@@ -14,11 +14,12 @@
 
 std::string *Request::stotab(void)
 {
+	int	put_int_tab = 0;
+
 	if (_buffer == "")
 		return (NULL);
-	std::string *tab = new std::string[_size_buf];
-	int	put_int_tab = 0;
-	for (int i = 0; _buffer[i]; i++)
+	std::string *tab = new std::string[_size_buf + 1];
+	for (int i = 0; i < (int)_buffer.length(); i++)
 	{
 		if (_buffer[i] == '\n')
 		{

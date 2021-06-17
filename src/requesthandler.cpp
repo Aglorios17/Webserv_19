@@ -69,8 +69,8 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 	if (*fd != server)
 	{
 		std::string path = sock.get_request().get_referer();
-		//clean_path(path);
-		//std::cout<<"------->"<<path<<std::endl;
+		clean_path(path);
+		std::cout<<"------->"<<path<<std::endl;
 		send_html(*fd, "src/includes/static/index.html");
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
@@ -88,8 +88,8 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	if (*fd != server)
 	{
 	    close(*fd);
+	    *fd = -1;
 	    delete_last(s_poll);
-		*fd = -1;
 	}
 	printf("==========\n");
 }
