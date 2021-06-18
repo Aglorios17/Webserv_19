@@ -30,7 +30,7 @@ int		sizeof_fds(POLLFD* fds)
 	int size;
 	if (fds == NULL)
 		return 0;
- 	size = sizeof(fds)/sizeof(fds[0]);
+ 	size = sizeof(*fds)/sizeof(fds[0]);
 
 	return size;
 }

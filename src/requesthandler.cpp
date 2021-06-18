@@ -32,8 +32,10 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	if (*fd != server)
 	{
 		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0)
-		printf("---%s---\n", buffer);
-		fflush(stdout);
+		{
+			printf("%s", buffer);
+			fflush(stdout);
+		}
 		request.add(buffer);
 		request.request_data();
 		sock.set_request(request);
@@ -48,14 +50,14 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	return 0;
 }
 
-void clean_substring(std::string main, std::string to_delete)
+void clean_substring(std::string &main, std::string to_delete)
 {
 	size_t pos = main.find(to_delete);	
 	if (pos != std::string::npos)
 		main.erase(pos, to_delete.length());
 }
 
-void clean_path(std::string path)
+void clean_path(std::string &path)
 {
 	clean_substring(path, "http://localhost:8080/");
 }
@@ -68,10 +70,12 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 
 	if (*fd != server)
 	{
-		std::string path = sock.get_request().get_referer();
-		clean_path(path);
-		std::cout<<"------->"<<path<<std::endl;
-		send_html(*fd, "src/includes/static/index.html");
+		char *path = (char*)malloc(4000);
+		std::string source = sock.get_request().get_referer();
+		//clean_path(source);
+		strcpy(path, source.c_str());
+		send_html(*fd,path);
+		free(path);
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
 	printf("==========\n");

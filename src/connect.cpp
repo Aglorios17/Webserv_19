@@ -17,6 +17,15 @@
  */
 # define QUEUE 3
 
+bool	file_exists(char const* name)
+{
+
+	printf("INDEX QUERY: [%s]\n", name);
+	fflush(stdout);
+
+	std::ifstream f(name);
+	return f.good();
+}
 
 int	send_header(int fd, int size)
 {
@@ -31,22 +40,29 @@ int	send_header(int fd, int size)
 	return (ret);
 }
 
-void send_html(int fd, const char *path)
+void send_html(int fd, char *path)
 {
 	const char *s1;
 	std::string line;
-	std::ifstream file(path);
+	std::ifstream file;
 
-	if (file.is_open())
+	if (file_exists(path) == false)
 	{
-		send_header(fd, get_file_size(path));
-		while(std::getline(file, line))
-		{
-			s1 = &line[0];
-			send(fd, s1, strlen(s1), 0);
-		}
-		file.close();
+		printf("ERROR: PAGE NOT FOUND\n");	
+		fflush(stdout);
+		strcpy(path, "./src/includes/static/error.html");
 	}
+
+	file.open(path);
+
+
+	send_header(fd, get_file_size(path));
+	while(std::getline(file, line))
+	{
+		s1 = &line[0];
+		send(fd, s1, strlen(s1), 0);
+	}
+	file.close();
 }
 
 void delete_last(struct poll * poll)

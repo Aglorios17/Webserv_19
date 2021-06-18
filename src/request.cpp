@@ -62,6 +62,7 @@ std::string Request::str_ret(std::string str, std::string cmd)
 		i++;
 	while (str[i] && str[i] != ' ')
 		add += str[i++];
+	add += '\0';
 	return (add);
 }
 
