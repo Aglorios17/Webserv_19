@@ -12,26 +12,25 @@
 
 #include "includes/webserver.h"
 
-std::string *Request::stotab(void)
+std::string* Request::stotab()
 {
-	int	put_int_tab = 0;
+	std::string*	res = new std::string[19];
+	std::string	str = _buffer.substr(0, _buffer.length());
+	std::string	delimiter = "\n";
+	size_t		pos = 0;
+	int		i = 0;
 
 	if (_buffer == "")
-		return (NULL);
-	std::string *tab = new std::string[_size_buf + 1];
-	for (int i = 0; i < (int)_buffer.length(); i++)
+		return NULL;
+	while ((pos = _buffer.find(delimiter)) != std::string::npos)
 	{
-		if (_buffer[i] == '\n')
-		{
-			put_int_tab++;
-			if (_buffer[i + 1])
-				i++;
-			else
-				break;
-		}
-		tab[put_int_tab] += _buffer[i];
+		std::string tmp = _buffer.substr(0, pos);
+		res[i] = _buffer.substr(0, pos);	
+		res[i][pos-1] = '\0';
+		i++;
+		_buffer.erase(0, pos + delimiter.length());
 	}
-	return (tab);
+	return res;
 }
 
 
@@ -40,11 +39,12 @@ void Request::add(char *buffer)
 	_size_buf = 0;
 	if (!buffer)
 		return ;
-	std::string add(buffer);
-	_buffer = add;
-	for (int i = 0; _buffer[i] ; i++)
-		if (_buffer[i] == '\n')
-			_size_buf++;
+	std::string tmp(buffer);
+	_buffer = tmp;//add;
+
+	for (int i = 0; (i = _buffer.find('\n', i))
+			!= (int)std::string::npos; i++)
+		_size_buf++;
 }
 
 std::string Request::str_ret(std::string str, std::string cmd)
@@ -57,12 +57,15 @@ std::string Request::str_ret(std::string str, std::string cmd)
 		cmp += str[i++];
 	if (cmp != cmd)
 		return (0);
-	std::string add;
+	fflush(stdout);
+	//std::string add = new std::string;
+	char add[1000];
+	fflush(stdout);
 	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
 		i++;
+	int j = 0;
 	while (str[i] && str[i] != ' ')
-		add += str[i++];
-	add += '\0';
+		add[j++] = str[i++];
 	return (add);
 }
 
@@ -86,14 +89,16 @@ bool Request::request_method_check(std::string line)
 	if (strncmp(&_method[0], "GET", strlen(&_method[0])) && strncmp(&_method[0], "POST", strlen(&_method[0]))
 			&& strncmp(&_method[0], "DELETE", strlen(&_method[0])))
 		return (0);
-	if (!strncmp(&_http_method[0], "HTTP/1.1", strlen(&_http_method[0])))
-		return (0);
+	//if (!strncmp(&_http_method[0], "HTTP/1.1", strlen(&_http_method[0])))
+		//return (0);/*Alessio: condition isnt valid anymore,
+		//needs some fixing
 	return (1);
 }
 
 bool Request::request_data(void)
 {
-	std::string *tab = stotab();
+	std::string *tab;
+       	tab = stotab();
 	if (!tab)
 	{
 		std::cout << "BUFFER NULL" << std::endl;
