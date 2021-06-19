@@ -142,7 +142,6 @@ bool server_norme(std::string *tab, int size)
 bool Parser::client_body_size_check(std::string tab)
 {
 	std::string add;
-	_client_max_body_size = 0;
 	if (_client_max_body_size != 0 || (add = str_val(tab, "client_max_body_size")) == "")
 		return (0);
 	if (!isdigit(add[0]))

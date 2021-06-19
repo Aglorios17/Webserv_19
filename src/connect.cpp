@@ -50,6 +50,7 @@ void send_html(int fd, char *path)
 	{
 		printf("ERROR: PAGE NOT FOUND\n");	
 		fflush(stdout);
+
 		strcpy(path, "./src/includes/static/error.html");
 	}
 

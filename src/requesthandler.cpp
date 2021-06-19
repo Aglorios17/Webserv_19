@@ -70,12 +70,10 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 
 	if (*fd != server)
 	{
-		char *path = (char*)malloc(10);
 		std::string source = sock.get_request().get_referer();
 		clean_path(source);
-		strcpy(path, source.c_str());
-		send_html(*fd,path);
-		free(path);
+		source = "src/includes/static/" + source;
+		send_html(*fd, &source[0]);
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
 	printf("==========\n");
