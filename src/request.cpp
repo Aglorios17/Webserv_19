@@ -24,12 +24,9 @@ std::string *Request::stotab(void)
 		return (NULL);
 	while((pos = str.find(delimiter)) != std::string::npos)
 	{
-		std::string tmp = _buffer.substr(0, pos);
 		tab[i] = str.substr(0, pos);
-		tab[i][pos - 1] = '\0';
-		i++;
+		tab[i++][pos - 1] = '\0';
 		str.erase(0, pos + delimiter.length());
-
 	}
 	return (tab);
 }
