@@ -44,7 +44,11 @@ clean:
 
 fclean: clean
 	rm -rf $(TARGET)
+	rm ./client | true
 
 run: all
 	./webserver src/includes/conf/server1.conf
+client: all
+	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
+	echo "./webserver src/includes/conf/server1.conf"
 re:	fclean all
