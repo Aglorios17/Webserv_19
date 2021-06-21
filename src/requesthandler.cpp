@@ -31,11 +31,7 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	fflush(stdout);
 	if (*fd != server)
 	{
-		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0)
-		{
-			printf("%s", buffer);
-			fflush(stdout);
-		}
+		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0){}
 		request.add(buffer);
 		request.request_data();
 		sock.set_request(request);
@@ -72,12 +68,15 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 	{
 		std::string source = sock.get_request().get_referer();
 		clean_path(source);
-		source = "src/includes/static/" + source;
+		if (source.length() == 0)
+			source = "index.html";
+		source= "src/includes/static/" + source;
 		send_html(*fd, &source[0]);
+
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
-	printf("==========\n");
 	msleep(150);
+	printf("==========\n");
 }
 
 void poller_handler(int *fd, int server, struct poll* s_poll,
@@ -87,7 +86,7 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	fflush(stdout);
 	(void)sock;
 	(void)addr;
-	if (*fd != server)
+	if (*fd != server && s_poll->nfds > 1)
 	{
 	    close(*fd);
 	    *fd = -1;

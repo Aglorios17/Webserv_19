@@ -33,8 +33,12 @@ int	send_header(int fd, int size)
 	std::string	buf;
 	int		ret;
 
-	buf = "HTTP/1.0 OK\nContent-Type:text/html\nContent-Length: "
+	buf =	"HTTP/1.1 200 OK\nCache-Control: must-revalidate, no-cache, no-store\nContent-Type:text/html\nContent-Length: "
 		+ std::to_string(size) + "\n\n";
+
+	std::cout<<"------------"<<std::endl;
+	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
+	std::cout<<"------------"<<std::endl;
 	s1 = &buf[0];
 	ret = send(fd, s1, strlen(s1), 0);
 	return (ret);
@@ -51,6 +55,7 @@ void send_html(int fd, char *path)
 		printf("ERROR: PAGE NOT FOUND\n");	
 		fflush(stdout);
 
+		path = (char*)malloc(strlen("./src/includes/static/error.html"));
 		strcpy(path, "./src/includes/static/error.html");
 	}
 
@@ -114,24 +119,14 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 			fd = &s_poll->fds[i].fd;
 
 			if (s_poll->fds[i].revents&POLLIN)
-			{
-				if (pollin_handler(fd, server, s_poll,
-							addr, sock))
-					return ;
-			}
-
+				pollin_handler(fd, server, s_poll,
+							addr, sock);
 			else if (s_poll->fds[i].revents&POLLOUT)
-			{
 				pollout_handler(fd, server, s_poll,
-							addr, sock);/*remove client*/
-			}
-
-
+							addr, sock);
 			else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
-			{
 				poller_handler(fd, server, s_poll,
-							addr, sock);/*sometimes*/
-			}
+							addr, sock);
 		}
 }
 
