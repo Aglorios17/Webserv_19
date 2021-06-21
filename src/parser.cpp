@@ -168,6 +168,7 @@ bool Parser::save_data(void)
 	std::string *tab_conf = stotab();
 	_listen_port = 0;
 	_timeout = 0;
+	_client_max_body_size = 0;
 	if (!server_norme(tab_conf, size_file))
 		return (0);
 	for (int y = 1; y < size_file - 1; y++)
