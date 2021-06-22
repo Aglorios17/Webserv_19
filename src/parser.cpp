@@ -199,11 +199,11 @@ bool Parser::save_data(void)
 				return (0);
 		}
 	}
-	std::cout << "PORT : "<< _listen_port << std::endl;
-	std::cout << "Timeout : "<< _timeout << std::endl;
-	std::cout << "Server_name : "<< _server_name << std::endl;
+	std::cout << "PORT : " << _listen_port << std::endl;
+	std::cout << "Timeout : " << _timeout << std::endl;
+	std::cout << "Server_name : " << _server_name << std::endl;
 	std::cout << "client_max_body_size : "<< _client_max_body_size << std::endl;
-	std::cout << "index : "<< _index << std::endl;
+	std::cout << "index : " << _index << std::endl;
 	delete[] tab_conf;
 	return (1);
 }

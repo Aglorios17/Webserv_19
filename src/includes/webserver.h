@@ -89,6 +89,13 @@ int	send_header(int fd, int size);
 void	send_html(int fd, char *path);
 
 /*
+ * method 
+ */
+bool method_get(int *fd, int server, Socket &sock, char *request);
+bool method_post(int *fd, int server, struct poll* s_poll, struct sockaddr *addr, Socket &sock);
+bool method_delete(int *fd, int server, struct poll* s_poll, struct sockaddr *addr, Socket &sock);
+
+/*
  * poll handlers
  */
 

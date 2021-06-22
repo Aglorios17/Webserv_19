@@ -32,6 +32,8 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	if (*fd != server)
 	{
 		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0){}
+		printf("[POLLIN BUFFER] %s\n", buffer);
+		fflush(stdout);
 		request.add(buffer);
 		request.request_data();
 		sock.set_request(request);

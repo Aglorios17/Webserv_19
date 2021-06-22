@@ -24,6 +24,7 @@ SRCS  = $(SRC_DIR)/parser.cpp\
 		$(SRC_DIR)/connect.cpp\
 		$(SRC_DIR)/file.cpp\
 		$(SRC_DIR)/poll.cpp\
+		$(SRC_DIR)/method.cpp\
 		$(SRC_DIR)/requesthandler.cpp
 
 
