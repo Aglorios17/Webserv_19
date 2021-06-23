@@ -46,6 +46,7 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	{
 		printf("adding new connection.\n");
 		add_connection(sock, addr, s_poll);
+		msleep(50);
 		return 1;
 	}
 	printf("==========\n");
@@ -99,6 +100,7 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	    *fd = -1;
 	    delete_last(s_poll);
 	}
+	msleep(50);
 	printf("==========\n");
 }
 

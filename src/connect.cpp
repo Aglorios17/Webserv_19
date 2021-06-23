@@ -41,7 +41,7 @@ int	send_header(int fd, int size, char* type, int err)
 	if (strcmp(type, "html") == 0)
 		buf += "Content-Type: text/html\n";
 	else 
-		buf += "Content-Type: image/ico\n";
+		buf += "Content-Type: image/jpg\n";
 	buf += "Cache-Control: no-store\n";
 	buf += "Content-Length: " + std::to_string(size) + "\n\n";
 
@@ -133,21 +133,14 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 			fd = &s_poll->fds[i].fd;
 
 			if (s_poll->fds[i].revents&POLLIN)
-			{
-				if (pollin_handler(fd, server, s_poll,
-							addr, sock))
-					return ;
-			}
+				pollin_handler(fd, server, s_poll,
+							addr, sock);
 			else if (s_poll->fds[i].revents&POLLOUT)
-			{
 				pollout_handler(fd, server, s_poll,
 							addr, sock);
-			}
 			else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
-			{
 				poller_handler(fd, server, s_poll,
 							addr, sock);
-			}
 		}
 }
 
