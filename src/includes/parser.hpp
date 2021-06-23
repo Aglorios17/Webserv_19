@@ -26,15 +26,34 @@ class Parser
 		std::string _conf_file;
 		int			size_file;
 		std::string	_index;
+		std::string	_error_page;
 //		int	_queue;
 		int	_listen_port;
 		int _timeout;
 		std::string	_host_address;
 		std::string	_server_name;
+		std::string _root;
 		int _client_max_body_size;
 	public:
 		Parser(void) {}
 		~Parser(void) {}
+		Parser & operator=(Parser &cpy)
+		{
+			if (this != &cpy)
+			{
+				_conf_file = cpy._conf_file;
+				size_file = cpy.size_file;
+				_index = cpy._index;
+				_error_page = cpy._error_page;
+				_listen_port = cpy._listen_port;
+				_timeout = cpy._timeout;
+				_host_address = cpy._host_address;
+				_server_name = cpy._server_name;
+				_root = cpy._root;
+				_client_max_body_size = cpy._client_max_body_size;
+			}
+			return (*this);
+		}
 		bool copy_file(char *file);
 		bool save_data(void);
 		int int_val(std::string cmp, std::string cmd);
@@ -46,6 +65,8 @@ class Parser
 		std::string get_domain(void) {return (_host_address);}
 		std::string get_server_name(void) {return (_server_name);}
 		std::string get_index(void) {return (_index);}
+		std::string get_error_page(void) {return (_error_page);}
+		std::string get_root(void) {return (_root);}
 };
 
 #endif

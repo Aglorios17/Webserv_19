@@ -1,8 +1,9 @@
 #ifndef SOCKET_H
-#define SOCKET_H
+# define SOCKET_H
 
-#include "webserver.h"
-#include "request.hpp"
+# include "webserver.h"
+# include "request.hpp"
+# include "parser.hpp"
 
 class Socket
 {
@@ -19,6 +20,7 @@ class Socket
 		int	_socket_fd;
 		int _timeout;
 		Request _request;
+		Parser	_parser;
 
 	public:
 		Socket();
@@ -36,6 +38,8 @@ class Socket
 		int			get_timeout();
 		void		set_request(Request & ref) {_request = ref;}
 		Request		get_request(void) {return (_request);}
+		void		set_parser(Parser & ref) {_parser = ref;}
+		Parser		get_parser(void) {return (_parser);}
 };
 
 #endif

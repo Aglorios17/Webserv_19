@@ -193,9 +193,19 @@ bool Parser::save_data(void)
 			if (!client_body_size_check(tab_conf[y]))
 				return (0);
 		}
+		else if (tab_conf[y].find("root") != std::string::npos)
+		{	
+			if (_root != "" || (_root = str_val(tab_conf[y], "root")) == "")
+				return (0);
+		}
 		else if (tab_conf[y].find("index") != std::string::npos)
 		{	
 			if (_index != "" || (_index = str_val(tab_conf[y], "index")) == "")
+				return (0);
+		}
+		else if (tab_conf[y].find("error_page") != std::string::npos)
+		{	
+			if (_error_page != "" || (_error_page = str_val(tab_conf[y], "error_page")) == "")
 				return (0);
 		}
 	}
@@ -203,7 +213,9 @@ bool Parser::save_data(void)
 	std::cout << "Timeout : " << _timeout << std::endl;
 	std::cout << "Server_name : " << _server_name << std::endl;
 	std::cout << "client_max_body_size : "<< _client_max_body_size << std::endl;
+	std::cout << "root : " << _root << std::endl;
 	std::cout << "index : " << _index << std::endl;
+	std::cout << "error_page : " << _error_page << std::endl;
 	delete[] tab_conf;
 	return (1);
 }

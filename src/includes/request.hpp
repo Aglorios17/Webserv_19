@@ -47,10 +47,10 @@ class Request
 			}
 			return (*this);
 		}
-		bool request_data(void);
-		bool request_method_check(std::string line);
+		bool	request_data(void);
+		bool	request_method_check(std::string line);
 		void	add(char *buffer);
-		std::string *stotab(void);
+		std::string	*stotab(void);
 		std::string str_ret(std::string str, std::string cmd);
 		std::string	get_host(void) {return (_host);}
 		std::string	get_method(void) {return (_method);}

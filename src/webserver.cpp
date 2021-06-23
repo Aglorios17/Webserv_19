@@ -41,6 +41,7 @@ int main(int argc, char **argv)
 		return (0);
 	}
 	Socket	socket(ip, SOCK_STREAM, 0, parser.get_port(), INADDR_ANY, parser.get_timeout());	
+	socket.set_parser(parser);
 	address = new struct sockaddr_in;
 
 	poll = (struct poll*)malloc(sizeof(struct poll));

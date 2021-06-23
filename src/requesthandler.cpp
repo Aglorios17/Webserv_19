@@ -71,9 +71,9 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 		std::string source = sock.get_request().get_referer();
 		clean_path(source);
 		if (source.length() == 0)
-			source = "index.html";
-		source= "src/includes/static/" + source;
-		send_html(*fd, &source[0]);
+			source = sock.get_parser().get_index();
+		source= sock.get_parser().get_root() + source;
+		send_html(*fd, &source[0], sock);
 
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
@@ -96,4 +96,3 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	}
 	printf("==========\n");
 }
-

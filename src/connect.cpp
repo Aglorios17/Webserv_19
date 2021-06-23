@@ -44,7 +44,7 @@ int	send_header(int fd, int size)
 	return (ret);
 }
 
-void send_html(int fd, char *path)
+void send_html(int fd, char *path, Socket &sock)
 {
 	const char *s1;
 	std::string line;
@@ -55,8 +55,9 @@ void send_html(int fd, char *path)
 		printf("ERROR: PAGE NOT FOUND\n");	
 		fflush(stdout);
 
-		path = (char*)malloc(strlen("./src/includes/static/error.html"));
-		strcpy(path, "./src/includes/static/error.html");
+		std::string error = sock.get_parser().get_root() + sock.get_parser().get_error_page();
+		path = (char*)malloc(strlen(&error[0]));
+		strcpy(path, &error[0]);
 	}
 
 	file.open(path);
