@@ -52,4 +52,8 @@ run: all
 client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
 	echo "./webserver src/includes/conf/server1.conf"
+valgrind: all
+	valgrind ./webserver src/includes/conf/server1.conf
+
+
 re:	fclean all

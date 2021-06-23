@@ -74,11 +74,10 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 	{
 		std::string source = sock.get_request().get_referer();
 		clean_path(source);
-		if (source.length() == 0)
+		if (source.length() == 0 || source.length() == 1)
 			source = "index.html";
 		source= "src/includes/static/" + source;
 		send_html(*fd, &source[0]);
-
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
 	msleep(150);

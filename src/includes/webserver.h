@@ -85,7 +85,7 @@ void	run_server(Socket &sock, struct sockaddr *addr, struct poll* poll);
  */
 
 int	get_file_size(char const *path);
-int	send_header(int fd, int size);
+int	send_header(int fd, int size, int err);
 void	send_html(int fd, char *path);
 
 /*
