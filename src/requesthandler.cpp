@@ -32,7 +32,11 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	if (*fd != server)
 	{
 		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0){}
-		printf("[POLLIN BUFFER] %s\n", buffer);
+		printf("----------------\n");
+		fflush(stdout);
+		printf("Client Request:\n%s", buffer);
+		fflush(stdout);
+		printf("----------------\n\n");
 		fflush(stdout);
 		request.add(buffer);
 		request.request_data();
@@ -42,6 +46,7 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	{
 		printf("adding new connection.\n");
 		add_connection(sock, addr, s_poll);
+		msleep(50);
 		return 1;
 	}
 	printf("==========\n");
@@ -57,7 +62,7 @@ void clean_substring(std::string &main, std::string to_delete)
 
 void clean_path(std::string &path)
 {
-	clean_substring(path, "http://localhost:8080/");
+	clean_substring(path, "/");
 }
 
 void pollout_handler(int *fd, int server, struct poll* s_poll,
@@ -65,16 +70,17 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 {
 	printf("[POLLOUT] send to %s(%d)\n", *fd == server ? "server" : "client", *fd);
 	fflush(stdout);
+	(void)s_poll;
+	(void)addr;
 
 	if (*fd != server)
 	{
-		std::string source = sock.get_request().get_referer();
+		std::string source = sock.get_request().get_arg_method();
 		clean_path(source);
 		if (source.length() == 0)
 			source = sock.get_parser().get_index();
 		source= sock.get_parser().get_root() + source;
 		send_html(*fd, &source[0], sock);
-
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
 	msleep(150);
@@ -94,5 +100,6 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	    *fd = -1;
 	    delete_last(s_poll);
 	}
+	msleep(50);
 	printf("==========\n");
 }

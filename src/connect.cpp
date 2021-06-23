@@ -27,14 +27,23 @@ bool	file_exists(char const* name)
 	return f.good();
 }
 
-int	send_header(int fd, int size)
+int	send_header(int fd, int size, char* type, int err)
 {
 	char const	*s1;
 	std::string	buf;
 	int		ret;
 
-	buf =	"HTTP/1.1 200 OK\nCache-Control: must-revalidate, no-cache, no-store\nContent-Type:text/html\nContent-Length: "
-		+ std::to_string(size) + "\n\n";
+	if (err == 404)
+		buf = "HTTP/1.1 404 File Not Found\n";
+	else
+		buf = "HTTP/1.1 200 OK\n";
+
+	if (strcmp(type, "html") == 0)
+		buf += "Content-Type: text/html\n";
+	else 
+		buf += "Content-Type: image/jpg\n";
+	buf += "Cache-Control: no-store\n";
+	buf += "Content-Length: " + std::to_string(size) + "\n\n";
 
 	std::cout<<"------------"<<std::endl;
 	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
@@ -47,14 +56,18 @@ int	send_header(int fd, int size)
 void send_html(int fd, char *path, Socket &sock)
 {
 	const char *s1;
+	int err = 0;
 	std::string line;
 	std::ifstream file;
 
+	printf("FILE REQUESTED: %s\n", path);
+	fflush(stdout);
+
 	if (file_exists(path) == false)
 	{
-		printf("ERROR: PAGE NOT FOUND\n");	
+		printf("ERROR: FILE NOT FOUND\n");	
 		fflush(stdout);
-
+		err = 404;
 		std::string error = sock.get_parser().get_root() + sock.get_parser().get_error_page();
 		path = (char*)malloc(strlen(&error[0]));
 		strcpy(path, &error[0]);
@@ -63,7 +76,7 @@ void send_html(int fd, char *path, Socket &sock)
 	file.open(path);
 
 
-	send_header(fd, get_file_size(path));
+	send_header(fd, get_file_size(path), &path[strlen(path) - 4], err);
 	while(std::getline(file, line))
 	{
 		s1 = &line[0];
