@@ -32,7 +32,11 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	if (*fd != server)
 	{
 		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0){}
-		printf("[POLLIN BUFFER] %s\n", buffer);
+		printf("----------------\n");
+		fflush(stdout);
+		printf("Client Request:\n%s", buffer);
+		fflush(stdout);
+		printf("----------------\n\n");
 		fflush(stdout);
 		request.add(buffer);
 		request.request_data();
