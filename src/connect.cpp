@@ -27,7 +27,7 @@ bool	file_exists(char const* name)
 	return f.good();
 }
 
-int	send_header(int fd, int size, int err)
+int	send_header(int fd, int size, char* type, int err)
 {
 	char const	*s1;
 	std::string	buf;
@@ -35,11 +35,15 @@ int	send_header(int fd, int size, int err)
 
 	if (err == 404)
 		buf = "HTTP/1.1 404 File Not Found\n";
-
 	else
-		buf =	"HTTP/1.1 200 OK\n";
-	buf += "Content-Type: text/html\nContent-Length: "
-			+ std::to_string(size) + "\n\n";
+		buf = "HTTP/1.1 200 OK\n";
+
+	if (strcmp(type, "html") == 0)
+		buf += "Content-Type: text/html\n";
+	else 
+		buf += "Content-Type: image/ico\n";
+	buf += "Cache-Control: no-store\n";
+	buf += "Content-Length: " + std::to_string(size) + "\n\n";
 
 	std::cout<<"------------"<<std::endl;
 	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
@@ -72,7 +76,7 @@ void send_html(int fd, char *path)
 	file.open(path);
 
 
-	send_header(fd, get_file_size(path), err);
+	send_header(fd, get_file_size(path), &path[strlen(path) - 4], err);
 	while(std::getline(file, line))
 	{
 		s1 = &line[0];

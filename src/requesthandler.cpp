@@ -61,7 +61,7 @@ void clean_substring(std::string &main, std::string to_delete)
 
 void clean_path(std::string &path)
 {
-	clean_substring(path, "http://localhost:8080/");
+	clean_substring(path, "/");
 }
 
 void pollout_handler(int *fd, int server, struct poll* s_poll,
@@ -69,10 +69,12 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 {
 	printf("[POLLOUT] send to %s(%d)\n", *fd == server ? "server" : "client", *fd);
 	fflush(stdout);
+	(void)s_poll;
+	(void)addr;
 
 	if (*fd != server)
 	{
-		std::string source = sock.get_request().get_referer();
+		std::string source = sock.get_request().get_arg_method();
 		clean_path(source);
 		if (source.length() == 0 || source.length() == 1)
 			source = "index.html";
