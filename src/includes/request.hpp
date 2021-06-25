@@ -25,6 +25,7 @@ class Request
 	private:
 		std::string _method;
 		std::string _arg_method;
+		std::string _cgi;
 		std::string _http_method;
 		std::string _buffer;
 		std::string _host;
@@ -55,6 +56,7 @@ class Request
 		std::string	get_host(void) {return (_host);}
 		std::string	get_method(void) {return (_method);}
 		std::string	get_arg_method(void) {return (_arg_method);}
+		std::string	get_cgi(void) {return (_cgi);}
 		std::string	get_http_method(void) {return (_http_method);}
 		std::string	get_referer(void) {return (_referer);}
 		std::string	get_connection(void) {return (_connection);}

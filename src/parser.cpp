@@ -163,6 +163,74 @@ bool Parser::client_body_size_check(std::string tab)
 	}
 	return (1);
 }
+
+bool Parser::put_data(std::string tab)
+{
+	if (tab.find("listen") != std::string::npos)
+	{	
+		if (_listen_port != 0 || !(_listen_port = int_val(tab, "listen")))
+			return (0);
+	}
+	else if (tab.find("timeout") != std::string::npos)
+	{	
+		if (_timeout != 0 || !(_timeout = int_val(tab, "timeout")))
+			return (0);
+	}
+	else if (tab.find("server_name") != std::string::npos)
+	{	
+		if (_server_name != "" || (_server_name = str_val(tab, "server_name")) == "")
+			return (0);
+	}
+	else if (tab.find("client_max_body_size") != std::string::npos)
+	{
+		if (!client_body_size_check(tab))
+			return (0);
+	}
+	else if (tab.find("root") != std::string::npos)
+	{	
+		if (_root != "" || (_root = str_val(tab, "root")) == "")
+			return (0);
+	}
+	else if (tab.find("index") != std::string::npos)
+	{	
+		if (_index != "" || (_index = str_val(tab, "index")) == "")
+			return (0);
+	}
+	else if (tab.find("error_page") != std::string::npos)
+	{	
+		if (_error_page != "" || (_error_page = str_val(tab, "error_page")) == "")
+			return (0);
+	}
+	return (1);
+}
+
+bool Parser::location_parser(std::string *tab_conf, int start, int end, int size_file)
+{
+	(void)tab_conf;
+	(void)start;
+	(void)end;
+	(void)size_file;
+	return (1);
+}
+
+bool Parser::server_parser(std::string *tab_conf, int size_file)
+{
+	for (int y = 1; y < size_file - 1; y++)
+	{
+		if (tab_conf[y].find("location") != std::string::npos)
+		{
+			int start = y;
+			while (y < size_file && tab_conf[y].find("}") != std::string::npos)
+				y++;
+			if (!location_parser(tab_conf, start, y, size_file))
+				return (0);
+		}
+		if (!put_data(tab_conf[y]))
+			return (0);
+	}
+	return (1);
+}
+
 bool Parser::save_data(void)
 {
 	std::string *tab_conf = stotab();
@@ -171,44 +239,8 @@ bool Parser::save_data(void)
 	_client_max_body_size = 0;
 	if (!server_norme(tab_conf, size_file))
 		return (0);
-	for (int y = 1; y < size_file - 1; y++)
-	{
-		if (tab_conf[y].find("listen") != std::string::npos)
-		{	
-			if (_listen_port != 0 || !(_listen_port = int_val(tab_conf[y], "listen")))
-				return (0);
-		}
-		else if (tab_conf[y].find("timeout") != std::string::npos)
-		{	
-			if (_timeout != 0 || !(_timeout = int_val(tab_conf[y], "timeout")))
-				return (0);
-		}
-		else if (tab_conf[y].find("server_name") != std::string::npos)
-		{	
-			if (_server_name != "" || (_server_name = str_val(tab_conf[y], "server_name")) == "")
-				return (0);
-		}
-		else if (tab_conf[y].find("client_max_body_size") != std::string::npos)
-		{
-			if (!client_body_size_check(tab_conf[y]))
-				return (0);
-		}
-		else if (tab_conf[y].find("root") != std::string::npos)
-		{	
-			if (_root != "" || (_root = str_val(tab_conf[y], "root")) == "")
-				return (0);
-		}
-		else if (tab_conf[y].find("index") != std::string::npos)
-		{	
-			if (_index != "" || (_index = str_val(tab_conf[y], "index")) == "")
-				return (0);
-		}
-		else if (tab_conf[y].find("error_page") != std::string::npos)
-		{	
-			if (_error_page != "" || (_error_page = str_val(tab_conf[y], "error_page")) == "")
-				return (0);
-		}
-	}
+	if (!server_parser(tab_conf, size_file))
+		return (0);
 	std::cout << "PORT : " << _listen_port << std::endl;
 	std::cout << "Timeout : " << _timeout << std::endl;
 	std::cout << "Server_name : " << _server_name << std::endl;

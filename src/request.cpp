@@ -72,7 +72,11 @@ bool Request::request_method_check(std::string line)
 		if (i == 0)
 			_method = token;
 		if (i == 1)
+		{
 			_arg_method = token;
+			if (_arg_method.find(".") != std::string::npos)
+				_cgi = _arg_method.substr(_arg_method.find(".") + 1);
+		}
 		if (i == 2)
 			_http_method = token;
 		if (i == 3)

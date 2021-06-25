@@ -33,6 +33,7 @@ class Parser
 		std::string	_host_address;
 		std::string	_server_name;
 		std::string _root;
+		std::string _cgi_path;
 		int _client_max_body_size;
 	public:
 		Parser(void) {}
@@ -56,6 +57,9 @@ class Parser
 		}
 		bool copy_file(char *file);
 		bool save_data(void);
+		bool put_data(std::string tab);
+		bool server_parser(std::string *tab_conf, int size_file);
+		bool location_parser(std::string *tab_conf, int start, int end, int size_file);
 		int int_val(std::string cmp, std::string cmd);
 		bool client_body_size_check(std::string tab);
 		std::string str_val(std::string cmp, std::string cmd);
