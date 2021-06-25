@@ -59,7 +59,7 @@ class Parser
 		bool save_data(void);
 		bool put_data(std::string tab);
 		bool server_parser(std::string *tab_conf, int size_file);
-		bool location_parser(std::string *tab_conf, int start, int end, int size_file);
+		bool location_parser(std::string *tab_conf, int start, int end);
 		int int_val(std::string cmp, std::string cmd);
 		bool client_body_size_check(std::string tab);
 		std::string str_val(std::string cmp, std::string cmd);

@@ -204,12 +204,46 @@ bool Parser::put_data(std::string tab)
 	return (1);
 }
 
-bool Parser::location_parser(std::string *tab_conf, int start, int end, int size_file)
+std::string bypass_tab(char *str)
 {
-	(void)tab_conf;
-	(void)start;
-	(void)end;
-	(void)size_file;
+	std::string string;
+	for (int y = 0; str[y]; y++)
+		if (str[y] != '\t')
+			string += str[y];
+	return (string);
+}
+
+bool Parser::location_parser(std::string *tab_conf, int start, int end)
+{
+	char *token = strtok(&tab_conf[start][0], " ");
+	std::string path;
+	std::string tok;
+	int i = 0;
+	while (token != NULL)
+	{
+		tok = bypass_tab(token);
+		if ((i == 0 && tok != "location") || (i == 2 && tok != "{") || i == 3)
+			return (0);
+		if (i == 1)
+			path = tok;
+		i++;
+		token = strtok(NULL, " ");
+	}
+	token = strtok(&tab_conf[end][0], " ");
+	i = 0;
+	while (token != NULL)
+	{
+		tok = bypass_tab(token);
+		if ((i == 0 && tok != "}") || i == 1)
+			return (0);
+		i++;
+		token = strtok(NULL, " ");
+	}
+	if (path == "/")
+		path = "";
+	for (int x = start + 1; x < end; x++)
+		if (!put_data(tab_conf[x]))
+			return (0);
 	return (1);
 }
 
@@ -220,9 +254,9 @@ bool Parser::server_parser(std::string *tab_conf, int size_file)
 		if (tab_conf[y].find("location") != std::string::npos)
 		{
 			int start = y;
-			while (y < size_file && tab_conf[y].find("}") != std::string::npos)
+			while (y < size_file && tab_conf[y].find("}") == std::string::npos)
 				y++;
-			if (!location_parser(tab_conf, start, y, size_file))
+			if (!location_parser(tab_conf, start, y))
 				return (0);
 		}
 		if (!put_data(tab_conf[y]))
