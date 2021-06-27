@@ -72,6 +72,8 @@ class Parser
 		std::string get_index(void) {return (_index);}
 		std::string get_error_page(void) {return (_error_page);}
 		std::string get_root(void) {return (_root);}
+		std::string get_cgi_root(void) {return (_cgi_root);}
+		std::string get_cgi_path(void) {return (_cgi_path);}
 };
 
 #endif
