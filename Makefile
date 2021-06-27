@@ -48,12 +48,12 @@ fclean: clean
 	rm ./client | true
 
 run: all
-	./webserver src/includes/conf/server1.conf
+	./webserver src/includes/conf/tester.conf
 client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
-	echo "./webserver src/includes/conf/server1.conf"
+	echo "./webserver src/includes/conf/tester.conf"
 valgrind: all
-	valgrind ./webserver src/includes/conf/server1.conf
+	valgrind ./webserver src/includes/conf/tester.conf
 
 
 re:	fclean all

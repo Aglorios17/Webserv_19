@@ -7,6 +7,7 @@ int	get_file_size(const char *path)
 	int 		count;
 
 	count = 0;
+	std::cout<<"file size path: "<<path<<std::endl;
 	if (file.is_open())
 	{
 		while (std::getline(file, line))

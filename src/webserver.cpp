@@ -12,7 +12,7 @@
 
 #include "includes/webserver.h"
 
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **env)
 {
 	Parser					parser;
 	struct sockaddr_in*		address;
@@ -58,6 +58,11 @@ int main(int argc, char **argv)
 	bind(socket.get_fd(),
 			(struct sockaddr *)address,
 			sizeof(struct sockaddr_in));
+	while(*env)
+		std::cout<<*env++<<std::endl<<std::endl;
+
+
+	std::cout<<"-------------------->"<<socket.get_parser().get_cgi_path()<<std::endl;
 	run_server(socket, (struct sockaddr*)address, poll);
 	return (0);
 }

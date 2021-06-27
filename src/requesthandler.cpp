@@ -53,6 +53,7 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 	return 0;
 }
 
+//------Move to a util*.cpp
 void clean_substring(std::string &main, std::string to_delete)
 {
 	size_t pos = main.find(to_delete);	
@@ -64,6 +65,9 @@ void clean_path(std::string &path)
 {
 	clean_substring(path, "/");
 }
+//----------------
+
+
 
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)

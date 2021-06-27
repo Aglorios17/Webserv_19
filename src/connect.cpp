@@ -17,6 +17,22 @@
  */
 # define QUEUE 3
 
+
+/*
+ * ENV VARIABLES:
+ *
+ *	REQUEST_METHOD (GET/POST/DELETE)
+ *	SERVER_PROTOCOL (HTTP/1.1)
+ *	PATH_INFO (arg method)
+ */
+
+
+/*
+ *  1. check if file needs to be run with CGI
+ *  2. Set Env variables using setenv
+ *  3. fork and run cgi with env 
+ */
+
 bool	file_exists(char const* name)
 {
 
@@ -53,30 +69,88 @@ int	send_header(int fd, int size, char* type, int err)
 	return (ret);
 }
 
+std::string get_extension(std::string file)
+{
+	std::string type;
+	std::size_t pos = file.find('.');
+
+	if (pos == std::string::npos)
+		return file;
+	type = file.substr(pos+1);
+	std::cout<<"pos is: "<<pos<<std::endl;
+	std::cout<<"type is: "<<type<<std::endl;
+	return type;
+}
+
+void set_env(Socket &sock, std::string path_info)
+{
+	const char *REQUEST_METHOD;
+	const char *SERVER_PROTOCOL;
+	const char *PATH_INFO;
+
+	REQUEST_METHOD = sock.get_request().get_method().c_str();
+	SERVER_PROTOCOL = sock.get_request().get_http_method().c_str();
+	PATH_INFO = path_info.c_str();
+
+	std::cout<<"-------\nCGI ENV VAR:\n"<<"REQUEST METHOD: "<<REQUEST_METHOD<<std::endl;
+	std::cout<<"SERVER PROTOCOL: "<< SERVER_PROTOCOL<<std::endl;
+	std::cout<<"PATH INFO: "<< PATH_INFO <<std::endl;
+
+	setenv("REQUEST_METHOD", REQUEST_METHOD, 1);
+	setenv("SERVER_PROTOCOL", SERVER_PROTOCOL, 1);
+	setenv("PATH_INFO", PATH_INFO, 1);
+}
+
+void cgi_handler(std::string cgi, Socket &sock, std::string path_info)
+{
+	set_env(sock, path_info);
+	std::cout<<"cgi------------------>"<<cgi.c_str()<<std::endl;
+	system(cgi.c_str());//<-----fork 
+	return ;
+}
+
+
 void send_html(int fd, char *path, Socket &sock)
 {
 	const char *s1;
 	int err = 0;
 	std::string line;
 	std::ifstream file;
+	
+
+	std::cout<<"\ncgi_extension: "<< sock.get_parser().get_cgi_root()<<std::endl;
 
 	printf("FILE REQUESTED: %s\n", path);
 	fflush(stdout);
 
-	if (file_exists(path) == false)
+	if (file_exists(path) == false)//check if file exists
 	{
 		printf("ERROR: FILE NOT FOUND\n");	
 		fflush(stdout);
 		err = 404;
 		std::string error = sock.get_parser().get_root() + sock.get_parser().get_error_page();
-		path = (char*)malloc(strlen(&error[0]));
+		path = (char*)malloc(strlen(&error[0]) + 1);
 		strcpy(path, &error[0]);
+	}
+	std::string s_path(path);
+	std::string cgi = "bla";//sock.get_parser().get_cgi_path();//shoudl be _extension
+
+	std::string s_file = s_path.substr(s_path.find_last_of('/') + 1);
+
+	std::string cgi_extension = cgi.substr(cgi.find_last_of('/') + 1);
+	std::string cgi_path = sock.get_parser().get_cgi_root();//should be _path
+
+
+	if (get_extension(cgi_extension).compare(get_extension(s_file)) == 0)//check cgi
+	{
+		cgi_handler("./src/includes/static/tester/cgi_tester", sock, path);
+		return ;
 	}
 
 	file.open(path);
 
+	send_header(fd, get_file_size(path), &get_extension(s_file)[0], err);
 
-	send_header(fd, get_file_size(path), &path[strlen(path) - 4], err);
 	while(std::getline(file, line))
 	{
 		s1 = &line[0];
