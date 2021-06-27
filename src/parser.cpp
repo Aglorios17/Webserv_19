@@ -164,7 +164,7 @@ bool Parser::client_body_size_check(std::string tab)
 	return (1);
 }
 
-bool Parser::put_data(std::string tab)
+bool Parser::put_data(std::string tab, int cgi)
 {
 	if (tab.find("listen") != std::string::npos)
 	{	
@@ -188,8 +188,14 @@ bool Parser::put_data(std::string tab)
 	}
 	else if (tab.find("root") != std::string::npos)
 	{	
-		if (_root != "" || (_root = str_val(tab, "root")) == "")
-			return (0);
+		if (cgi == 0)
+		{
+			if (_root != "" || (_root = str_val(tab, "root")) == "")
+				return (0);
+		}
+		else
+			if (_cgi_root != "" || (_cgi_root = str_val(tab, "root")) == "")
+				return (0);
 	}
 	else if (tab.find("index") != std::string::npos)
 	{	
@@ -213,8 +219,24 @@ std::string bypass_tab(char *str)
 	return (string);
 }
 
+bool location_end(std::string *tab_conf, int end)
+{
+	char *token = strtok(&tab_conf[end][0], " ");
+	int i = 0;
+	while (token != NULL)
+	{
+		std::string tok = bypass_tab(token);
+		if ((i == 0 && tok != "}") || i == 1)
+			return (0);
+		i++;
+		token = strtok(NULL, " ");
+	}
+	return (1);
+}
+
 bool Parser::location_parser(std::string *tab_conf, int start, int end)
 {
+	int cgi = 0;
 	char *token = strtok(&tab_conf[start][0], " ");
 	std::string path;
 	std::string tok;
@@ -225,24 +247,23 @@ bool Parser::location_parser(std::string *tab_conf, int start, int end)
 		if ((i == 0 && tok != "location") || (i == 2 && tok != "{") || i == 3)
 			return (0);
 		if (i == 1)
+		{
 			path = tok;
+			if (_cgi_path == "" && path.find(".bla") != std::string::npos)
+			{
+				_cgi_path = path;
+				cgi = 1;
+			}
+		}
 		i++;
 		token = strtok(NULL, " ");
 	}
-	token = strtok(&tab_conf[end][0], " ");
-	i = 0;
-	while (token != NULL)
-	{
-		tok = bypass_tab(token);
-		if ((i == 0 && tok != "}") || i == 1)
-			return (0);
-		i++;
-		token = strtok(NULL, " ");
-	}
+	if (!location_end(tab_conf, end))
+		return (0);
 	if (path == "/")
 		path = "";
 	for (int x = start + 1; x < end; x++)
-		if (!put_data(tab_conf[x]))
+		if (!put_data(tab_conf[x], cgi))
 			return (0);
 	return (1);
 }
@@ -259,7 +280,7 @@ bool Parser::server_parser(std::string *tab_conf, int size_file)
 			if (!location_parser(tab_conf, start, y))
 				return (0);
 		}
-		if (!put_data(tab_conf[y]))
+		if (!put_data(tab_conf[y], 0))
 			return (0);
 	}
 	return (1);
@@ -282,6 +303,8 @@ bool Parser::save_data(void)
 	std::cout << "root : " << _root << std::endl;
 	std::cout << "index : " << _index << std::endl;
 	std::cout << "error_page : " << _error_page << std::endl;
+	std::cout << "cgi_path : " << _cgi_path << std::endl;
+	std::cout << "cgi_root : " << _cgi_root << std::endl;
 	delete[] tab_conf;
 	return (1);
 }
