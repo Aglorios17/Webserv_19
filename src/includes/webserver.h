@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 12:08:16 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/16 16:43:36 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/28 16:09:35 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@
 #include <fcntl.h>
 #include <fstream>
 #include <poll.h>
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "socket.h"
 #include "parser.hpp"

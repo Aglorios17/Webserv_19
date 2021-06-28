@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:40:44 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/16 17:14:19 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/28 19:30:51 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,33 @@ int	send_header(int fd, int size, char* type, int err)
 	std::string	buf;
 	int		ret;
 
-	if (err == 404)
+	std::cout<<"err: "<<err<<std::endl;
+	if (err == 201)
+		buf = "HTTP/1.1 201 Created\n";
+	else if (err == 100)
+		buf = "HTTP/1.1 100 Continue\n";
+	else if (err == 411)
+		buf = "HTTP/1.1 411 Length Required\n";
+	else if (err == 202)
+		buf = "HTTP/1.1 202 Accepted\n";
+	else if (err == 203)
+		buf = "HTTP/1.1 203 Non-Authoritative Information\n";
+	else if (err == 204)
+		buf = "HTTP/1.1 204 No Content\n";
+	else if (err == 206)
+		buf = "HTTP/1.1 206 Partial Content\n";
+	else if (err == 404)
 		buf = "HTTP/1.1 404 File Not Found\n";
 	else
 		buf = "HTTP/1.1 200 OK\n";
 
-	if (strcmp(type, "html") == 0)
-		buf += "Content-Type: text/html\n";
-	else 
-		buf += "Content-Type: image/jpg\n";
+	if (type)
+	{
+		if (strcmp(type, "html") == 0)
+			buf += "Content-Type: text/html\n";
+		else 
+			buf += "Content-Type: image/jpg\n";
+	}
 	buf += "Cache-Control: no-store\n";
 	buf += "Content-Length: " + std::to_string(size) + "\n\n";
 
@@ -105,7 +123,16 @@ void cgi_handler(std::string cgi, Socket &sock, std::string path_info)
 {
 	set_env(sock, path_info);
 	std::cout<<"cgi------------------>"<<cgi.c_str()<<std::endl;
-	system(cgi.c_str());//<-----fork 
+	int pid = 0;
+	if ((pid = fork()) == 0)
+	{
+		system(cgi.c_str());//<-----fork 
+		exit(0);	
+	}
+	char buffer[BUFFER_SIZE];
+	std::cout<<"going in"<<std::endl;
+	read(1, buffer, BUFFER_SIZE);
+	std::cout<<"____________________cgi output: "<<buffer<<std::endl;
 	return ;
 }
 

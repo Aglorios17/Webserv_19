@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 11:40:42 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/17 16:47:05 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/28 19:31:38 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,16 @@ void msleep(int tms)
     tv.tv_sec  = tms / 1000;
     tv.tv_usec = (tms % 1000) * 1000;
     select (0, NULL, NULL, NULL, &tv);
+}
+
+void receive_data(int fd,Socket &sock)
+{
+	char buffer[BUFFER_SIZE];
+	(void)sock;
+
+	while(read(fd, buffer, BUFFER_SIZE) > 0)
+		std::cout<<"["<<buffer<<"]"<<std::endl;
+	return ;
 }
 
 int pollin_handler(int *fd, int server, struct poll* s_poll,
@@ -41,6 +51,15 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 		request.add(buffer);
 		request.request_data();
 		sock.set_request(request);
+		if (sock.get_request().get_method() == "POST")
+		{
+			receive_data(*fd, sock);
+			char* type = (char*)"html";
+			(void)type;
+			send_header(*fd, 0, NULL, 411);
+			std::cout<<"done receiving"<<std::endl;
+			poller_handler(fd, server, s_poll, addr, sock);
+		}
 	}
 	else
 	{
