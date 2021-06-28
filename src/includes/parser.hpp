@@ -6,7 +6,7 @@
 /*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 14:48:27 by aglorios          #+#    #+#             */
-/*   Updated: 2021/06/08 16:54:34 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/28 17:00:39 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ class Parser
 		std::string	_host_address;
 		std::string	_server_name;
 		std::string _root;
+		std::string _cgi_extension;
 		std::string _cgi_path;
-		std::string _cgi_root;
 		int _client_max_body_size;
 	public:
 		Parser(void) {}
@@ -53,6 +53,8 @@ class Parser
 				_server_name = cpy._server_name;
 				_root = cpy._root;
 				_client_max_body_size = cpy._client_max_body_size;
+				_cgi_path = cpy._cgi_path;
+				_cgi_extension = cpy._cgi_extension;
 			}
 			return (*this);
 		}
@@ -72,8 +74,8 @@ class Parser
 		std::string get_index(void) {return (_index);}
 		std::string get_error_page(void) {return (_error_page);}
 		std::string get_root(void) {return (_root);}
-		std::string get_cgi_root(void) {return (_cgi_root);}
 		std::string get_cgi_path(void) {return (_cgi_path);}
+		std::string get_cgi_extension(void) {return (_cgi_extension);}
 };
 
 #endif
