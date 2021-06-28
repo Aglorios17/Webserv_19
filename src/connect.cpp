@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/08 16:40:44 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/28 19:30:51 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/28 19:34:07 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void send_html(int fd, char *path, Socket &sock)
 	std::ifstream file;
 	
 
-	std::cout<<"\ncgi_extension: "<< sock.get_parser().get_cgi_root()<<std::endl;
+	std::cout<<"\ncgi_extension: "<< sock.get_parser().get_cgi_path()<<std::endl;
 
 	printf("FILE REQUESTED: %s\n", path);
 	fflush(stdout);
@@ -160,17 +160,17 @@ void send_html(int fd, char *path, Socket &sock)
 		strcpy(path, &error[0]);
 	}
 	std::string s_path(path);
-	std::string cgi = "bla";//sock.get_parser().get_cgi_path();//shoudl be _extension
+	std::string cgi = sock.get_parser().get_cgi_extension();
 
 	std::string s_file = s_path.substr(s_path.find_last_of('/') + 1);
 
 	std::string cgi_extension = cgi.substr(cgi.find_last_of('/') + 1);
-	std::string cgi_path = sock.get_parser().get_cgi_root();//should be _path
+	std::string cgi_path = sock.get_parser().get_cgi_path();
 
 
 	if (get_extension(cgi_extension).compare(get_extension(s_file)) == 0)//check cgi
 	{
-		cgi_handler("./src/includes/static/tester/cgi_tester", sock, path);
+		cgi_handler(cgi_path, sock, path);
 		return ;
 	}
 

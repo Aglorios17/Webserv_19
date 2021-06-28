@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 11:40:42 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/28 19:31:38 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/28 19:34:30 by elajimi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int pollin_handler(int *fd, int server, struct poll* s_poll,
 			receive_data(*fd, sock);
 			char* type = (char*)"html";
 			(void)type;
-			send_header(*fd, 0, NULL, 411);
+			send_header(*fd, 0, NULL, 100);
 			std::cout<<"done receiving"<<std::endl;
 			poller_handler(fd, server, s_poll, addr, sock);
 		}

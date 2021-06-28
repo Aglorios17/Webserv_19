@@ -6,7 +6,7 @@
 /*   By: elajimi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 16:09:09 by elajimi           #+#    #+#             */
-/*   Updated: 2021/06/15 14:58:46 by elajimi          ###   ########.fr       */
+/*   Updated: 2021/06/28 16:41:54 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,6 @@ int main(int argc, char **argv, char **env)
 	while(*env)
 		std::cout<<*env++<<std::endl<<std::endl;
 
-
-	std::cout<<"-------------------->"<<socket.get_parser().get_cgi_path()<<std::endl;
 	run_server(socket, (struct sockaddr*)address, poll);
 	return (0);
 }

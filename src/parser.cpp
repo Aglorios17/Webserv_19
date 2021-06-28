@@ -6,7 +6,7 @@
 /*   By: aglorios <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 15:19:04 by aglorios          #+#    #+#             */
-/*   Updated: 2021/06/08 16:54:32 by aglorios         ###   ########.fr       */
+/*   Updated: 2021/06/28 16:59:01 by aglorios         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,7 @@ bool Parser::put_data(std::string tab, int cgi)
 				return (0);
 		}
 		else
-			if (_cgi_root != "" || (_cgi_root = str_val(tab, "root")) == "")
+			if (_cgi_path != "" || (_cgi_path = str_val(tab, "root")) == "")
 				return (0);
 	}
 	else if (tab.find("index") != std::string::npos)
@@ -234,11 +234,27 @@ bool location_end(std::string *tab_conf, int end)
 	return (1);
 }
 
+std::string ret_extension(std::string ext)
+{
+	std::string ret;
+	char *token = strtok(&ext[0], ".");
+	int i = 0;
+	while (token != NULL)
+	{
+		if (i == 1)
+			ret = bypass_tab(token);
+		if (i == 2)
+			return (0);
+		i++;
+		token = strtok(NULL, " ");
+	}
+	return (ret);
+}
+
 bool Parser::location_parser(std::string *tab_conf, int start, int end)
 {
 	int cgi = 0;
 	char *token = strtok(&tab_conf[start][0], " ");
-	std::string path;
 	std::string tok;
 	int i = 0;
 	while (token != NULL)
@@ -248,10 +264,9 @@ bool Parser::location_parser(std::string *tab_conf, int start, int end)
 			return (0);
 		if (i == 1)
 		{
-			path = tok;
-			if (_cgi_path == "" && path.find(".bla") != std::string::npos)
+			if (_cgi_extension == "" && tok.find(".") != std::string::npos)
 			{
-				_cgi_path = path;
+				_cgi_extension = ret_extension(tok);
 				cgi = 1;
 			}
 		}
@@ -260,8 +275,6 @@ bool Parser::location_parser(std::string *tab_conf, int start, int end)
 	}
 	if (!location_end(tab_conf, end))
 		return (0);
-	if (path == "/")
-		path = "";
 	for (int x = start + 1; x < end; x++)
 		if (!put_data(tab_conf[x], cgi))
 			return (0);
@@ -303,8 +316,8 @@ bool Parser::save_data(void)
 	std::cout << "root : " << _root << std::endl;
 	std::cout << "index : " << _index << std::endl;
 	std::cout << "error_page : " << _error_page << std::endl;
+	std::cout << "cgi_extension : " << _cgi_extension << std::endl;
 	std::cout << "cgi_path : " << _cgi_path << std::endl;
-	std::cout << "cgi_root : " << _cgi_root << std::endl;
 	delete[] tab_conf;
 	return (1);
 }
