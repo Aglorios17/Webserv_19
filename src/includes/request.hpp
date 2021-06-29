@@ -34,6 +34,9 @@ class Request
 		std::string _content_type;
 		std::string _content_length;
 		std::string	_content_encoding;
+		std::string	_user_agent;
+		std::string	_transfer_encoding;
+		std::string	_accept_encoding;
 		int			_size_buf;
 		int			_status;
 	public:
@@ -53,6 +56,9 @@ class Request
 				_content_length = cpy._content_length;
 				_content_encoding = cpy._content_encoding;
 				_status = cpy._status;
+				_user_agent = cpy._user_agent;
+				_transfer_encoding = cpy._transfer_encoding;
+				_accept_encoding = cpy._accept_encoding;
 			}
 			return (*this);
 		}
@@ -72,6 +78,9 @@ class Request
 		std::string	get_content_type(void) {return (_content_type);}
 		std::string	get_content_length(void) {return (_content_length);}
 		std::string	get_content_encoding(void) {return (_content_encoding);}
+		std::string	get_accept_encoding(void) {return (_accept_encoding);}
+		std::string	get_transfer_encoding(void) {return (_transfer_encoding);}
+		std::string	get_user_agent(void) {return (_user_agent);}
 		int			get_status(void) {return (_status);}
 };
 
