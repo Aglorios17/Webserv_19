@@ -139,5 +139,7 @@ void	delete_last(struct poll * poll);
 void	msleep(int tms);
 void	clean_path(std::string &path);
 bool	file_exists(char const* name);
+std::string *str_add_back(std::string *tab, std::string add);
+int *int_add_back(int *tab, int add);
 
 #endif
