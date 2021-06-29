@@ -65,3 +65,40 @@ void	add_fd_to_poll(struct poll* poll, POLLFD fd)
 	poll->nfds += 1;
 }
 
+void delete_last(struct poll * poll)
+{
+	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));
+
+	for (int i = 0 ; i < poll->nfds - 1; i++)
+		tmp[i] = poll->fds[i];
+	delete poll->fds;
+	poll->fds = tmp;
+	poll->nfds--;
+}
+
+int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
+{
+
+	int len;
+	int sender;
+	int optval = 1;
+
+	len = sizeof((sockaddr_in*)addr);
+	if ((sender = accept(sock.get_fd(),
+			addr, (socklen_t*)&len)) < 0)
+		exit (EXIT_FAILURE);
+
+	setsockopt(sender, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
+
+	add_fd_to_poll(
+					s_poll,
+					set_poll(
+							sender,
+							POLLIN|
+							POLLOUT|
+							POLLHUP|
+							POLLERR,
+							O_NONBLOCK));
+
+	return sender;
+}

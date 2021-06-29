@@ -26,6 +26,31 @@
  *	PATH_INFO (arg method)
  */
 
+std::string get_header_message(int status)
+{
+	switch (status)
+	{
+		case 100:
+			return "HTTP/1.1 100 Continue\n";
+		case 201:
+			return "HTTP/1.1 201 Created\n";
+		case 202:
+			return "HTTP/1.1 202 Accepted\n";
+		case 203:
+			return "HTTP/1.1 203 Non-Authoritative Information\n";
+		case 204:
+			return "HTTP/1.1 204 No Content\n";
+		case 206:
+			return "HTTP/1.1 206 Partial Content\n";
+		case 404:
+			return "HTTP/1.1 404 File Not Found\n";
+		case 411:
+			return "HTTP/1.1 411 Length Required\n";
+		default:
+			return "HTTP/1.1 200 OK\n";
+	}
+}
+
 int	send_header(int fd, int size, char* type, int err)
 {
 	char const	*s1;
@@ -33,27 +58,7 @@ int	send_header(int fd, int size, char* type, int err)
 	int		ret;
 
 	std::cout<<"err: "<<err<<std::endl;
-	//-----------------switch function
-	if (err == 201)
-		buf = "HTTP/1.1 201 Created\n";
-	else if (err == 100)
-		buf = "HTTP/1.1 100 Continue\n";
-	else if (err == 411)
-		buf = "HTTP/1.1 411 Length Required\n";
-	else if (err == 202)
-		buf = "HTTP/1.1 202 Accepted\n";
-	else if (err == 203)
-		buf = "HTTP/1.1 203 Non-Authoritative Information\n";
-	else if (err == 204)
-		buf = "HTTP/1.1 204 No Content\n";
-	else if (err == 206)
-		buf = "HTTP/1.1 206 Partial Content\n";
-	else if (err == 404)
-		buf = "HTTP/1.1 404 File Not Found\n";
-	else
-		buf = "HTTP/1.1 200 OK\n";
-	//-----------------------------------
-
+	buf = get_header_message(err);
 	//-----------------switch function
 	if (type)
 	{
@@ -173,45 +178,6 @@ void send_html(int fd, char *path, Socket &sock)
 	file.close();
 }
 
-//-------------------poll utils
-void delete_last(struct poll * poll)
-{
-	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));
-
-	for (int i = 0 ; i < poll->nfds - 1; i++)
-		tmp[i] = poll->fds[i];
-	delete poll->fds;
-	poll->fds = tmp;
-	poll->nfds--;
-}
-
-int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
-{
-
-	int len;
-	int sender;
-	int optval = 1;
-
-	len = sizeof((sockaddr_in*)addr);
-	if ((sender = accept(sock.get_fd(),
-			addr, (socklen_t*)&len)) < 0)
-		exit (EXIT_FAILURE);
-
-	setsockopt(sender, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
-
-	add_fd_to_poll(
-					s_poll,
-					set_poll(
-							sender,
-							POLLIN|
-							POLLOUT|
-							POLLHUP|
-							POLLERR,
-							O_NONBLOCK));
-
-	return sender;
-}
-//-------------------
 void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
 		int		*fd;
