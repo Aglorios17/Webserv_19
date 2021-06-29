@@ -12,7 +12,6 @@
 
 #include "includes/webserver.h"
 
-
 void msleep(int tms)
 {
     struct timeval tv;
@@ -41,4 +40,25 @@ bool	file_exists(char const* name)
 
 	std::ifstream f(name);
 	return f.good();
+}
+
+std::string *str_add_back(std::string *tab, std::string add)
+{
+	std::string *ret = new std::string[tab->size() + 1];
+	for (size_t i = 0; i < tab->size(); i++)
+		ret[i] = tab[i];
+	ret[ret->size()] = add;
+	delete[] tab;
+	return (ret);
+}
+
+int *int_add_back(int *tab, int add)
+{
+	int length = sizeof(&tab)/sizeof(tab[0]);
+	int *ret = new int[length + 1];
+	for (int i = 0; i < length; i++)
+		ret[i] = tab[i];
+	ret[length + 1] = add;
+	delete[] tab;
+	return (ret);
 }

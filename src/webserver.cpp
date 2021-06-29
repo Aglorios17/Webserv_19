@@ -58,9 +58,9 @@ int main(int argc, char **argv, char **env)
 	bind(socket.get_fd(),
 			(struct sockaddr *)address,
 			sizeof(struct sockaddr_in));
-	while(*env)
-		std::cout<<*env++<<std::endl<<std::endl;
-
+	(void)env;
+//	while(*env)
+//		std::cout<<*env++<<std::endl<<std::endl;
 	run_server(socket, (struct sockaddr*)address, poll);
 	return (0);
 }
