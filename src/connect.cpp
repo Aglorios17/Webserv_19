@@ -234,7 +234,7 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 			fd = &s_poll->fds[i].fd;
 
 			if (s_poll->fds[i].revents&POLLIN)
-				pollin_handler(fd, server, s_poll,
+				pollin_handler(&s_poll->fds[i], server, s_poll,
 							addr, sock);
 			else if (s_poll->fds[i].revents&POLLOUT)
 				pollout_handler(fd, server, s_poll,

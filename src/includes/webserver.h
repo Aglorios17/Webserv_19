@@ -121,7 +121,7 @@ POLLFD	set_poll(int fd, int event, int FD_STATUS);
 void	add_fd_to_poll(struct poll* poll, POLLFD fd);
 
 
-int pollin_handler(int *fd, int server, struct poll* s_poll,
+int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 	struct sockaddr *addr, Socket &sock);
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock);

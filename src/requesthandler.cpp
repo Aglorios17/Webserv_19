@@ -30,36 +30,48 @@ void receive_data(int fd,Socket &sock)
 	return ;
 }
 
-int pollin_handler(int *fd, int server, struct poll* s_poll,
+void set_request(Request request, Socket &sock, char *buffer)
+{
+	request.add(buffer);
+	request.request_data();
+	sock.set_request(request);
+}
+
+int apply_method(POLLFD *poll, Socket &sock)
+{
+	if (sock.get_request().get_method() == "POST")
+	{
+		receive_data(poll->fd, sock);
+		if (poll->revents&POLLOUT)
+		{
+			send_header(poll->fd, 0, NULL, 100);
+			std::cout<<"done receiving"<<std::endl;
+		}
+		return 1;
+	}
+	return 0;
+}
+
+int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)
 {
 	int ret;
 	char buffer[BUFFER_SIZE];
 	Request request;
 
-	printf("[POLLIN] read from %s(%d)\n", *fd == server ? "server" : "client", *fd);
+	printf("[POLLIN] read from %s(%d)\n", poll->fd == server ? "server" : "client", poll->fd);
 	fflush(stdout);
-	if (*fd != server)
+	if (poll->fd != server)
 	{
-		while ((ret = recv(*fd, buffer, BUFFER_SIZE, 0)) > 0){}
+		while ((ret = recv(poll->fd, buffer, BUFFER_SIZE, 0)) > 0){}
+
 		printf("----------------\n");
-		fflush(stdout);
 		printf("Client Request:\n%s", buffer);
-		fflush(stdout);
 		printf("----------------\n\n");
-		fflush(stdout);
-		request.add(buffer);
-		request.request_data();
-		sock.set_request(request);
-		if (sock.get_request().get_method() == "POST")
-		{
-			receive_data(*fd, sock);
-			char* type = (char*)"html";
-			(void)type;
-			send_header(*fd, 0, NULL, 100);
-			std::cout<<"done receiving"<<std::endl;
-			poller_handler(fd, server, s_poll, addr, sock);
-		}
+
+		set_request(request, sock, buffer);
+		if (apply_method(poll, sock))
+			poller_handler(&poll->fd, server, s_poll, addr, sock);
 	}
 	else
 	{
