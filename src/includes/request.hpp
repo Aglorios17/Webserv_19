@@ -25,13 +25,17 @@ class Request
 	private:
 		std::string _method;
 		std::string _arg_method;
-		std::string _cgi;
 		std::string _http_method;
+		std::string _cgi;
 		std::string _buffer;
 		std::string _host;
 		std::string _referer;
 		std::string	_connection;
+		std::string _content_type;
+		std::string _content_length;
+		std::string	_content_encoding;
 		int			_size_buf;
+		int			_status;
 	public:
 		Request(void) {}
 		~Request(void) {}
@@ -45,12 +49,17 @@ class Request
 	 			_host = cpy._host;
 	 			_referer = cpy._referer;
 				_connection = cpy._connection;
+				_content_type = cpy._content_type;
+				_content_length = cpy._content_length;
+				_content_encoding = cpy._content_encoding;
+				_status = cpy._status;
 			}
 			return (*this);
 		}
-		bool	request_data(void);
-		bool	request_method_check(std::string line);
-		void	add(char *buffer);
+		bool		request_data(void);
+		int			add_request_data(std::string tab);
+		bool		request_method_check(std::string line);
+		void		add(char *buffer);
 		std::string	*stotab(void);
 		std::string str_ret(std::string str, std::string cmd);
 		std::string	get_host(void) {return (_host);}
@@ -60,6 +69,10 @@ class Request
 		std::string	get_http_method(void) {return (_http_method);}
 		std::string	get_referer(void) {return (_referer);}
 		std::string	get_connection(void) {return (_connection);}
+		std::string	get_content_type(void) {return (_content_type);}
+		std::string	get_content_length(void) {return (_content_length);}
+		std::string	get_content_encoding(void) {return (_content_encoding);}
+		int			get_status(void) {return (_status);}
 };
 
 #endif

@@ -18,6 +18,7 @@ CC = clang++
 
 SRCS  = $(SRC_DIR)/parser.cpp\
 		$(SRC_DIR)/request.cpp\
+		$(SRC_DIR)/utils.cpp\
 		$(SRC_DIR)/socket.cpp\
 		$(SRC_DIR)/webserver.cpp\
 		$(SRC_DIR)/configure.cpp\

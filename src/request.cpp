@@ -80,44 +80,98 @@ bool Request::request_method_check(std::string line)
 		if (i == 2)
 			_http_method = token;
 		if (i == 3)
+		{
+			_status = 400;
 			return (0);
+		}
 		i++;
 		token = strtok(NULL, " ");
 	}
 	if (strncmp(&_method[0], "GET", strlen(&_method[0])) && strncmp(&_method[0], "POST", strlen(&_method[0]))
 			&& strncmp(&_method[0], "DELETE", strlen(&_method[0])))
+	{
+		_status = 501;
 		return (0);
+	}
 	if (strncmp(&_http_method[0], "HTTP/1.1", strlen(&_http_method[0])))
+	{
+		_status = 505;
 		return (0);
+	}
 	return (1);
+}
+
+int Request::add_request_data(std::string tab)
+{
+	if (tab.find("Host:") != std::string::npos)
+	{
+		if (_host != "")
+			return (400);
+		if ((_host = str_ret(tab, "Host:")) == "")
+			return (400);
+	}
+	else if (tab.find("Referer:") != std::string::npos)
+	{
+		if (_referer != "")
+			return (400);
+		if ((_referer = str_ret(tab, "Referer:")) == "")
+			return (400);
+	}
+	else if (tab.find("Content-Encoding:") != std::string::npos)
+	{
+		if (_content_encoding != "")
+			return (400);
+		if ((_content_encoding = str_ret(tab, "Content-Encoding:")) == "")
+			return (400);
+	}
+	else if (tab.find("Content-Length:") != std::string::npos)
+	{
+		if (_content_length != "")
+			return (400);
+		if ((_content_length = str_ret(tab, "Content-Length:")) == "")
+			return (411);
+	}
+	else if (tab.find("Content-Type:") != std::string::npos)
+	{
+		if (_content_type != "")
+			return (400);
+		if ((_content_type = str_ret(tab, "Content-Type:")) == "")
+			return (415);
+	}
+	else if (tab.find("Connection:") != std::string::npos)
+	{
+		if (_connection != "")
+			return (400);
+		if ((_connection = str_ret(tab, "Connection:")) == "")
+			return (400);
+	}
+	return (200);
 }
 
 bool Request::request_data(void)
 {
 	std::string *tab = stotab();
+	_status = 200;
 	if (!tab)
 	{
-		std::cout << "BUFFER NULL" << std::endl;
+		_status = 204;
+		std::cout << "STATUS CODE : ||" << _status << "||\n";
 		return (0);
 	}
 	if (!request_method_check(tab[0]))
+	{
+		std::cout << "STATUS CODE : ||" << _status << "||\n";
 		return (0);
+	}
 	for (int y = 1; y < _size_buf; y++)
 	{
-		if (tab[y].find("Host:") != std::string::npos)
+		if ((_status = add_request_data(tab[y])) != 200)
 		{
-			if (_host != "" || (_host = str_ret(tab[y], "Host:")) == "")
-				return (0);
+			std::cout << "STATUS CODE : ||" << _status << "||\n";
+			return (0);
 		}
-		else if (tab[y].find("Referer:") != std::string::npos)
-		{
-			if (_referer != "" || (_referer = str_ret(tab[y], "Referer:")) == "")
-				return (0);
-		}
-		else if (tab[y].find("Connection:") != std::string::npos)
-			if (_connection != "" || (_connection = str_ret(tab[y], "Connection:")) == "")
-				return (0);
 	}
+	std::cout << "STATUS CODE : ||" << _status << "||\n";
 	delete[] tab;
 	return (1);
 }
