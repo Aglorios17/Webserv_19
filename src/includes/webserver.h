@@ -132,4 +132,12 @@ int	add_connection(Socket &sock, struct sockaddr *addr,
 	struct poll* s_poll);
 void	delete_last(struct poll * poll);
 
+/*
+ * UTILS
+ */
+
+void	msleep(int tms);
+void	clean_path(std::string &path);
+bool	file_exists(char const* name);
+
 #endif

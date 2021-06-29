@@ -12,14 +12,7 @@
 
 #include "includes/webserver.h"
 
-void msleep(int tms)
-{
-    struct timeval tv;
-    tv.tv_sec  = tms / 1000;
-    tv.tv_usec = (tms % 1000) * 1000;
-    select (0, NULL, NULL, NULL, &tv);
-}
-
+//--------------Sock utils
 void receive_data(int fd,Socket &sock)
 {
 	char buffer[BUFFER_SIZE];
@@ -51,6 +44,7 @@ int apply_method(POLLFD *poll, Socket &sock)
 	}
 	return 0;
 }
+//------------------------
 
 int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)
@@ -83,22 +77,6 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 	printf("==========\n");
 	return 0;
 }
-
-//------Move to a util*.cpp
-void clean_substring(std::string &main, std::string to_delete)
-{
-	size_t pos = main.find(to_delete);	
-	if (pos != std::string::npos)
-		main.erase(pos, to_delete.length());
-}
-
-void clean_path(std::string &path)
-{
-	clean_substring(path, "/");
-}
-//----------------
-
-
 
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)

@@ -26,23 +26,6 @@
  *	PATH_INFO (arg method)
  */
 
-
-/*
- *  1. check if file needs to be run with CGI
- *  2. Set Env variables using setenv
- *  3. fork and run cgi with env 
- */
-
-bool	file_exists(char const* name)
-{
-
-	printf("INDEX QUERY: [%s]\n", name);
-	fflush(stdout);
-
-	std::ifstream f(name);
-	return f.good();
-}
-
 int	send_header(int fd, int size, char* type, int err)
 {
 	char const	*s1;
@@ -50,6 +33,7 @@ int	send_header(int fd, int size, char* type, int err)
 	int		ret;
 
 	std::cout<<"err: "<<err<<std::endl;
+	//-----------------switch function
 	if (err == 201)
 		buf = "HTTP/1.1 201 Created\n";
 	else if (err == 100)
@@ -68,7 +52,9 @@ int	send_header(int fd, int size, char* type, int err)
 		buf = "HTTP/1.1 404 File Not Found\n";
 	else
 		buf = "HTTP/1.1 200 OK\n";
+	//-----------------------------------
 
+	//-----------------switch function
 	if (type)
 	{
 		if (strcmp(type, "html") == 0)
@@ -76,6 +62,7 @@ int	send_header(int fd, int size, char* type, int err)
 		else 
 			buf += "Content-Type: image/jpg\n";
 	}
+	//-----------------------------------
 	buf += "Cache-Control: no-store\n";
 	buf += "Content-Length: " + std::to_string(size) + "\n\n";
 
@@ -186,6 +173,7 @@ void send_html(int fd, char *path, Socket &sock)
 	file.close();
 }
 
+//-------------------poll utils
 void delete_last(struct poll * poll)
 {
 	POLLFD * tmp = (POLLFD*)malloc(sizeof(POLLFD) * (poll->nfds));
@@ -223,6 +211,7 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 
 	return sender;
 }
+//-------------------
 void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
 		int		*fd;
