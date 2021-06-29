@@ -55,6 +55,9 @@ client: all
 	echo "./webserver src/includes/conf/tester.conf"
 valgrind: all
 	valgrind ./webserver src/includes/conf/tester.conf
+tester:
+	chmod +x ./src/includes/static/tester/tester
+	./src/includes/static/tester/tester http://localhost:8080
 
 
 re:	fclean all
