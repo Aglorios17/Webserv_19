@@ -37,7 +37,7 @@ int apply_method(POLLFD *poll, Socket &sock)
 		receive_data(poll->fd, sock);
 		if (poll->revents&POLLOUT)
 		{
-			send_header(poll->fd, 0, NULL, 100);
+			send_header(poll->fd, 0, NULL, 200);
 			std::cout<<"done receiving"<<std::endl;
 		}
 		return 1;
@@ -65,7 +65,8 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 
 		set_request(request, sock, buffer);
 		if (apply_method(poll, sock))
-			poller_handler(&poll->fd, server, s_poll, addr, sock);
+			(void)sock;
+			//poller_handler(&poll->fd, server, s_poll, addr, sock);
 	}
 	else
 	{
