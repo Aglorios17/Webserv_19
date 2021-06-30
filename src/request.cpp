@@ -138,6 +138,27 @@ int Request::add_request_data(std::string tab)
 		if ((_content_type = str_ret(tab, "Content-Type:")) == "")
 			return (415);
 	}
+	else if (tab.find("Transfer-Encoding:") != std::string::npos)
+	{
+		if (_transfer_encoding != "")
+			return (400);
+		if ((_transfer_encoding = str_ret(tab, "Transfer-Encoding:")) == "")
+			return (415);
+	}
+	else if (tab.find("Accept-Encoding:") != std::string::npos)
+	{
+		if (_accept_encoding != "")
+			return (400);
+		if ((_accept_encoding = str_ret(tab, "Accept-Encoding:")) == "")
+			return (415);
+	}
+	else if (tab.find("User-Agent:") != std::string::npos)
+	{
+		if (_user_agent != "")
+			return (400);
+		if ((_user_agent = str_ret(tab, "User-Agent:")) == "")
+			return (415);
+	}
 	else if (tab.find("Connection:") != std::string::npos)
 	{
 		if (_connection != "")
