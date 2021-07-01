@@ -51,7 +51,7 @@ std::string get_header_message(int status)
 	}
 }
 
-int	send_header(int fd, int size, char* type, int err)
+int	send_header(Socket &sock, int fd, int size, char* type, int err)
 {
 	char const	*s1;
 	std::string	buf;
@@ -60,6 +60,7 @@ int	send_header(int fd, int size, char* type, int err)
 	std::cout<<"err: "<<err<<std::endl;
 	buf = get_header_message(err);
 	//-----------------switch function
+	buf += "Server: " + sock.get_parser().get_server_name() + "\n"; 
 	if (type)
 	{
 		if (strcmp(type, "html") == 0)
@@ -168,7 +169,7 @@ void send_html(int fd, char *path, Socket &sock)
 
 	file.open(path);
 
-	send_header(fd, get_file_size(path), &get_extension(s_file)[0], err);
+	send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], err);
 
 	while(std::getline(file, line))
 	{

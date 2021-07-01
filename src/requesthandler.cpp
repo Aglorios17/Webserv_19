@@ -37,7 +37,7 @@ int apply_method(POLLFD *poll, Socket &sock)
 		receive_data(poll->fd, sock);
 		if (poll->revents&POLLOUT)
 		{
-			send_header(poll->fd, 0, NULL, 200);
+			send_header(sock, poll->fd, 0, NULL, 200);
 			std::cout<<"done receiving"<<std::endl;
 		}
 		return 1;
