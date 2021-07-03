@@ -63,6 +63,28 @@ std::string Request::str_ret(std::string str, std::string cmd)
 	return (add);
 }
 
+int Request::int_ret(std::string str, std::string cmd)
+{
+	int i = 0;
+	std::string cmp;
+	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
+		i++;
+	while (str[i] && str[i] != ' ')
+		cmp += str[i++];
+	if (cmp != cmd)
+		return (-1);
+	std::string add;
+	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
+		i++;
+	while (str[i] && str[i] != ' ')
+		add += str[i++];
+	add += '\0';
+	for (size_t y = 0; y < add.size(); y++)
+		if (!isdigit(add[y]))
+			return (-1);
+	return (stoi(add));
+}
+
 bool Request::request_method_check(std::string line)
 {
 	char *token = strtok(&line[0], " ");
@@ -130,6 +152,9 @@ int Request::add_request_data(std::string tab)
 			return (400);
 		if ((_content_length = str_ret(tab, "Content-Length:")) == "")
 			return (411);
+		for (size_t y = 0; y < _content_length.size(); y++)
+			if (!isdigit(_content_length[y]))
+				return (400);
 	}
 	else if (tab.find("Content-Type:") != std::string::npos)
 	{

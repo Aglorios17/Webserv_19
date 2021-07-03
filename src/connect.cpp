@@ -50,15 +50,14 @@ std::string get_header_message(int status)
 	}
 }
 
-int	send_header(Socket &sock, int fd, int size, char* type, int err, t_data *data)
+int	send_header(Socket &sock, int fd, int size, char* type, t_data *data)
 {
 	char const	*s1;
 	std::string	buf;
 	int		ret;
 	std::string last = data->last;
 
-	std::cout<<"err: "<<err<<std::endl;
-	buf = get_header_message(err);
+	buf = get_header_message(data->status);
 	//-----------------switch function
 	buf += get_time(data);
 	buf += "Server: " + sock.get_parser().get_server_name() + "\r\n"; 
@@ -69,10 +68,20 @@ int	send_header(Socket &sock, int fd, int size, char* type, int err, t_data *dat
 //	}
 	if (type)
 	{
-		if (strcmp(type, "html") == 0)
+		if (strcmp(type, "php") == 0)
 			buf += "Content-Type: text/html\r\n";
-		else 
+		else if (strcmp(type, "jpg") == 0)
 			buf += "Content-Type: image/jpg\r\n";
+		else if (strcmp(type, "png") == 0)
+			buf += "Content-Type: image/png\r\n";
+		else if (strcmp(type, "gif") == 0)
+			buf += "Content-Type: image/gif\r\n";
+		else if (strcmp(type, "jpeg") == 0)
+			buf += "Content-Type: image/jpeg\r\n";
+		else if (strcmp(type, "ico") == 0)
+			buf += "Content-Type: image/x-icon\r\n";
+		else
+			buf += "Content-Type: text/html\r\n";
 	}
 	//-----------------------------------
 	buf += "Cache-Control: no-store\r\n";
@@ -94,8 +103,8 @@ std::string get_extension(std::string file)
 	if (pos == std::string::npos)
 		return file;
 	type = file.substr(pos+1);
-	std::cout<<"pos is: "<<pos<<std::endl;
-	std::cout<<"type is: "<<type<<std::endl;
+//	std::cout<<"pos is: "<<pos<<std::endl;
+//	std::cout<<"type is: "<<type<<std::endl;
 	return type;
 }
 
@@ -139,7 +148,6 @@ void cgi_handler(std::string cgi, Socket &sock, std::string path_info)
 void send_html(int fd, char *path, Socket &sock, t_data *data)
 {
 	const char *s1;
-	int err = 0;
 	std::string line;
 	std::ifstream file;
 	
@@ -153,7 +161,7 @@ void send_html(int fd, char *path, Socket &sock, t_data *data)
 	{
 		printf("ERROR: FILE NOT FOUND\n");	
 		fflush(stdout);
-		err = 404;
+		data->status = 404;
 		std::string error = sock.get_parser().get_root() + sock.get_parser().get_error_page();
 		path = (char*)malloc(strlen(&error[0]) + 1);
 		strcpy(path, &error[0]);
@@ -175,7 +183,7 @@ void send_html(int fd, char *path, Socket &sock, t_data *data)
 
 	file.open(path);
 
-	send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], err, data);
+	send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], data);
 
 	while(std::getline(file, line))
 	{
@@ -213,6 +221,7 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 	t_data data;
 
 	data.last = strdup("");
+	data.status = 0;
 	if (listen(sock.get_fd(), 1) < 0)
 		exit (EXIT_FAILURE);
 	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)

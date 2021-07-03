@@ -23,11 +23,14 @@ void receive_data(int fd,Socket &sock)
 	return ;
 }
 
-void set_request(Request request, Socket &sock, char *buffer)
+void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 {
 	request.add(buffer);
 	request.request_data();
 	sock.set_request(request);
+	data->status = sock.get_request().get_status();
+	if (sock.get_request().get_content_length() > sock.get_parser().get_client_max_body_size())
+		data->status = 413;
 }
 
 int apply_method(POLLFD *poll, Socket &sock, t_data *data)
@@ -37,7 +40,7 @@ int apply_method(POLLFD *poll, Socket &sock, t_data *data)
 		receive_data(poll->fd, sock);
 		if (poll->revents&POLLOUT)
 		{
-			send_header(sock, poll->fd, 0, NULL, 200, data);
+			send_header(sock, poll->fd, 0, NULL, data);
 			std::cout<<"done receiving"<<std::endl;
 		}
 		return 1;
@@ -63,7 +66,7 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		printf("Client Request:\n%s", buffer);
 		printf("----------------\n\n");
 
-		set_request(request, sock, buffer);
+		set_request(request, sock, buffer, data);
 		if (apply_method(poll, sock, data))
 			(void)sock;
 			//poller_handler(&poll->fd, server, s_poll, addr, sock);

@@ -69,6 +69,7 @@ class Parser
 		std::string *stotab(void);
 		int	get_port(void) {return (_listen_port);}
 		int	get_timeout(void) {return (_timeout);}
+		int get_client_max_body_size(void) {return (_client_max_body_size);}
 		std::string get_domain(void) {return (_host_address);}
 		std::string get_server_name(void) {return (_server_name);}
 		std::string get_index(void) {return (_index);}

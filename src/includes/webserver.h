@@ -57,6 +57,7 @@
 typedef struct	s_data
 {
 		char	*last;
+		int		status;
 }				t_data;
 
 bool	conf_is_valid(std::string &conf_path);
@@ -96,7 +97,7 @@ void	run_server(Socket &sock, struct sockaddr *addr, struct poll* poll);
 
 int	get_file_size(char const *path);
 void	send_html(int fd, char *path, Socket &sock, t_data *data);
-int	send_header(Socket &sock, int fd, int size, char *type, int err, t_data *data);
+int	send_header(Socket &sock, int fd, int size, char *type, t_data *data);
 
 /*
  * method 
