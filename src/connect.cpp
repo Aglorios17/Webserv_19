@@ -17,7 +17,6 @@
  */
 # define QUEUE 3
 
-
 /*
  * ENV VARIABLES:
  *
@@ -47,30 +46,37 @@ std::string get_header_message(int status)
 		case 411:
 			return "HTTP/1.1 411 Length Required\n";
 		default:
-			return "HTTP/1.1 200 OK\n";
+			return "HTTP/1.1 200 OK\r\n";
 	}
 }
 
-int	send_header(Socket &sock, int fd, int size, char* type, int err)
+int	send_header(Socket &sock, int fd, int size, char* type, int err, t_data *data)
 {
 	char const	*s1;
 	std::string	buf;
 	int		ret;
+	std::string last = data->last;
 
 	std::cout<<"err: "<<err<<std::endl;
 	buf = get_header_message(err);
 	//-----------------switch function
-	buf += "Server: " + sock.get_parser().get_server_name() + "\n"; 
+	buf += get_time(data);
+	buf += "Server: " + sock.get_parser().get_server_name() + "\r\n"; 
+//	if (last != "") /////////// pas ouf lol
+//	{
+//		std::string str(data->last);
+//		buf += ("Last-Modified: " + str);
+//	}
 	if (type)
 	{
 		if (strcmp(type, "html") == 0)
-			buf += "Content-Type: text/html\n";
+			buf += "Content-Type: text/html\r\n";
 		else 
-			buf += "Content-Type: image/jpg\n";
+			buf += "Content-Type: image/jpg\r\n";
 	}
 	//-----------------------------------
-	buf += "Cache-Control: no-store\n";
-	buf += "Content-Length: " + std::to_string(size) + "\n\n";
+	buf += "Cache-Control: no-store\r\n";
+	buf += "Content-Length: " + std::to_string(size) + "\r\n\r\n";
 
 	std::cout<<"------------"<<std::endl;
 	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
@@ -130,7 +136,7 @@ void cgi_handler(std::string cgi, Socket &sock, std::string path_info)
 }
 
 
-void send_html(int fd, char *path, Socket &sock)
+void send_html(int fd, char *path, Socket &sock, t_data *data)
 {
 	const char *s1;
 	int err = 0;
@@ -169,7 +175,7 @@ void send_html(int fd, char *path, Socket &sock)
 
 	file.open(path);
 
-	send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], err);
+	send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], err, data);
 
 	while(std::getline(file, line))
 	{
@@ -179,7 +185,7 @@ void send_html(int fd, char *path, Socket &sock)
 	file.close();
 }
 
-void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
+void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_data *data)
 {
 		int		*fd;
 		int		server;
@@ -191,10 +197,10 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 
 			if (s_poll->fds[i].revents&POLLIN)
 				pollin_handler(&s_poll->fds[i], server, s_poll,
-							addr, sock);
+							addr, sock, data);
 			else if (s_poll->fds[i].revents&POLLOUT)
 				pollout_handler(fd, server, s_poll,
-							addr, sock);
+							addr, sock, data);
 			else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
 				poller_handler(fd, server, s_poll,
 							addr, sock);
@@ -204,13 +210,14 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
 	int	ret;
+	t_data data;
 
+	data.last = strdup("");
 	if (listen(sock.get_fd(), 1) < 0)
 		exit (EXIT_FAILURE);
-
-
 	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
-		direct_request(sock, addr, s_poll);
+		direct_request(sock, addr, s_poll, &data);
 	printf("ret--->%d\n", ret);
 	fflush(stdout);
+	free(data.last);
 }

@@ -62,3 +62,60 @@ int *int_add_back(int *tab, int add)
 	delete[] tab;
 	return (ret);
 }
+
+std::string get_time(t_data *data)
+{
+/*
+	int sday = 86400;
+	int shour = 3600;
+	int smin = 60;
+	struct timeval tv;
+	struct timeval tz;
+	std::string time = "Date: ";
+
+	gettimeofday(&tv, &tz);
+	long hms = tv.tv_sec % sday;
+	hms += tz.tz_dsttime * shour;
+  	hms -= tz.tz_minuteswest * smin;
+  	hms = (hms + sday) % sday;
+	time += std::to_string(hms / shour) + ":";
+	time += std::to_string((hms % shour) / smin) + ":";
+	time += std::to_string((hms % shour) % smin) + " GMT";
+*/
+	time_t now = time(0);
+	char* dt = ctime(&now);
+	std::string time = "Date : ";
+	char *token = strtok(dt, " ");
+	int i = 0;
+	std::string day;
+	std::string month;
+	std::string year;
+	std::string hour;
+	std::string nbday;
+	while (token != NULL)
+	{
+		if (i == 0)
+			day = token;
+		if (i == 1)
+			month = token;
+		if (i == 2)
+			nbday = token;
+		if (i == 3)
+			hour = token;
+		if (i == 4)
+			for (int y = 0; token[y] != '\n'; y++)
+				year += token[y];
+		i++;
+		token = strtok(NULL, " ");
+	}
+	std::string add = (day + ", " + nbday + " " + month + " " + year + " " + hour + " GMT\r\n");
+	std::string tmp(data->last); /////////// lol c est pas tres fonctionnel
+	if (add != tmp)
+	{
+		free(data->last);
+		data->last = new char[add.length() + 1];
+		strcpy(data->last, add.c_str());
+	}
+	time += add;
+	return (time);
+}

@@ -37,6 +37,8 @@
 #include <fcntl.h>
 #include <fstream>
 #include <poll.h>
+#include <time.h>
+#include <ctime>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -52,6 +54,10 @@
 #define O_NOFLAG 0
 #define BUFFER_SIZE 1024 
 
+typedef struct	s_data
+{
+		char	*last;
+}				t_data;
 
 bool	conf_is_valid(std::string &conf_path);
 bool	domain_is_valid(int domain);
@@ -89,8 +95,8 @@ void	run_server(Socket &sock, struct sockaddr *addr, struct poll* poll);
  */
 
 int	get_file_size(char const *path);
-void	send_html(int fd, char *path, Socket &sock);
-int	send_header(Socket &sock, int fd, int size, char *type, int err);
+void	send_html(int fd, char *path, Socket &sock, t_data *data);
+int	send_header(Socket &sock, int fd, int size, char *type, int err, t_data *data);
 
 /*
  * method 
@@ -122,9 +128,9 @@ void	add_fd_to_poll(struct poll* poll, POLLFD fd);
 
 
 int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
-	struct sockaddr *addr, Socket &sock);
+	struct sockaddr *addr, Socket &sock, t_data *data);
 void pollout_handler(int *fd, int server, struct poll* s_poll,
-		struct sockaddr *addr, Socket &sock);
+		struct sockaddr *addr, Socket &sock, t_data *data);
 void	poller_handler(int *fd, int server, struct poll* s_poll,
 	struct sockaddr *addr, Socket &sock);
 
@@ -141,5 +147,6 @@ void	clean_path(std::string &path);
 bool	file_exists(char const* name);
 std::string *str_add_back(std::string *tab, std::string add);
 int *int_add_back(int *tab, int add);
+std::string get_time(t_data *data);
 
 #endif
