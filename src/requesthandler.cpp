@@ -28,14 +28,19 @@ void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 	request.add(buffer);
 	request.request_data();
 	sock.set_request(request);
-	data->status = sock.get_request().get_status();
+	if ((data->status = sock.get_request().get_status()) != 200)
+		return ;
 	if (sock.get_request().get_content_length() > sock.get_parser().get_client_max_body_size())
 		data->status = 413;
 }
 
-int apply_method(POLLFD *poll, Socket &sock, t_data *data)
+int apply_request(POLLFD *poll, Socket &sock, t_data *data)
 {
-	if (sock.get_request().get_method() == "POST")
+/*	if (data->status != 200)
+	{
+		// error header
+	}
+*/	if (sock.get_request().get_method() == "POST")
 	{
 		receive_data(poll->fd, sock);
 		if (poll->revents&POLLOUT)
@@ -44,7 +49,15 @@ int apply_method(POLLFD *poll, Socket &sock, t_data *data)
 			std::cout<<"done receiving"<<std::endl;
 		}
 		return 1;
+	}/*
+	else if (sock.get_request().get_method() == "GET")
+	{
+		//hello :) ici on envoie en chunk ou unchunk
 	}
+	else if (sock.get_request().get_method() == "DELETE")
+	{
+		// delete file
+	}*/
 	return 0;
 }
 //------------------------
@@ -65,11 +78,8 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		printf("----------------\n");
 		printf("Client Request:\n%s", buffer);
 		printf("----------------\n\n");
-
-		set_request(request, sock, buffer, data);
-		if (apply_method(poll, sock, data))
-			(void)sock;
-			//poller_handler(&poll->fd, server, s_poll, addr, sock);
+		free(data->buffer);
+		data->buffer = strdup(&buffer[0]);
 	}
 	else
 	{

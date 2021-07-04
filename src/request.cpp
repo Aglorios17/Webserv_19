@@ -194,10 +194,33 @@ int Request::add_request_data(std::string tab)
 	return (200);
 }
 
+void Request::init(void)
+{
+	_status = 200;
+	_method = "";
+	_arg_method = "";
+	_http_method = "";
+	_cgi = "";
+	_host = "";
+	_referer = "";
+	_connection = "";
+	_content_type = "";
+	_content_length = "";
+	_content_encoding = "";
+	_user_agent = "";
+	_transfer_encoding = "";
+	_accept_encoding = "";
+}
+
 bool Request::request_data(void)
 {
 	std::string *tab = stotab();
-	_status = 200;
+	init();
+	if (_buffer.find("no request") != std::string::npos)
+	{
+		std::cout << "NO REQUEST\n";
+		return (1);
+	}
 	if (!tab)
 	{
 		_status = 204;
@@ -206,18 +229,18 @@ bool Request::request_data(void)
 	}
 	if (!request_method_check(tab[0]))
 	{
-		std::cout << "STATUS CODE : ||" << _status << "||\n";
+		std::cout << "1STATUS CODE : ||" << _status << "||\n";
 		return (0);
 	}
 	for (int y = 1; y < _size_buf; y++)
 	{
 		if ((_status = add_request_data(tab[y])) != 200)
 		{
-			std::cout << "STATUS CODE : ||" << _status << "||\n";
+			std::cout << "2STATUS CODE : ||" << _status << "||\n";
 			return (0);
 		}
 	}
-	std::cout << "STATUS CODE : ||" << _status << "||\n";
+	std::cout << "3STATUS CODE : ||" << _status << "||\n";
 	delete[] tab;
 	return (1);
 }

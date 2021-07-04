@@ -58,6 +58,7 @@ typedef struct	s_data
 {
 		char	*last;
 		int		status;
+		char	*buffer;
 }				t_data;
 
 bool	conf_is_valid(std::string &conf_path);
@@ -105,6 +106,8 @@ int	send_header(Socket &sock, int fd, int size, char *type, t_data *data);
 bool method_get(int *fd, int server, Socket &sock, char *request);
 bool method_post(int *fd, int server, struct poll* s_poll, struct sockaddr *addr, Socket &sock);
 bool method_delete(int *fd, int server, struct poll* s_poll, struct sockaddr *addr, Socket &sock);
+void set_request(Request request, Socket &sock, char *buffer, t_data *data);
+int apply_request(POLLFD *poll, Socket &sock, t_data *data);
 
 /*
  * poll handlers
@@ -126,6 +129,7 @@ int	init_poll_struct(struct poll *poll);
 int	sizeof_fds(POLLFD* fds);
 POLLFD	set_poll(int fd, int event, int FD_STATUS);
 void	add_fd_to_poll(struct poll* poll, POLLFD fd);
+
 
 
 int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,

@@ -62,6 +62,7 @@ class Request
 			}
 			return (*this);
 		}
+		void		init(void);
 		bool		request_data(void);
 		int			add_request_data(std::string tab);
 		bool		request_method_check(std::string line);

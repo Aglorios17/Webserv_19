@@ -221,12 +221,20 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 	t_data data;
 
 	data.last = strdup("");
+	data.buffer = strdup("no request");
 	data.status = 0;
 	if (listen(sock.get_fd(), 1) < 0)
 		exit (EXIT_FAILURE);
 	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
+	{
 		direct_request(sock, addr, s_poll, &data);
+		set_request(sock.get_request(), sock, data.buffer, &data);
+		apply_request(s_poll->fds, sock, &data);
+		free(data.buffer);
+		data.buffer = strdup("no request");
+	}
 	printf("ret--->%d\n", ret);
 	fflush(stdout);
 	free(data.last);
+	free(data.buffer);
 }
