@@ -195,24 +195,31 @@ void send_html(int fd, char *path, Socket &sock, t_data *data)
 
 void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_data *data)
 {
-		int		*fd;
-		int		server;
+	int		*fd;
+	int		server;
 
-		server = s_poll->fds[0].fd;
-		for(int i = 0; i < s_poll->nfds ; i++)
-		{
-			fd = &s_poll->fds[i].fd;
+	server = s_poll->fds[0].fd;
+	for(int i = 0; i < s_poll->nfds ; i++)
+	{
+		fd = &s_poll->fds[i].fd;
 
-			if (s_poll->fds[i].revents&POLLIN)
-				pollin_handler(&s_poll->fds[i], server, s_poll,
-							addr, sock, data);
-			else if (s_poll->fds[i].revents&POLLOUT)
-				pollout_handler(fd, server, s_poll,
-							addr, sock, data);
-			else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
-				poller_handler(fd, server, s_poll,
-							addr, sock);
-		}
+		if (s_poll->fds[i].revents&POLLIN)
+			pollin_handler(&s_poll->fds[i], server, s_poll,
+						addr, sock, data);
+		else if (s_poll->fds[i].revents&POLLOUT)
+			pollout_handler(fd, server, s_poll,
+						addr, sock, data);
+		else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
+			poller_handler(fd, server, s_poll,
+						addr, sock);
+	}
+}
+
+void init_data(t_data *data)
+{
+	data->last = strdup("");
+	data->buffer = strdup("no request");
+	data->status = 0;
 }
 
 void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
@@ -220,16 +227,12 @@ void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 	int	ret;
 	t_data data;
 
-	data.last = strdup("");
-	data.buffer = strdup("no request");
-	data.status = 0;
+	init_data(&data);
 	if (listen(sock.get_fd(), 1) < 0)
 		exit (EXIT_FAILURE);
 	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
 	{
 		direct_request(sock, addr, s_poll, &data);
-		set_request(sock.get_request(), sock, data.buffer, &data);
-		apply_request(s_poll->fds, sock, &data);
 		free(data.buffer);
 		data.buffer = strdup("no request");
 	}

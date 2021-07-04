@@ -107,7 +107,7 @@ bool method_get(int *fd, int server, Socket &sock, char *request);
 bool method_post(int *fd, int server, struct poll* s_poll, struct sockaddr *addr, Socket &sock);
 bool method_delete(int *fd, int server, struct poll* s_poll, struct sockaddr *addr, Socket &sock);
 void set_request(Request request, Socket &sock, char *buffer, t_data *data);
-int apply_request(POLLFD *poll, Socket &sock, t_data *data);
+int apply_request(int *fd, Socket &sock, t_data *data);
 
 /*
  * poll handlers

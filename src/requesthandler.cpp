@@ -12,7 +12,6 @@
 
 #include "includes/webserver.h"
 
-//--------------Sock utils
 void receive_data(int fd,Socket &sock)
 {
 	char buffer[BUFFER_SIZE];
@@ -34,33 +33,42 @@ void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 		data->status = 413;
 }
 
-int apply_request(POLLFD *poll, Socket &sock, t_data *data)
+int apply_request(int *fd, Socket &sock, t_data *data)
 {
-/*	if (data->status != 200)
+	if (data->status != 200)
 	{
-		// error header
-	}
-*/	if (sock.get_request().get_method() == "POST")
-	{
-		receive_data(poll->fd, sock);
-		if (poll->revents&POLLOUT)
-		{
-			send_header(sock, poll->fd, 0, NULL, data);
-			std::cout<<"done receiving"<<std::endl;
-		}
+		std::cout<< "HELLO IM ERROR" <<std::endl;
+		send_header(sock, *fd, 0, NULL, data);
+		std::cout<<"done erroring"<<std::endl;
 		return 1;
-	}/*
+	}
+	if (sock.get_request().get_method() == "POST")
+	{
+		std::cout<< "HELLO IM POST" <<std::endl;
+		send_header(sock, *fd, 0, NULL, data);
+		std::cout<<"done posting"<<std::endl;
+		return 1;
+	}
 	else if (sock.get_request().get_method() == "GET")
 	{
-		//hello :) ici on envoie en chunk ou unchunk
+		std::string source = sock.get_request().get_arg_method();
+		clean_path(source);
+		if (source.length() == 0)
+			source = sock.get_parser().get_index();
+		source = sock.get_parser().get_root() + source;
+		send_html(*fd, &source[0], sock, data);
+		std::cout<<"done getting"<<std::endl;
+		return 1;
 	}
 	else if (sock.get_request().get_method() == "DELETE")
 	{
-		// delete file
-	}*/
+		std::cout<< "HELLO IM DELETE" <<std::endl;
+		send_header(sock, *fd, 0, NULL, data);
+		std::cout<<"done deleting"<<std::endl;
+		return 1;
+	}
 	return 0;
 }
-//------------------------
 
 int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock, t_data *data)
@@ -80,6 +88,7 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		printf("----------------\n\n");
 		free(data->buffer);
 		data->buffer = strdup(&buffer[0]);
+	 	set_request(sock.get_request(), sock, data->buffer, data);
 	}
 	else
 	{
@@ -102,12 +111,7 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 
 	if (*fd != server)
 	{
-		std::string source = sock.get_request().get_arg_method();
-		clean_path(source);
-		if (source.length() == 0)
-			source = sock.get_parser().get_index();
-		source= sock.get_parser().get_root() + source;
-		send_html(*fd, &source[0], sock, data);
+		apply_request(fd, sock, data);
 		poller_handler(fd, server, s_poll, addr, sock);
 	}
 	msleep(150);
