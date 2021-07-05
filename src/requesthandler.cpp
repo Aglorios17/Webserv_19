@@ -36,37 +36,13 @@ void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 int apply_request(int *fd, Socket &sock, t_data *data)
 {
 	if (data->status != 200)
-	{
-		std::cout<< "HELLO IM ERROR" <<std::endl;
-		send_header(sock, *fd, 0, NULL, data);
-		std::cout<<"done erroring"<<std::endl;
-		return 1;
-	}
+		return (method_error(fd, sock, data));
 	if (sock.get_request().get_method() == "POST")
-	{
-		std::cout<< "HELLO IM POST" <<std::endl;
-		send_header(sock, *fd, 0, NULL, data);
-		std::cout<<"done posting"<<std::endl;
-		return 1;
-	}
+		return (method_post(fd, sock, data));
 	else if (sock.get_request().get_method() == "GET")
-	{
-		std::string source = sock.get_request().get_arg_method();
-		clean_path(source);
-		if (source.length() == 0)
-			source = sock.get_parser().get_index();
-		source = sock.get_parser().get_root() + source;
-		send_html(*fd, &source[0], sock, data);
-		std::cout<<"done getting"<<std::endl;
-		return 1;
-	}
+		return (method_get(fd, sock, data));
 	else if (sock.get_request().get_method() == "DELETE")
-	{
-		std::cout<< "HELLO IM DELETE" <<std::endl;
-		send_header(sock, *fd, 0, NULL, data);
-		std::cout<<"done deleting"<<std::endl;
-		return 1;
-	}
+		return (method_delete(fd, sock, data));
 	return 0;
 }
 
