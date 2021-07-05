@@ -18,10 +18,13 @@ class CGI
 		std::string REMOTE_USER;
 		std::string SERVER_NAME;
 		std::string REDIRECT_STATUS;
+		char		*env[14];
 
 	public:
 		CGI();
+		~CGI();
 
+		void	set_env(char **_env);
 		void	set_PATH_INFO(std::string _PATH_INFO);
 		void	set_SERVER_PORT(std::string _SERVER_PORT);
 		void	set_SERVER_SOFTWARE(std::string _SERVER_SOFTWARE);

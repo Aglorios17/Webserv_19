@@ -64,30 +64,30 @@ void	CGI::set_cgi_env()
 
 char*	get_env(std::string s1, std::string s2)
 {
-	std::string res;
-
-	res = s1 + s2;
-	return (char*)res.c_str();
+	return (strdup((char*)(s1 + s2).c_str()));
 }
+
+void CGI::set_env(char **_env)
+{
+	_env[0] = (char*)"SERVER_PROTOCOL=HTTP/1.1";
+	_env[1] = get_env("REQUEST_METHOD=", REQUEST_METHOD);
+	_env[2] = get_env("PATH_INFO=", PATH_INFO);
+	_env[3] = get_env("SERVER_PORT=", SERVER_PORT);
+	_env[4] = get_env("SERVER_SOFTWARE=", SERVER_SOFTWARE);
+	_env[5] = get_env("GATEWAY_INTERFACE=", GATEWAY_INTERFACE);
+	_env[6] = get_env("SCRIPT_FILENAME=", SCRIPT_FILENAME);
+	_env[7] = get_env("PATH_TRANSLATED=", PATH_TRANSLATED);
+	_env[8] = get_env("QUERY_STRING=", QUERY_STRING);
+	_env[9] = get_env("REMOTE_ADDR=", REMOTE_ADDR);
+	_env[10] = get_env("REMOTE_USER=", REMOTE_USER);
+	_env[11] = get_env("SERVER_NAME=", SERVER_NAME);
+	_env[12] = get_env("REDIRECT_STATUS=", REDIRECT_STATUS);
+	_env[13] = NULL;
+}
+
 int	CGI::execute_cgi()
 {
-	char *env[14]; 
-
-	env[0] = (char*)"SERVER_PROTOCOL=HTTP/1.1";
-	env[1] = get_env("REQUEST_METHOD=", REQUEST_METHOD);
-	env[2] = get_env("PATH_INFO=", PATH_INFO);
-	env[3] = get_env("SERVER_PORT=", SERVER_PORT);
-	env[4] = get_env("SERVER_SOFTWARE=", SERVER_SOFTWARE);
-	env[5] = get_env("GATEWAY_INTERFACE=", GATEWAY_INTERFACE);
-	env[6] = get_env("SCRIPT_FILENAME=", SCRIPT_FILENAME);
-	env[7] = get_env("PATH_TRANSLATED=", PATH_TRANSLATED);
-	env[8] = get_env("QUERY_STRING=", QUERY_STRING);
-	env[9] = get_env("REMOTE_ADDR=", REMOTE_ADDR);
-	env[10] = get_env("REMOTE_USER=", REMOTE_USER);
-	env[11] = get_env("SERVER_NAME=", SERVER_NAME);
-	env[12] = get_env("REDIRECT_STATUS=", REDIRECT_STATUS);
-	env[13] = NULL;
-	
+	set_env(&env[0]);
 	return (0);
 }
 
@@ -131,6 +131,26 @@ CGI&	CGI::operator=(CGI& ref)
 		REMOTE_USER = ref.REMOTE_USER; 
 		SERVER_NAME = ref.SERVER_NAME; 
 		REDIRECT_STATUS = ref.REDIRECT_STATUS; 
+		ref.set_env(&env[0]);
 
 		return *this;
+}
+
+void	ft_freetab(char **tabs)
+{
+	int a;
+
+	a = 0;
+	while (tabs[a])
+	{
+		free(tabs[a]);
+		tabs[a] = NULL;
+		a++;
+	}
+	tabs = NULL;
+}
+
+CGI::~CGI(void)
+{
+	ft_freetab(env);
 }
