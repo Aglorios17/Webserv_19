@@ -104,6 +104,7 @@ int	send_header(Socket &sock, int fd, int size, char *type, t_data *data);
 /*
  * method 
  */
+
 bool method_error(int *fd, Socket &sock, t_data *data);
 bool method_get(int *fd, Socket &sock, t_data *data);
 bool method_post(int *fd, Socket &sock, t_data *data);
@@ -149,11 +150,13 @@ void	delete_last(struct poll * poll);
  * UTILS
  */
 
-void	msleep(int tms);
-void	clean_path(std::string &path);
-bool	file_exists(char const* name);
-std::string *str_add_back(std::string *tab, std::string add);
-int *int_add_back(int *tab, int add);
+void		msleep(int tms);
+void		clean_path(std::string &path);
+bool		file_exists(char const* name);
+std::string	*str_add_back(std::string *tab, std::string add);
+int			*int_add_back(int *tab, int *add);
+int			*int_in_tab(int *tab, int add, int size);
 std::string get_time(t_data *data);
+std::string	bypass_tab(char *str);
 
 #endif

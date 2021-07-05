@@ -28,7 +28,7 @@ class Parser
 		std::string	_index;
 		std::string	_error_page;
 //		int	_queue;
-		int	_listen_port;
+		int	*_listen_port;
 		int _timeout;
 		std::string	_host_address;
 		std::string	_server_name;
@@ -64,10 +64,11 @@ class Parser
 		bool server_parser(std::string *tab_conf, int size_file);
 		bool location_parser(std::string *tab_conf, int start, int end);
 		int int_val(std::string cmp, std::string cmd);
+		int *int_tab_val(std::string cmp, std::string cmd);
 		bool client_body_size_check(std::string tab);
 		std::string str_val(std::string cmp, std::string cmd);
 		std::string *stotab(void);
-		int	get_port(void) {return (_listen_port);}
+		int	*get_port(void) {return (_listen_port);}
 		int	get_timeout(void) {return (_timeout);}
 		int get_client_max_body_size(void) {return (_client_max_body_size);}
 		std::string get_domain(void) {return (_host_address);}

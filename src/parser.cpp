@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/webserver.h"
+#include "../includes/webserver.h"
 
 /* It could be possible to implement 
  * more compatibilities see:
@@ -36,6 +36,45 @@ int	end_line(int i, std::string cmp)
 		i++;
 	}
 	return (1);
+}
+
+int *Parser::int_tab_val(std::string cmp, std::string cmd)
+{
+	char *token = strtok(&cmp[0], " ");
+	int i = 0;
+	bool end = 0;
+	int	*tab = NULL;
+	while (token != NULL)
+	{
+		if (end)
+			return (NULL);
+		std::string tok = bypass_tab(token);
+		if (tok == ";")
+			end = 1;
+		else if (i == 0 && tok != cmd)
+			return (0);
+		else if (i != 0)
+		{
+			if (tok.find(";") != std::string::npos)
+			{
+				for (size_t y = 0; y < tok.size(); y++)
+					if (!isdigit(tok[y]) && (tok[y] != ';' && !tok[y + 1]))
+						return (NULL);
+				end = 1;
+			}
+			else
+				for (size_t y = 0; y < tok.size(); y++)
+					if (!isdigit(tok[y]))
+						return (NULL);
+			if (tab == NULL)
+				tab = int_in_tab(NULL, std::stoi(tok), 1);
+			else
+				tab = int_in_tab(tab, std::stoi(tok), i);
+		}
+		i++;
+		token = strtok(NULL, " ");
+	}
+	return (tab);
 }
 
 int Parser::int_val(std::string cmp, std::string cmd)
@@ -167,9 +206,20 @@ bool Parser::client_body_size_check(std::string tab)
 bool Parser::put_data(std::string tab, int cgi)
 {
 	if (tab.find("listen") != std::string::npos)
-	{	
-		if (_listen_port != 0 || !(_listen_port = int_val(tab, "listen")))
-			return (0);
+	{
+		if (_listen_port != NULL)
+		{
+			int *port_tab = 0;
+			if (!(port_tab = int_tab_val(tab, "listen")))
+				return (0);
+			_listen_port = int_add_back(_listen_port, port_tab);
+			delete[] port_tab;
+		}
+		else
+		{
+			if (!(_listen_port = int_tab_val(tab, "listen")))
+				return (0);
+		}
 	}
 	else if (tab.find("timeout") != std::string::npos)
 	{	
@@ -208,15 +258,6 @@ bool Parser::put_data(std::string tab, int cgi)
 			return (0);
 	}
 	return (1);
-}
-
-std::string bypass_tab(char *str)
-{
-	std::string string;
-	for (int y = 0; str[y]; y++)
-		if (str[y] != '\t')
-			string += str[y];
-	return (string);
 }
 
 bool location_end(std::string *tab_conf, int end)
@@ -309,7 +350,10 @@ bool Parser::save_data(void)
 		return (0);
 	if (!server_parser(tab_conf, size_file))
 		return (0);
-	std::cout << "PORT : " << _listen_port << std::endl;
+	std::cout << "PORT : ";
+	for (int i = 0; _listen_port[i] ; i++)
+		std::cout << _listen_port[i] << " ";
+	std::cout << std::endl;
 	std::cout << "Timeout : " << _timeout << std::endl;
 	std::cout << "Server_name : " << _server_name << std::endl;
 	std::cout << "client_max_body_size : "<< _client_max_body_size << std::endl;

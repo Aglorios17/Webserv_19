@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/webserver.h"
+#include "../includes/webserver.h"
 
 void msleep(int tms)
 {
@@ -52,14 +52,32 @@ std::string *str_add_back(std::string *tab, std::string add)
 	return (ret);
 }
 
-int *int_add_back(int *tab, int add)
+int *int_in_tab(int *tab, int add, int size)
 {
-	int length = sizeof(&tab)/sizeof(tab[0]);
-	int *ret = new int[length + 1];
+	int length = size - 1;
+	int *ret = new int[size];
 	for (int i = 0; i < length; i++)
 		ret[i] = tab[i];
-	ret[length + 1] = add;
+	ret[length] = add;
 	delete[] tab;
+	return (ret);
+}
+
+int *int_add_back(int *tab, int *add)
+{
+	int length = sizeof(&tab)/sizeof(tab[0]);
+	int size_add = sizeof(&add)/sizeof(add[0]);
+	int *ret = new int[length + size_add];
+	int a = 0;
+	for (int i = 0; i < length + size_add; i++)
+	{
+		if (i < length)
+			ret[i] = tab[i];
+		else
+			ret[i] = add[a++];
+	}
+	delete[] tab;
+	delete[] add;
 	return (ret);
 }
 
@@ -118,4 +136,13 @@ std::string get_time(t_data *data)
 	}
 	time += add;
 	return (time);
+}
+
+std::string bypass_tab(char *str)
+{
+	std::string string;
+	for (int y = 0; str[y]; y++)
+		if (str[y] != '\t')
+			string += str[y];
+	return (string);
 }

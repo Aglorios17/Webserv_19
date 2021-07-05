@@ -49,16 +49,16 @@ fclean: clean
 	rm ./client | true
 
 run: all
-	./webserver src/includes/conf/tester.conf
+	./webserver includes/conf/tester.conf
 client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
-	echo "./webserver src/includes/conf/tester.conf"
+	echo "./webserver includes/conf/tester.conf"
 valgrind: all
-	valgrind ./webserver src/includes/conf/tester.conf
+	valgrind ./webserver includes/conf/tester.conf
 tester:
-	chmod +x ./src/includes/static/tester/tester
-	./src/includes/static/tester/tester http://localhost:8080
-#	./src/includes/static/tester/tester http://localhost:7777
+	chmod +x includes/static/tester/tester
+	includes/static/tester/tester http://localhost:8080
+#	includes/static/tester/tester http://localhost:7777
 
 
 re:	fclean all

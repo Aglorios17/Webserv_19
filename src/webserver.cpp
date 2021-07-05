@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/webserver.h"
+#include "../includes/webserver.h"
 
 int main(int argc, char **argv, char **env)
 {
@@ -40,7 +40,8 @@ int main(int argc, char **argv, char **env)
 		std::cout << "INVALID IP" << std::endl;
 		return (0);
 	}
-	Socket	socket(ip, SOCK_STREAM, 0, parser.get_port(), INADDR_ANY, parser.get_timeout());	
+	int *port = parser.get_port();
+	Socket	socket(ip, SOCK_STREAM, 0, port[0], INADDR_ANY, parser.get_timeout());	
 	socket.set_parser(parser);
 	address = new struct sockaddr_in;
 
