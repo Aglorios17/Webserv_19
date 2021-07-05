@@ -10,6 +10,7 @@ bool method_error(int *fd, Socket &sock, t_data *data)
 
 bool method_get(int *fd, Socket &sock, t_data *data)
 {
+	std::cout<< "HELLO IM GET" <<std::endl;
 	std::string source = sock.get_request().get_arg_method();
 	clean_path(source);
 	if (source.length() == 0)
@@ -23,6 +24,17 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 bool method_post(int *fd, Socket &sock, t_data *data)
 {
 	std::cout<< "HELLO IM POST" <<std::endl;
+	std::string method = sock.get_request().get_arg_method();
+	clean_path(method);
+	method = sock.get_parser().get_root() + method;
+
+	std::fstream file;
+	file.open(method, std::ios::out);
+	if (!file)
+		data->status = 404;
+	else
+		file << "POST BODY HERE";
+	file.close();
 	send_header(sock, *fd, 0, NULL, data);
 	std::cout<<"done posting"<<std::endl;
 	return (1);
@@ -31,6 +43,13 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 bool method_delete(int *fd, Socket &sock, t_data *data)
 {
 	std::cout<< "HELLO IM DELETE" <<std::endl;
+	std::string method = sock.get_request().get_arg_method();
+	clean_path(method);
+	std::string file = sock.get_parser().get_root() + method;
+
+	std::cout<< "file to delete :" << file <<std::endl;
+	if (std::remove(&file[0]) != 0)
+		data->status = 404;
 	send_header(sock, *fd, 0, NULL, data);
 	std::cout<<"done deleting"<<std::endl;
 	return (1);
