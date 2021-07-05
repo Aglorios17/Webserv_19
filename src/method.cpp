@@ -24,9 +24,11 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 bool method_post(int *fd, Socket &sock, t_data *data)
 {
 	std::cout<< "HELLO IM POST" <<std::endl;
-	std::string method = sock.get_request().get_arg_method();
-	clean_path(method);
-	method = sock.get_parser().get_root() + method;
+	std::string type = sock.get_request().get_content_type();
+	std::string method = sock.get_parser().get_root();
+	for(int i = 0; type[i] && type[i] != '/'; i++)
+		method += type[i];
+	std::cout << "file name:" << method << std::endl;
 
 	std::fstream file;
 	file.open(method, std::ios::out);
