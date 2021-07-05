@@ -58,7 +58,5 @@ valgrind: all
 tester: all
 	chmod +x ./tester/tester
 	./tester/tester http://localhost:8080
-#	includes/static/tester/tester http://localhost:7777
-
 
 re:	fclean all
