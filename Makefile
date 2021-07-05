@@ -55,9 +55,9 @@ client: all
 	echo "./webserver includes/conf/tester.conf"
 valgrind: all
 	valgrind ./webserver includes/conf/tester.conf
-tester:
-	chmod +x includes/static/tester/tester
-	includes/static/tester/tester http://localhost:8080
+tester: all
+	chmod +x ./tester/tester
+	./tester/tester http://localhost:8080
 #	includes/static/tester/tester http://localhost:7777
 
 
