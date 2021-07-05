@@ -4,6 +4,8 @@
 # include "webserver.h"
 # include "request.hpp"
 # include "parser.hpp"
+# include "cgi.hpp"
+
 
 class Socket
 {
@@ -18,9 +20,10 @@ class Socket
 		int	_port;
 		int	_interface;
 		int	_socket_fd;
-		int _timeout;
+		int	_timeout;
 		Request _request;
 		Parser	_parser;
+		CGI _CGI;
 
 	public:
 		Socket();
@@ -29,13 +32,14 @@ class Socket
 				int interface, int timeout);
 		~Socket();
 
-		int			get_domain();
-		int			get_type();
-		int			get_protocol();
-		int			get_port();
-		int			get_interface();
-		int			get_fd();
-		int			get_timeout();
+		int		get_domain();
+		int		get_type();
+		int		get_protocol();
+		int		get_port();
+		int		get_interface();
+		int		get_fd();
+		int		get_timeout();
+		void		set_cgi(CGI &ref) {_CGI = ref;}
 		void		set_request(Request & ref) {_request = ref;}
 		Request		get_request(void) {return (_request);}
 		void		set_parser(Parser & ref) {_parser = ref;}

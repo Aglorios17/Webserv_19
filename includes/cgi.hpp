@@ -1,10 +1,13 @@
-#include "./webserver.h"
+#ifndef CGI_HPP
+# define CGI_HPP
 
+# include "./webserver.h"
 
-class CGI
+class CGI 
 {
 	private:
 		std::string PATH_INFO;
+		std::string REQUEST_METHOD;
 		std::string SERVER_PORT;
 		std::string SERVER_SOFTWARE;
 		std::string GATEWAY_INTERFACE;
@@ -29,7 +32,11 @@ class CGI
 		void	set_REMOTE_ADDR(std::string _REMOTE_ADDR);
 		void	set_REMOTE_USER(std::string _REMOTE_USER);
 		void	set_SERVER_NAME(std::string _SERVER_NAME);
+		void	set_REQUEST_METHOD(std::string _REQUEST_METHOD);
 		void	set_REDIRECT_STATUS(std::string _REDIRECT_STATUS);
-		void	set_cgi_env(Parser &parser, Request &request)
+		void	set_cgi_env();
 		int	execute_cgi();	
-}
+		CGI	&operator=(CGI& ref);
+};
+
+#endif

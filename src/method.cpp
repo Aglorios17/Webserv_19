@@ -8,20 +8,24 @@ bool method_error(int *fd, Socket &sock, t_data *data)
 	return (1);
 }
 
-bool method_get(int *fd, Socket &sock, t_data *data)
+std::string get_path_info(Socket &sock, int method)
 {
-	std::cout<< "HELLO IM GET" <<std::endl;
-
-	//-------------------- Setting PATH_INFO
 	std::string source = sock.get_request().get_arg_method();
 
 	clean_path(source);
-	if (source.length() == 0)
+	if (source.length() == 0 && method != 0)
 		source = sock.get_parser().get_index();
 
 	source = sock.get_parser().get_root() + source;//PATH_INFO
-	//-------------------- 
 
+	return source;
+}
+
+bool method_get(int *fd, Socket &sock, t_data *data)
+{
+	std::cout<< "GET METHOD: " <<std::endl;
+
+	std::string source = get_path_info(sock, 1);
 	std::cout<<">CGI PATH: "<< source << std::endl;
 
 	send_html(*fd, &source[0], sock, data);//should send_file
@@ -31,22 +35,17 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 
 bool method_post(int *fd, Socket &sock, t_data *data)
 {
-	std::cout<< "HELLO IM POST" <<std::endl;
+	std::cout<< "POST METHOD: " <<std::endl;
 
-	//-------------------- Setting PATH_INFO
-	std::string type = sock.get_request().get_content_type();//get_arg_method
-	std::string method = sock.get_parser().get_root();
-	for(int i = 0; type[i] && type[i] != '/'; i++)
-		method += type[i];
-	std::cout << ">>>>>>>>>>>>>>>file name:" << method << std::endl;
-	//-------------------- 
+	std::string path_info = get_path_info(sock, 0);
+	std::cout << ">>>>>>>>>>>>>>>file name:" << data << std::endl;
 
 	std::fstream file;
-	file.open(method, std::ios::out);
-	if (!file)
-		data->status = 404;
+	file.open(path_info, std::ios::out);
+	if (!file)// Check whether exist or empty (404 or 405)
+		data->status = 405;
 	else
-		file << "POST BODY HERE";
+		file << 0;
 	file.close();
 	send_header(sock, *fd, 0, NULL, data);
 	std::cout<<"done posting"<<std::endl;
@@ -56,17 +55,13 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 bool method_delete(int *fd, Socket &sock, t_data *data)
 {
 	std::cout<< "HELLO IM DELETE" <<std::endl;
-	//
-	//-------------------- Setting PATH_INFO
-	std::string method = sock.get_request().get_arg_method();
-	clean_path(method);
-	std::string file = sock.get_parser().get_root() + method;
 
-	std::cout<< "file to delete :" << file <<std::endl;
-	//-------------------- 
+	std::string path_info = get_path_info(sock, 0);
+	std::cout << ">>>>>>>>>>>>>>>file name:" << path_info << std::endl;
 
-	if (std::remove(&file[0]) != 0)
-		data->status = 404;
+// Check whether exist or empty (404 or 405) (cant delete whole dir or sensitive files
+	if (std::remove(&path_info[0]) != 0)	
+		data->status = 405;
 	send_header(sock, *fd, 0, NULL, data);
 	std::cout<<"done deleting"<<std::endl;
 	return (1);

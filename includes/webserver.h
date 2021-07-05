@@ -48,6 +48,7 @@
 #include "socket.h"
 #include "parser.hpp"
 #include "request.hpp"
+#include "cgi.hpp"
 
 #define POLLFD struct pollfd
 #define PORT 8080
@@ -57,9 +58,9 @@
 
 typedef struct	s_data
 {
-		char	*last;
+		char		*last;
 		int		status;
-		char	*buffer;
+		char		*buffer;
 }				t_data;
 
 bool	conf_is_valid(std::string &conf_path);

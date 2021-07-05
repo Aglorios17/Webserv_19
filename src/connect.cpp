@@ -43,6 +43,8 @@ std::string get_header_message(int status)
 			return "HTTP/1.1 206 Partial Content\n";
 		case 404:
 			return "HTTP/1.1 404 File Not Found\n";
+		case 405:
+			return "HTTP/1.1 405 Method Not Allowed\n";
 		case 411:
 			return "HTTP/1.1 411 Length Required\n";
 		default:

@@ -17,6 +17,7 @@ SRC_DIR = src
 CC = clang++
 
 SRCS  = $(SRC_DIR)/parser.cpp\
+		$(SRC_DIR)/cgi.cpp\
 		$(SRC_DIR)/request.cpp\
 		$(SRC_DIR)/utils.cpp\
 		$(SRC_DIR)/socket.cpp\
@@ -56,7 +57,7 @@ client: all
 valgrind: all
 	valgrind ./webserver includes/conf/tester.conf
 tester: all
-	chmod +x ./tester/tester
-	./tester/tester http://localhost:8080
+	chmod +x ./tester/old_tester
+	./tester/old_tester http://localhost:8080
 
 re:	fclean all
