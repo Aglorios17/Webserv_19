@@ -156,10 +156,12 @@ void		msleep(int tms);
 void		clean_path(std::string &path);
 bool		file_exists(char const* name);
 std::string	*str_add_back(std::string *tab, std::string add);
-int			*int_add_back(int *tab, int *add);
-int			*int_in_tab(int *tab, int add, int size);
-std::string get_time(t_data *data);
+int		*int_add_back(int *tab, int *add);
+int		*int_in_tab(int *tab, int add, int size);
+std::string	get_time(t_data *data);
 std::string	bypass_tab(char *str);
 int			hexa_to_decimal(std::string value);
+std::string	get_extension(std::string file);
+std::string strtrim(std::string &s,char c);
 
 #endif

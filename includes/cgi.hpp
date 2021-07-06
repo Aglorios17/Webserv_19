@@ -2,6 +2,8 @@
 # define CGI_HPP
 
 # include "./webserver.h"
+# include "./parser.hpp"
+#include "./request.hpp"
 
 class CGI 
 {
@@ -22,7 +24,7 @@ class CGI
 
 	public:
 		CGI();
-		~CGI();
+		CGI(Request request, Parser parser);
 
 		void	set_env(char **_env);
 		void	set_PATH_INFO(std::string _PATH_INFO);
@@ -37,8 +39,11 @@ class CGI
 		void	set_SERVER_NAME(std::string _SERVER_NAME);
 		void	set_REQUEST_METHOD(std::string _REQUEST_METHOD);
 		void	set_REDIRECT_STATUS(std::string _REDIRECT_STATUS);
-		void	set_cgi_env();
+		void	set_var(Request& request, Parser& parser);
+		void	init_var();
 		int	execute_cgi();	
+
+		~CGI();
 		CGI	&operator=(CGI& ref);
 };
 
