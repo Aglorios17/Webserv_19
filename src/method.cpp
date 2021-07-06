@@ -56,7 +56,7 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	 * path/to/file is forbidden -> 405
 	 */
 
-	if (path_info.empty())// Check whether exist or empty (404 or 405)
+	if (!file)// Check whether exist or empty (404 or 405)
 		data->status = 405;
 	else
 	{
