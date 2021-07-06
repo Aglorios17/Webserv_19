@@ -45,7 +45,10 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	if (!file)// Check whether exist or empty (404 or 405)
 		data->status = 405;
 	else
-		file << 0;
+	{
+		std::cout << "BODY : ||" << sock.get_request().get_body() << "||\n";
+		file << sock.get_request().get_body();
+	}
 	file.close();
 	send_header(sock, *fd, 0, NULL, data);
 	std::cout<<"done posting"<<std::endl;

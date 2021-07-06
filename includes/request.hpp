@@ -37,6 +37,7 @@ class Request
 		std::string	_user_agent;
 		std::string	_transfer_encoding;
 		std::string	_accept_encoding;
+		std::string _body;
 		int			_size_buf;
 		int			_status;
 	public:
@@ -60,17 +61,18 @@ class Request
 				_transfer_encoding = cpy._transfer_encoding;
 				_accept_encoding = cpy._accept_encoding;
 				_cgi = cpy._cgi;
+				_body = cpy._body;
 			}
 			return (*this);
 		}
 		void		init(void);
 		bool		request_data(void);
-		int		add_request_data(std::string tab);
+		int			add_request_data(std::string tab);
 		bool		request_method_check(std::string line);
 		void		add(char *buffer);
 		std::string	*stotab(void);
 		std::string str_ret(std::string str, std::string cmd);
-		int		int_ret(std::string str, std::string cmd);
+		int			int_ret(std::string str, std::string cmd);
 		std::string	get_host(void) {return (_host);}
 		std::string	get_method(void) {return (_method);}
 		std::string	get_arg_method(void) {return (_arg_method);}
@@ -79,7 +81,8 @@ class Request
 		std::string	get_referer(void) {return (_referer);}
 		std::string	get_connection(void) {return (_connection);}
 		std::string	get_content_type(void) {return (_content_type);}
-		int		get_content_length(void)
+		std::string get_body(void) {return (_body);}
+		int			get_content_length(void)
 		{
 			if (_content_length != "")
 				return (stoi(_content_length));
@@ -90,7 +93,7 @@ class Request
 		std::string	get_accept_encoding(void) {return (_accept_encoding);}
 		std::string	get_transfer_encoding(void) {return (_transfer_encoding);}
 		std::string	get_user_agent(void) {return (_user_agent);}
-		int		get_status(void) {return (_status);}
+		int			get_status(void) {return (_status);}
 };
 
 #endif

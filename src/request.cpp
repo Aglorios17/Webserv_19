@@ -191,7 +191,18 @@ int Request::add_request_data(std::string tab)
 		if ((_connection = str_ret(tab, "Connection:")) == "")
 			return (400);
 	}
+	else if (tab.find(":") == std::string::npos)
+		return (1);
 	return (200);
+}
+
+std::string stock_body(std::string *tab, int y, int max)
+{
+	std::string body;
+
+	for (int i = y; i < max; i++)
+		body += tab[i] + "\n";
+	return (body);
 }
 
 void Request::init(void)
@@ -224,23 +235,31 @@ bool Request::request_data(void)
 	if (!tab)
 	{
 		_status = 204;
-		std::cout << "STATUS CODE : ||" << _status << "||\n";
 		return (0);
 	}
 	if (!request_method_check(tab[0]))
-	{
-		std::cout << "1STATUS CODE : ||" << _status << "||\n";
 		return (0);
-	}
-	for (int y = 1; y < _size_buf; y++)
+	for (int y = 1; y < _size_buf - 1; y++)
 	{
 		if ((_status = add_request_data(tab[y])) != 200)
 		{
-			std::cout << "2STATUS CODE : ||" << _status << "||\n";
-			return (0);
+			if (_status == 1)
+			{
+				if (_method == "POST")
+				{
+					_body = stock_body(tab, y, _size_buf - 1);
+					_status = 200;
+				}
+				else
+				{
+					_status = 400;
+					return (0);
+				}
+			}
+			else
+				return (0);
 		}
 	}
-	std::cout << "3STATUS CODE : ||" << _status << "||\n";
 	delete[] tab;
 	return (1);
 }
