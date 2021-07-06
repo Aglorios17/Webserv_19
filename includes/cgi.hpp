@@ -37,7 +37,7 @@ class CGI
 		void	set_SERVER_NAME(std::string _SERVER_NAME);
 		void	set_REQUEST_METHOD(std::string _REQUEST_METHOD);
 		void	set_REDIRECT_STATUS(std::string _REDIRECT_STATUS);
-		void	set_cgi_env();
+		void	set_cgi_env(Request& request, Parser& parser);
 		int	execute_cgi();	
 		CGI	&operator=(CGI& ref);
 };

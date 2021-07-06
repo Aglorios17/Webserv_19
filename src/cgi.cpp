@@ -51,7 +51,7 @@ CGI::CGI()
 	REDIRECT_STATUS = "";
 }
 
-void	CGI::set_cgi_env()
+void	CGI::set_cgi_env(Request& request, Parser& parser)
 {
 /*
  * Should get all variable from webserv
@@ -59,7 +59,36 @@ void	CGI::set_cgi_env()
  *
  * This function should be called everytime a new request is set.
  */
-	
+	char cwd[256];
+
+	getcwd(cwd, 256);
+	std::string full_path(cwd);
+	full_path += "/www";
+
+	REQUEST_METHOD = request.get_method();
+	PATH_INFO = request.get_arg_method();
+	SERVER_PORT = parser.get_port()[0];
+	SERVER_SOFTWARE = "webserver/1.0";
+	GATEWAY_INTERFACE = "CGI/1.1";
+	SCRIPT_FILENAME = parser.get_cgi_path();
+	PATH_TRANSLATED = (char*)full_path.c_str();
+	std::string referer = request.get_referer();
+	if (referer.find('?') != std::string::npos)
+		QUERY_STRING = referer.substr(referer.find('?') + 1);
+	SERVER_NAME = "http://localhost";
+	REDIRECT_STATUS =  "200";
+
+	std::cout<<"REQUEST_METHOD:	["<<REQUEST_METHOD<<"]"<<std::endl;
+	std::cout<<"PATH_INFO:		["<<PATH_INFO<<"]"<<std::endl;
+	std::cout<<"SERVER_PORT		["<<SERVER_PORT<<"]"<<std::endl;
+	std::cout<<"GATEWAY_INTERFACE	["<<GATEWAY_INTERFACE<<"]"<<std::endl;
+	std::cout<<"SCRIPT_FILENAME	["<<SCRIPT_FILENAME<<"]"<<std::endl;
+	std::cout<<"PATH_TRANSLATED	["<<PATH_TRANSLATED<<"]"<<std::endl;
+	std::cout<<"QUERY_STRING	["<<QUERY_STRING<<"]"<<std::endl;
+	std::cout<<"SERVER_NAME		["<<SERVER_NAME<<"]"<<std::endl;
+	std::cout<<"REDIRECT_STATUS	["<<REDIRECT_STATUS<<"]"<<std::endl;
+	//REMOTE_ADDR = 
+	//REMOTE_USER = 
 }
 
 char*	get_env(std::string s1, std::string s2)
@@ -88,6 +117,7 @@ void CGI::set_env(char **_env)
 int	CGI::execute_cgi()
 {
 	set_env(&env[0]);
+
 	return (0);
 }
 
