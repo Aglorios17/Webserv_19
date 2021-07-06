@@ -34,6 +34,7 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 	{
 		std::cout<<"LAUNCH CGI!!!"<<std::endl;	
 		CGI cgi(sock.get_request(), sock.get_parser());
+		cgi.execute_cgi();
 	}		
 
 	send_html(*fd, &source[0], sock, data);//should send_file

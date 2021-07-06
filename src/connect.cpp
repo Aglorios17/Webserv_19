@@ -116,22 +116,6 @@ void set_env(Socket &sock, std::string path_info)
 	setenv("PATH_INFO", PATH_INFO, 1);
 }
 
-void cgi_handler(std::string cgi, Socket &sock, std::string path_info)
-{
-	set_env(sock, path_info);
-	std::cout<<"cgi------------------>"<<cgi.c_str()<<std::endl;
-	int pid = 0;
-	if ((pid = fork()) == 0)
-	{
-		system(cgi.c_str());//<-----fork 
-		exit(0);	
-	}
-	char buffer[BUFFER_SIZE];
-	std::cout<<"going in"<<std::endl;
-	read(1, buffer, BUFFER_SIZE);
-	std::cout<<"____________________cgi output: "<<buffer<<std::endl;
-	return ;
-}
 
 
 void send_html(int fd, char *path, Socket &sock, t_data *data)
@@ -156,19 +140,19 @@ void send_html(int fd, char *path, Socket &sock, t_data *data)
 		strcpy(path, &error[0]);
 	}
 	std::string s_path(path);
-	std::string cgi = sock.get_parser().get_cgi_extension();
-
+//	std::string cgi = sock.get_parser().get_cgi_extension();
+//
 	std::string s_file = s_path.substr(s_path.find_last_of('/') + 1);
-
-	std::string cgi_extension = cgi.substr(cgi.find_last_of('/') + 1);
-	std::string cgi_path = sock.get_parser().get_cgi_path();
-
-
-	if (get_extension(cgi_extension).compare(get_extension(s_file)) == 0)//check cgi
-	{
-		cgi_handler(cgi_path, sock, path);
-		return ;
-	}
+//
+//	std::string cgi_extension = cgi.substr(cgi.find_last_of('/') + 1);
+//	std::string cgi_path = sock.get_parser().get_cgi_path();
+//
+//
+//	if (get_extension(cgi_extension).compare(get_extension(s_file)) == 0)//check cgi
+//	{
+//		cgi_handler(cgi_path, sock, path);
+//		return ;
+//	}
 
 	file.open(path);
 

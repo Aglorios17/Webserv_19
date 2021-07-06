@@ -61,6 +61,8 @@ void	CGI::set_var(Request& request, Parser& parser)
 		QUERY_STRING = referer.substr(referer.find('?') + 1);
 	SERVER_NAME = "http://localhost";
 	REDIRECT_STATUS =  "200";
+
+
 //------------------------------------
 	std::cout<<"REQUEST_METHOD:["<<REQUEST_METHOD<<"]"<<std::endl;
 	std::cout<<"PATH_INFO:	["<<PATH_INFO<<"]"<<std::endl;
@@ -124,7 +126,64 @@ void CGI::set_env(char **_env)
 	_env[13] = NULL;
 }
 
-int	CGI::execute_cgi() { return (0); }
+//void cgi_handler(std::string cgi, Socket &sock, std::string path_info)
+//{
+//	set_env(&env[0]);
+//	std::cout<<"cgi------------------>"<<cgi.c_str()<<std::endl;
+//	int pid = 0;
+//	if ((pid = fork()) == 0)
+//	{
+//		system(cgi.c_str());//<-----fork 
+//		exit(0);	
+//	}
+//	char buffer[BUFFER_SIZE];
+//	std::cout<<"going in"<<std::endl;
+//	read(1, buffer, BUFFER_SIZE);
+//	std::cout<<"____________________cgi output: "<<buffer<<std::endl;
+//	return ;
+//}
+
+int	CGI::execute_cgi() 
+{ 
+	int fd[2];
+
+	int fdin = dup(STDIN_FILENO);
+	int fdout = dup(STDOUT_FILENO);
+
+	char buffer[BUFFER_SIZE + 1];
+
+	pipe(fd);	
+	if (!fork())
+	{
+		dup2(fd[0], STDOUT_FILENO);
+		dup2(fd[1], STDIN_FILENO);
+
+		close(fd[0]);
+		execve(SCRIPT_FILENAME.c_str(), NULL, env);
+		exit(0);
+	}
+	close(fd[1]);
+	dup2(fd[0], 1);
+	
+	int ret = 1;
+	std::string body = "";
+
+	while(ret > 0)
+	{
+		memset(buffer, 0, BUFFER_SIZE);
+	    	ret = read(fd[0], buffer, BUFFER_SIZE);
+	      	body += buffer;
+	}
+
+	dup2(fdin, STDIN_FILENO);
+	dup2(fdout, STDOUT_FILENO);
+
+	std::cout<<"CGI OUTPUT ==================\n"<<std::endl;
+	std::cout<<buffer<<std::endl;
+	std::cout<<"==================\n"<<std::endl;
+
+	return (0);
+}
 
 void	CGI::set_PATH_INFO(std::string _PATH_INFO) { PATH_INFO = _PATH_INFO; }
 
