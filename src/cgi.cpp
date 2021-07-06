@@ -35,23 +35,7 @@ char *join(char *s1, char *s2)
 	return res;
 }
 
-CGI::CGI()
-{
-	REQUEST_METHOD = "";
-	PATH_INFO = "";
-	SERVER_PORT = "";
-	SERVER_SOFTWARE = "";
-	GATEWAY_INTERFACE = "";
-	SCRIPT_FILENAME = "";
-	PATH_TRANSLATED = "";
-	QUERY_STRING = "";
-	REMOTE_ADDR = "";
-	REMOTE_USER = "";
-	SERVER_NAME = "";
-	REDIRECT_STATUS = "";
-}
-
-void	CGI::set_cgi_env(Request& request, Parser& parser)
+void	CGI::set_var(Request& request, Parser& parser)
 {
 /*
  * Should get all variable from webserv
@@ -77,21 +61,47 @@ void	CGI::set_cgi_env(Request& request, Parser& parser)
 		QUERY_STRING = referer.substr(referer.find('?') + 1);
 	SERVER_NAME = "http://localhost";
 	REDIRECT_STATUS =  "200";
-
-	std::cout<<"REQUEST_METHOD:	["<<REQUEST_METHOD<<"]"<<std::endl;
-	std::cout<<"PATH_INFO:		["<<PATH_INFO<<"]"<<std::endl;
-	std::cout<<"SERVER_PORT		["<<SERVER_PORT<<"]"<<std::endl;
-	std::cout<<"GATEWAY_INTERFACE	["<<GATEWAY_INTERFACE<<"]"<<std::endl;
-	std::cout<<"SCRIPT_FILENAME	["<<SCRIPT_FILENAME<<"]"<<std::endl;
-	std::cout<<"PATH_TRANSLATED	["<<PATH_TRANSLATED<<"]"<<std::endl;
-	std::cout<<"QUERY_STRING	["<<QUERY_STRING<<"]"<<std::endl;
-	std::cout<<"SERVER_NAME		["<<SERVER_NAME<<"]"<<std::endl;
-	std::cout<<"REDIRECT_STATUS	["<<REDIRECT_STATUS<<"]"<<std::endl;
+//------------------------------------
+	std::cout<<"REQUEST_METHOD:["<<REQUEST_METHOD<<"]"<<std::endl;
+	std::cout<<"PATH_INFO:	["<<PATH_INFO<<"]"<<std::endl;
+	std::cout<<"SERVER_PORT	["<<SERVER_PORT<<"]"<<std::endl;
+	std::cout<<"GATEWAY_INTERFACE["<<GATEWAY_INTERFACE<<"]"<<std::endl;
+	std::cout<<"SCRIPT_FILENAME["<<SCRIPT_FILENAME<<"]"<<std::endl;
+	std::cout<<"PATH_TRANSLATED["<<PATH_TRANSLATED<<"]"<<std::endl;
+	std::cout<<"QUERY_STRING ["<<QUERY_STRING<<"]"<<std::endl;
+	std::cout<<"SERVER_NAME	["<<SERVER_NAME<<"]"<<std::endl;
+	std::cout<<"REDIRECT_STATUS ["<<REDIRECT_STATUS<<"]"<<std::endl;
 	//REMOTE_ADDR = 
 	//REMOTE_USER = 
+//------------------------------------
 }
 
-char*	get_env(std::string s1, std::string s2)
+void CGI::init_var()
+{
+	REQUEST_METHOD = "";
+	PATH_INFO = "";
+	SERVER_PORT = "";
+	SERVER_SOFTWARE = "";
+	GATEWAY_INTERFACE = "";
+	SCRIPT_FILENAME = "";
+	PATH_TRANSLATED = "";
+	QUERY_STRING = "";
+	REMOTE_ADDR = "";
+	REMOTE_USER = "";
+	SERVER_NAME = "";
+	REDIRECT_STATUS = "";
+}
+
+CGI::CGI() { init_var(); }
+
+CGI::CGI(Request request, Parser parser)
+{
+	init_var();
+	set_var(request, parser);
+	set_env(&env[0]);
+}
+
+char*	strcat(std::string s1, std::string s2)
 {
 	return (strdup((char*)(s1 + s2).c_str()));
 }
@@ -99,27 +109,22 @@ char*	get_env(std::string s1, std::string s2)
 void CGI::set_env(char **_env)
 {
 	_env[0] = (char*)"SERVER_PROTOCOL=HTTP/1.1";
-	_env[1] = get_env("REQUEST_METHOD=", REQUEST_METHOD);
-	_env[2] = get_env("PATH_INFO=", PATH_INFO);
-	_env[3] = get_env("SERVER_PORT=", SERVER_PORT);
-	_env[4] = get_env("SERVER_SOFTWARE=", SERVER_SOFTWARE);
-	_env[5] = get_env("GATEWAY_INTERFACE=", GATEWAY_INTERFACE);
-	_env[6] = get_env("SCRIPT_FILENAME=", SCRIPT_FILENAME);
-	_env[7] = get_env("PATH_TRANSLATED=", PATH_TRANSLATED);
-	_env[8] = get_env("QUERY_STRING=", QUERY_STRING);
-	_env[9] = get_env("REMOTE_ADDR=", REMOTE_ADDR);
-	_env[10] = get_env("REMOTE_USER=", REMOTE_USER);
-	_env[11] = get_env("SERVER_NAME=", SERVER_NAME);
-	_env[12] = get_env("REDIRECT_STATUS=", REDIRECT_STATUS);
+	_env[1] = strcat("REQUEST_METHOD=", REQUEST_METHOD);
+	_env[2] = strcat("PATH_INFO=", PATH_INFO);
+	_env[3] = strcat("SERVER_PORT=", SERVER_PORT);
+	_env[4] = strcat("SERVER_SOFTWARE=", SERVER_SOFTWARE);
+	_env[5] = strcat("GATEWAY_INTERFACE=", GATEWAY_INTERFACE);
+	_env[6] = strcat("SCRIPT_FILENAME=", SCRIPT_FILENAME);
+	_env[7] = strcat("PATH_TRANSLATED=", PATH_TRANSLATED);
+	_env[8] = strcat("QUERY_STRING=", QUERY_STRING);
+	_env[9] = strcat("REMOTE_ADDR=", REMOTE_ADDR);
+	_env[10] =strcat("REMOTE_USER=", REMOTE_USER);
+	_env[11] =strcat("SERVER_NAME=", SERVER_NAME);
+	_env[12] =strcat("REDIRECT_STATUS=", REDIRECT_STATUS);
 	_env[13] = NULL;
 }
 
-int	CGI::execute_cgi()
-{
-	set_env(&env[0]);
-
-	return (0);
-}
+int	CGI::execute_cgi() { return (0); }
 
 void	CGI::set_PATH_INFO(std::string _PATH_INFO) { PATH_INFO = _PATH_INFO; }
 
@@ -182,5 +187,5 @@ void	ft_freetab(char **tabs)
 
 CGI::~CGI(void)
 {
-	ft_freetab(env);
+	//ft_freetab(env);
 }

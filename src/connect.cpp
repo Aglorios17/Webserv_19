@@ -97,19 +97,6 @@ int	send_header(Socket &sock, int fd, int size, char* type, t_data *data)
 	return (ret);
 }
 
-std::string get_extension(std::string file)
-{
-	std::string type;
-	std::size_t pos = file.find('.');
-
-	if (pos == std::string::npos)
-		return file;
-	type = file.substr(pos+1);
-//	std::cout<<"pos is: "<<pos<<std::endl;
-//	std::cout<<"type is: "<<type<<std::endl;
-	return type;
-}
-
 void set_env(Socket &sock, std::string path_info)
 {
 	const char *REQUEST_METHOD;

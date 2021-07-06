@@ -12,6 +12,11 @@
 
 #include "../includes/webserver.h"
 
+std::string strtrim(std::string &s, char c)
+{
+	s.erase(0, s.find_first_not_of(c));
+	return s;
+}
 void msleep(int tms)
 {
     struct timeval tv;
@@ -79,6 +84,17 @@ int *int_add_back(int *tab, int *add)
 	delete[] tab;
 	delete[] add;
 	return (ret);
+}
+
+std::string get_extension(std::string file)
+{
+	std::string type;
+	std::size_t pos = file.find('.');
+
+	if (pos == std::string::npos)
+		return file;
+	type = file.substr(pos+1);
+	return type;
 }
 
 std::string get_time(t_data *data)
