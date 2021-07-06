@@ -65,6 +65,7 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		free(data->buffer);
 		data->buffer = strdup(&buffer[0]);
 	 	set_request(sock.get_request(), sock, data->buffer, data);
+		std::cout << "STATUS CODE : ||" << data->status << "||\n";
 	}
 	else
 	{
