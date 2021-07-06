@@ -146,3 +146,13 @@ std::string bypass_tab(char *str)
 			string += str[y];
 	return (string);
 }
+
+int hexa_to_decimal(std::string value)
+{
+	unsigned int x;   
+    std::stringstream ss;
+
+    ss << std::hex << value;
+    ss >> x;
+    return (static_cast<int>(x));
+}

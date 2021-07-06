@@ -196,12 +196,38 @@ int Request::add_request_data(std::string tab)
 	return (200);
 }
 
-std::string stock_body(std::string *tab, int y, int max)
+std::string Request::stock_body(std::string *tab, int y, int max)
 {
 	std::string body;
 
-	for (int i = y; i < max; i++)
-		body += tab[i] + "\n";
+//	std::cout << "encoding : |" << _transfer_encoding << "|"<<std::endl;
+	if (_transfer_encoding.find("chunked") == std::string::npos)
+	{
+		for (int i = y; i < max; i++)
+			body += tab[i];
+	}
+	else
+	{
+		int size;
+		for (int i = y + 1; i < max; i++)
+		{
+			size = hexa_to_decimal(tab[i]);
+			if (size == 0)
+			{
+				body += "\r\n";
+				break ;	
+			}
+			i++;
+			if (tab[i] == "")
+				break ;
+			for (int a = 0; a < size; a++)
+			{
+				if (!tab[i][a])
+					i++;
+				body += tab[i][a];
+			}
+		}
+	}
 	return (body);
 }
 
@@ -249,6 +275,7 @@ bool Request::request_data(void)
 				{
 					_body = stock_body(tab, y, _size_buf - 1);
 					_status = 200;
+					return (1);
 				}
 				else
 				{

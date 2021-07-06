@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <sstream>
 #include <string>
 #include <unistd.h>
 #include <stdlib.h>
@@ -159,5 +160,6 @@ int			*int_add_back(int *tab, int *add);
 int			*int_in_tab(int *tab, int add, int size);
 std::string get_time(t_data *data);
 std::string	bypass_tab(char *str);
+int			hexa_to_decimal(std::string value);
 
 #endif

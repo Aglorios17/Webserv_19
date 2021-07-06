@@ -73,6 +73,8 @@ class Request
 		std::string	*stotab(void);
 		std::string str_ret(std::string str, std::string cmd);
 		int			int_ret(std::string str, std::string cmd);
+		std::string	stock_body(std::string *tab, int y, int max);
+
 		std::string	get_host(void) {return (_host);}
 		std::string	get_method(void) {return (_method);}
 		std::string	get_arg_method(void) {return (_arg_method);}
