@@ -12,7 +12,7 @@
 
 #include "../includes/webserver.h"
 
-int main(int argc, char **argv, char **env)
+int main(int argc, char **argv)
 {
 	Parser					parser;
 	struct sockaddr_in*		address;
@@ -41,27 +41,36 @@ int main(int argc, char **argv, char **env)
 		return (0);
 	}
 	int *port = parser.get_port();
-	Socket	socket(ip, SOCK_STREAM, 0, port[0], INADDR_ANY, parser.get_timeout());	
-	socket.set_parser(parser);
-	address = new struct sockaddr_in;
+	int nport = parser.get_nport();
 
-	poll = (struct poll*)malloc(sizeof(struct poll));
-	init_poll_struct(poll);
+	Socket socket[nport];
 
-	add_fd_to_poll(
-					poll,
-					set_poll(
-							socket.get_fd(),
-							POLLIN,
-							O_NOFLAG));
-	configure(socket, address);
+	for (int i = 0; i < nport; i++)
+	{
+		socket[i].set_sock(ip, SOCK_STREAM, 0, port[i], INADDR_ANY, parser.get_timeout());	
 
-	bind(socket.get_fd(),
-			(struct sockaddr *)address,
-			sizeof(struct sockaddr_in));
-	(void)env;
-//	while(*env)
-//		std::cout<<*env++<<std::endl<<std::endl;
+		socket[i].set_parser(parser);
+		address = new struct sockaddr_in;
+
+		poll = (struct poll*)malloc(sizeof(struct poll));
+		init_poll_struct(poll);
+
+		add_fd_to_poll(
+				poll,
+				set_poll(
+					socket[i].get_fd(),
+					POLLIN,
+					O_NOFLAG));
+		configure(socket[i], address);
+
+		bind(socket[i].get_fd(),
+				(struct sockaddr *)address,
+				sizeof(struct sockaddr_in));
+		if (listen(socket[i].get_fd(), 1) < 0)
+			exit (EXIT_FAILURE);
+	}
+
 	run_server(socket, (struct sockaddr*)address, poll);
+
 	return (0);
 }

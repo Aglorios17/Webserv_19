@@ -171,7 +171,8 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_
 	int		*fd;
 	int		server;
 
-	server = s_poll->fds[0].fd;
+	server = sock.get_fd();
+
 	for(int i = 0; i < s_poll->nfds ; i++)
 	{
 		fd = &s_poll->fds[i].fd;
@@ -195,19 +196,23 @@ void init_data(t_data *data)
 	data->status = 0;
 }
 
-void run_server(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
+void run_server(Socket [] sock, struct sockaddr *addr, struct poll* s_poll)
 {
 	int	ret;
+	int	nport;
 	t_data data;
 
+	nport = sock[0].get_parser().get_nport();
 	init_data(&data);
-	if (listen(sock.get_fd(), 1) < 0)
-		exit (EXIT_FAILURE);
 	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
 	{
-		direct_request(sock, addr, s_poll, &data);
-		free(data.buffer);
-		data.buffer = strdup("no request");
+
+		for (int i = 0; i < nport; i++)
+		{
+			direct_request(sock[i], addr, s_poll, &data);
+			free(data.buffer);
+			data.buffer = strdup("no request");
+		}
 	}
 	printf("ret--->%d\n", ret);
 	fflush(stdout);

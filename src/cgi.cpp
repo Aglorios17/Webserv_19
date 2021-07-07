@@ -126,23 +126,6 @@ void CGI::set_env(char **_env)
 	_env[13] = NULL;
 }
 
-//void cgi_handler(std::string cgi, Socket &sock, std::string path_info)
-//{
-//	set_env(&env[0]);
-//	std::cout<<"cgi------------------>"<<cgi.c_str()<<std::endl;
-//	int pid = 0;
-//	if ((pid = fork()) == 0)
-//	{
-//		system(cgi.c_str());//<-----fork 
-//		exit(0);	
-//	}
-//	char buffer[BUFFER_SIZE];
-//	std::cout<<"going in"<<std::endl;
-//	read(1, buffer, BUFFER_SIZE);
-//	std::cout<<"____________________cgi output: "<<buffer<<std::endl;
-//	return ;
-//}
-
 int	CGI::execute_cgi() 
 { 
 	int fd[2];
@@ -244,7 +227,4 @@ void	ft_freetab(char **tabs)
 	tabs = NULL;
 }
 
-CGI::~CGI(void)
-{
-	//ft_freetab(env);
-}
+CGI::~CGI(void) { }

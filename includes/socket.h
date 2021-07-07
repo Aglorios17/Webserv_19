@@ -27,9 +27,13 @@ class Socket
 
 	public:
 		Socket();
-		Socket(int domain, int type,
-				int protocol, int port,
-				int interface, int timeout);
+
+		Socket(int domain, int type, int protocol,
+			int port, int interface, int timeout);
+
+		void set_sock(int domain, int type, int protocol,
+	       		int port, int interface, int timeout);
+
 		~Socket();
 
 		int		get_domain();
