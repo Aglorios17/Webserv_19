@@ -352,8 +352,12 @@ bool Parser::save_data(void)
 		return (0);
 	std::cout << "PORT : ";
 	for (int i = 0; _listen_port[i] ; i++)
+	{
 		std::cout << _listen_port[i] << " ";
+		_nport += 1;
+	}
 	std::cout << std::endl;
+	std::cout << "NPORT : " << _nport << std::endl;
 	std::cout << "Timeout : " << _timeout << std::endl;
 	std::cout << "Server_name : " << _server_name << std::endl;
 	std::cout << "client_max_body_size : "<< _client_max_body_size << std::endl;
@@ -382,7 +386,12 @@ bool Parser::copy_file(char *file)
 		if (line[i] != '#' && line[i] != '\0')
 		{
 			for (int a = 0;line[a] && line[a] != '#'; a++)
-				_conf_file += line[a];
+			{
+				if (line[a] == '\t')
+					_conf_file += ' ';
+				else
+					_conf_file += line[a];
+			}
 			_conf_file += "\n";
 			size_file++;
 		}

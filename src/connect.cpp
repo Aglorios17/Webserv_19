@@ -41,12 +41,24 @@ std::string get_header_message(int status)
 			return "HTTP/1.1 204 No Content\n";
 		case 206:
 			return "HTTP/1.1 206 Partial Content\n";
+		case 400:
+			return "HTTP/1.1 400 Bad Request\n";
 		case 404:
 			return "HTTP/1.1 404 File Not Found\n";
 		case 405:
 			return "HTTP/1.1 405 Method Not Allowed\n";
+		case 408:
+			return "HTTP/1.1 408 Request Time-out\n";
 		case 411:
 			return "HTTP/1.1 411 Length Required\n";
+		case 415:
+			return "HTTP/1.1 415 Unsupported Media Type\n";
+		case 500:
+			return "HTTP/1.1 500 Internal Server Error\n";
+		case 501:
+			return "HTTP/1.1 501 Not Implemented\n";
+		case 505:
+			return "HTTP/1.1 505 HTTP Version not supported\n";
 		default:
 			return "HTTP/1.1 200 OK\r\n";
 	}
