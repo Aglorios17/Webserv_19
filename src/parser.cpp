@@ -444,11 +444,12 @@ bool	port_is_valid(int port)
 	 * desired port.
 	 */
 
-	return (
-		port == 8080 ||
-		port == 8000 
-		/*...*/
-		);
+	(void)port;
+	return (1);
+	//	port == 8080 ||
+	//	port == 8000 
+	//	/*...*/
+	//	);
 }
 
 bool is_valid(int domain, int type, int protocol, int port)

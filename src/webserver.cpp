@@ -45,6 +45,8 @@ int main(int argc, char **argv)
 
 	Socket socket[nport];
 
+	poll = (struct poll*)malloc(sizeof(struct poll));
+	init_poll_struct(poll);
 	for (int i = 0; i < nport; i++)
 	{
 		socket[i].set_sock(ip, SOCK_STREAM, 0, port[i], INADDR_ANY, parser.get_timeout());	
@@ -52,8 +54,6 @@ int main(int argc, char **argv)
 		socket[i].set_parser(parser);
 		address = new struct sockaddr_in;
 
-		poll = (struct poll*)malloc(sizeof(struct poll));
-		init_poll_struct(poll);
 
 		add_fd_to_poll(
 				poll,
@@ -61,6 +61,7 @@ int main(int argc, char **argv)
 					socket[i].get_fd(),
 					POLLIN,
 					O_NOFLAG));
+
 		configure(socket[i], address);
 
 		bind(socket[i].get_fd(),

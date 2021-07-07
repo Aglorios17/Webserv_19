@@ -93,7 +93,7 @@ void	configure_adress(Socket &sock, struct sockaddr_in *addr);
  * CONNECT
  */
 
-void	run_server(Socket &sock, struct sockaddr *addr, struct poll* poll);
+void	run_server(Socket sock [] , struct sockaddr *addr, struct poll* poll);
 
 /*
  * I/O File

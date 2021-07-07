@@ -208,15 +208,16 @@ void init_data(t_data *data)
 	data->status = 0;
 }
 
-void run_server(Socket [] sock, struct sockaddr *addr, struct poll* s_poll)
+void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 {
 	int	ret;
 	int	nport;
 	t_data data;
 
 	nport = sock[0].get_parser().get_nport();
+	int timeout = sock[0].get_timeout();
 	init_data(&data);
-	while ((ret = poll(s_poll->fds, s_poll->nfds, sock.get_timeout())) >= 0)
+	while ((ret = poll(s_poll->fds, s_poll->nfds, timeout)) >= 0)
 	{
 
 		for (int i = 0; i < nport; i++)
@@ -226,8 +227,6 @@ void run_server(Socket [] sock, struct sockaddr *addr, struct poll* s_poll)
 			data.buffer = strdup("no request");
 		}
 	}
-	printf("ret--->%d\n", ret);
-	fflush(stdout);
 	free(data.last);
 	free(data.buffer);
 }
