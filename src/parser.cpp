@@ -352,8 +352,12 @@ bool Parser::save_data(void)
 		return (0);
 	std::cout << "PORT : ";
 	for (int i = 0; _listen_port[i] ; i++)
+	{
 		std::cout << _listen_port[i] << " ";
+		_nport += 1;
+	}
 	std::cout << std::endl;
+	std::cout << "NPORT : " << _nport << std::endl;
 	std::cout << "Timeout : " << _timeout << std::endl;
 	std::cout << "Server_name : " << _server_name << std::endl;
 	std::cout << "client_max_body_size : "<< _client_max_body_size << std::endl;

@@ -29,6 +29,7 @@ class Parser
 		std::string	_error_page;
 //		int	_queue;
 		int	*_listen_port;
+		int _nport;
 		int _timeout;
 		std::string	_host_address;
 		std::string	_server_name;
@@ -48,6 +49,7 @@ class Parser
 				_index = cpy._index;
 				_error_page = cpy._error_page;
 				_listen_port = cpy._listen_port;
+				_nport = cpy._nport;
 				_timeout = cpy._timeout;
 				_host_address = cpy._host_address;
 				_server_name = cpy._server_name;
@@ -69,6 +71,7 @@ class Parser
 		std::string str_val(std::string cmp, std::string cmd);
 		std::string *stotab(void);
 		int	*get_port(void) {return (_listen_port);}
+		int	get_nport(void) {return (_nport);}
 		int	get_timeout(void) {return (_timeout);}
 		int get_client_max_body_size(void) {return (_client_max_body_size);}
 		std::string get_domain(void) {return (_host_address);}
