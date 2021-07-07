@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 		if (listen(socket[i].get_fd(), 1) < 0)
 			exit (EXIT_FAILURE);
 	}
-
+	get_server(socket, NULL, SET);
 	run_server(socket, (struct sockaddr*)address, poll);
 
 	return (0);

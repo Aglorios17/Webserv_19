@@ -172,3 +172,38 @@ int hexa_to_decimal(std::string value)
     ss >> x;
     return (static_cast<int>(x));
 }
+
+int get_server(Socket sock [], int **holdr, int mode)
+{
+	static int *fds;
+	static int nport;
+
+
+	if (mode == SET)	
+	{
+		nport = sock[0].get_parser().get_nport();
+		fds = (int*) malloc((nport + 1) * 4);
+		memset(fds, 0, nport);
+		for (int i = 0; i < nport ; i++)
+			fds[i] = sock[i].get_fd();	
+	}
+	else if (mode == GET)
+		for (int i = 0; i < nport ; i++)
+			for (int i = 0; i < nport ; i++)
+				*holdr = &fds[0];
+	else
+		free(fds);
+	return nport;
+}
+
+int is_server(int fd)
+{
+	int *fds;
+	int nport;
+	nport = get_server(NULL, &fds, GET);
+
+	for (int i = 0; i < nport; i++)
+		if (fd == fds[i])
+			return nport;
+	return 0;
+}

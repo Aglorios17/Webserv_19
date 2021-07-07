@@ -56,6 +56,8 @@
 #define MAX_FD 100 /*shoudl find it through limits.h or something*/
 #define O_NOFLAG 0
 #define BUFFER_SIZE 1024 
+#define SET 0
+#define GET 1
 
 typedef struct	s_data
 {
@@ -160,8 +162,10 @@ int		*int_add_back(int *tab, int *add);
 int		*int_in_tab(int *tab, int add, int size);
 std::string	get_time(t_data *data);
 std::string	bypass_tab(char *str);
-int			hexa_to_decimal(std::string value);
+int		hexa_to_decimal(std::string value);
 std::string	get_extension(std::string file);
-std::string strtrim(std::string &s,char c);
+std::string	strtrim(std::string &s,char c);
+int		get_server(Socket sock [],int **holdr, int mode);
+int		is_server(int fd);
 
 #endif

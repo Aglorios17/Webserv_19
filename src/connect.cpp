@@ -178,6 +178,7 @@ void send_html(int fd, char *path, Socket &sock, t_data *data)
 	file.close();
 }
 
+
 void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_data *data)
 {
 	int		*fd;
@@ -207,6 +208,7 @@ void init_data(t_data *data)
 	data->buffer = strdup("no request");
 	data->status = 0;
 }
+
 
 void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 {

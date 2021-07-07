@@ -20,6 +20,7 @@ class CGI
 		std::string REMOTE_USER;
 		std::string SERVER_NAME;
 		std::string REDIRECT_STATUS;
+		std::string BODY;
 		char		*env[14];
 
 	public:
@@ -42,6 +43,7 @@ class CGI
 		void	set_var(Request& request, Parser& parser);
 		void	init_var();
 		int	execute_cgi();	
+		std::string get_body();	
 
 		~CGI();
 		CGI	&operator=(CGI& ref);

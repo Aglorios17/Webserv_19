@@ -55,6 +55,8 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 
 	printf("[POLLIN] read from %s(%d)\n", poll->fd == server ? "server" : "client", poll->fd);
 	fflush(stdout);
+	//std::cout<<"<<<<<is server: "<< (is_server(poll->fd) ? "yes" : "no") ;
+	is_server(poll->fd);
 	if (poll->fd != server)
 	{
 		while ((ret = recv(poll->fd, buffer, BUFFER_SIZE, 0)) > 0){}

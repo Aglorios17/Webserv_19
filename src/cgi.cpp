@@ -157,7 +157,7 @@ int	CGI::execute_cgi()
 	    	ret = read(fd[0], buffer, BUFFER_SIZE);
 	      	body += buffer;
 	}
-
+	BODY = body;
 	dup2(fdin, STDIN_FILENO);
 	dup2(fdout, STDOUT_FILENO);
 
@@ -168,6 +168,7 @@ int	CGI::execute_cgi()
 	return (0);
 }
 
+std::string CGI::get_body(){return BODY;}
 void	CGI::set_PATH_INFO(std::string _PATH_INFO) { PATH_INFO = _PATH_INFO; }
 
 void	CGI::set_SERVER_PORT(std::string _SERVER_PORT) { SERVER_PORT = _SERVER_PORT; }
