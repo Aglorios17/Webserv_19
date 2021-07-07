@@ -386,7 +386,12 @@ bool Parser::copy_file(char *file)
 		if (line[i] != '#' && line[i] != '\0')
 		{
 			for (int a = 0;line[a] && line[a] != '#'; a++)
-				_conf_file += line[a];
+			{
+				if (line[a] == '\t')
+					_conf_file += ' ';
+				else
+					_conf_file += line[a];
+			}
 			_conf_file += "\n";
 			size_file++;
 		}
