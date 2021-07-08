@@ -2,11 +2,29 @@
 
 #define PORT 8080
 
-int main()
+int main(int argc, char **argv)
 {
     int sock = 0;
     struct sockaddr_in serv_addr;
-    std::string hello = "Hello from client";
+	if (argc != 2)
+		return (-1);
+	std::string hello;
+    std::ifstream copy(argv[1]);
+ 
+    std::cout << "FILE : " << argv[1] << "\n";
+    if(!copy.is_open())
+	{
+        std::cout << "CANT OPEN \n";
+		return (-1);
+	}
+	std::string line;
+    while(std::getline(copy,line))
+		 hello += line + "\n";
+    std::cout << "SEND BY CLIENT \n";
+    std::cout << "============================== \n";
+	std::cout << hello << "\n";
+	copy.close();
+ 
     char buffer[1024] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
@@ -33,8 +51,13 @@ int main()
         return -1;
     }
     send(sock , &hello[0] , strlen(&hello[0]) , 0 );
-    printf("Hello message sent\n");
+    std::cout << "============================== \n";
+    printf("MESSAGE SEND\n");
+    std::cout << "------------------------------ \n";
+    printf("RESPOND SERVER\n");
     read( sock , buffer, 1024);
+    std::cout << "============================== \n";
     printf("%s\n",buffer );
+    std::cout << "============================== \n";
     return 0;
 }

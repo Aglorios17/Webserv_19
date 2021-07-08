@@ -36,7 +36,7 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 		CGI cgi(sock.get_request(), sock.get_parser());
 		cgi.execute_cgi();
 	}		
-
+	
 	send_html(*fd, &source[0], sock, data);//should send_file
 	std::cout<<"done getting"<<std::endl;
 	return (1);
@@ -47,7 +47,7 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	std::cout<< "POST METHOD: " <<std::endl;
 
 	std::string path_info = get_path_info(sock, 0);
-	std::cout << ">>>>>>>>>>>>>>>file name:" << data << std::endl;
+	std::cout << ">>>>>>>>>>>>>>>file name:" << path_info << std::endl;
 	
 	std::fstream file;
 	file.open(path_info, std::ios::out);
@@ -79,9 +79,18 @@ bool method_delete(int *fd, Socket &sock, t_data *data)
 	std::cout << ">>>>>>>>>>>>>>>file name:" << path_info << std::endl;
 
 // Check whether exist or empty (404 or 405) (cant delete whole dir or sensitive files
-	if (std::remove(&path_info[0]) != 0)	
-		data->status = 405;
+	std::fstream file;
+	file.open(path_info, std::ios::out);
+	if (!file)// Check whether exist or empty (404 or 405)
+		data->status = 404;
+	else
+	{
+		file.close();
+		if (std::remove(&path_info[0]) != 0)	
+			data->status = 405;
+		else
+			std::cout<<"done deleting"<<std::endl;
+	}
 	send_header(sock, *fd, 0, NULL, data);
-	std::cout<<"done deleting"<<std::endl;
 	return (1);
 }

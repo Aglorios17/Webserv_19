@@ -52,7 +52,7 @@ run: all
 	./webserver includes/conf/tester.conf
 client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
-	echo "./webserver includes/conf/tester.conf"
+	echo "./webserver includes/conf/tester.conf" 
 valgrind: all
 	valgrind ./webserver includes/conf/tester.conf
 tester: all
