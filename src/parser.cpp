@@ -67,9 +67,15 @@ int *Parser::int_tab_val(std::string cmp, std::string cmd)
 					if (!isdigit(tok[y]))
 						return (NULL);
 			if (tab == NULL)
+			{
 				tab = int_in_tab(NULL, std::stoi(tok), 1);
+				_tab_size++;
+			}
 			else
+			{
 				tab = int_in_tab(tab, std::stoi(tok), i);
+				_tab_size++;
+			}
 		}
 		i++;
 		token = strtok(NULL, " ");
@@ -207,13 +213,16 @@ bool Parser::put_data(std::string tab, int cgi)
 {
 	if (tab.find("listen") != std::string::npos)
 	{
+		std::cout << std::endl;
 		if (_listen_port != NULL)
 		{
 			int *port_tab = 0;
+			int save_port = _tab_size;
 			if (!(port_tab = int_tab_val(tab, "listen")))
 				return (0);
-			_listen_port = int_add_back(_listen_port, port_tab);
-			delete[] port_tab;
+			_add_size = _tab_size - save_port;
+			_listen_port = int_add_back(_listen_port, port_tab, save_port, _add_size);
+//			delete[] port_tab;
 		}
 		else
 		{
@@ -346,12 +355,14 @@ bool Parser::save_data(void)
 	_listen_port = 0;
 	_timeout = 0;
 	_client_max_body_size = 0;
+	_tab_size = 0;
+	_add_size = 0;
 	if (!server_norme(tab_conf, size_file))
 		return (0);
 	if (!server_parser(tab_conf, size_file))
 		return (0);
 	std::cout << "PORT : ";
-	for (int i = 0; _listen_port[i] ; i++)
+	for (int i = 0; i < _tab_size ; i++)
 	{
 		std::cout << _listen_port[i] << " ";
 		_nport += 1;

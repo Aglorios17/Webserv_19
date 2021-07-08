@@ -68,13 +68,19 @@ int *int_in_tab(int *tab, int add, int size)
 	return (ret);
 }
 
-int *int_add_back(int *tab, int *add)
+int	tab_len(int *tab)
 {
-	int length = sizeof(&tab)/sizeof(tab[0]);
-	int size_add = sizeof(&add)/sizeof(add[0]);
+	int ret = 0;
+	for (int i = 0; tab[i]; i++)
+		ret++;
+	return (ret);
+}
+
+int *int_add_back(int *tab, int *add, int length, int size_add)
+{
 	int *ret = new int[length + size_add];
 	int a = 0;
-	for (int i = 0; i < length + size_add; i++)
+	for (int i = 0; i < (length + size_add); i++)
 	{
 		if (i < length)
 			ret[i] = tab[i];

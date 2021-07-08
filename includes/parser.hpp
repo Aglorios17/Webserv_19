@@ -37,6 +37,8 @@ class Parser
 		std::string _cgi_extension;
 		std::string _cgi_path;
 		int _client_max_body_size;
+		int	_tab_size;
+		int _add_size;
 	public:
 		Parser(void) {}
 		~Parser(void) {}
