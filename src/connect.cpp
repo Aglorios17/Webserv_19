@@ -64,11 +64,12 @@ std::string get_header_message(int status)
 	}
 }
 
-int	send_header(Socket &sock, int fd, int size, char* type, t_data *data)
+std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data)
 {
 	char const	*s1;
 	std::string	buf;
-	int		ret;
+	//int		ret;
+	(void)fd;
 	std::string last = data->last;
 
 	buf = get_header_message(data->status);
@@ -105,8 +106,8 @@ int	send_header(Socket &sock, int fd, int size, char* type, t_data *data)
 	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
 	std::cout<<"------------"<<std::endl;
 	s1 = &buf[0];
-	ret = send(fd, s1, strlen(s1), 0);
-	return (ret);
+	//ret = send(fd, s1, strlen(s1), 0);
+	return (s1);
 }
 
 void set_env(Socket &sock, std::string path_info)
@@ -132,16 +133,10 @@ void set_env(Socket &sock, std::string path_info)
 
 void send_html(int fd, char *path, Socket &sock, t_data *data)
 {
-	const char *s1;
+	std::string s1;
 	std::string line;
 	std::ifstream file;
 	
-
-	std::cout<<"\ncgi_extension: "<< sock.get_parser().get_cgi_path()<<std::endl;
-
-	printf("FILE REQUESTED: %s\n", path);
-	fflush(stdout);
-
 	if (file_exists(path) == false)//check if file exists
 	{
 		printf("ERROR: FILE NOT FOUND\n");	
@@ -152,29 +147,20 @@ void send_html(int fd, char *path, Socket &sock, t_data *data)
 		strcpy(path, &error[0]);
 	}
 	std::string s_path(path);
-//	std::string cgi = sock.get_parser().get_cgi_extension();
-//
 	std::string s_file = s_path.substr(s_path.find_last_of('/') + 1);
-//
-//	std::string cgi_extension = cgi.substr(cgi.find_last_of('/') + 1);
-//	std::string cgi_path = sock.get_parser().get_cgi_path();
-//
-//
-//	if (get_extension(cgi_extension).compare(get_extension(s_file)) == 0)//check cgi
-//	{
-//		cgi_handler(cgi_path, sock, path);
-//		return ;
-//	}
-
 	file.open(path);
 
-	send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], data);
+	s1 = send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], data);
 
 	while(std::getline(file, line))
-	{
-		s1 = &line[0];
-		send(fd, s1, strlen(s1), 0);
-	}
+		s1 += &line[0];
+	send(fd, &s1[0], strlen(&s1[0]), 0);
+	//
+	//output function would come handy
+	std::cout<<"++++++++++++\n"<<std::endl;
+	std::cout<<s1<<std::endl;
+	std::cout<<"++++++++++++\n"<<std::endl;
+
 	file.close();
 }
 
