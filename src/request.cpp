@@ -152,8 +152,8 @@ int Request::add_request_data(std::string tab)
 			return (400);
 		if ((_content_length = str_ret(tab, "Content-Length:")) == "")
 			return (411);
-		for (size_t y = 0; y < _content_length.size(); y++)
-			if (!isdigit(_content_length[y]))
+		for (size_t y = 0; y < (_content_length.size() - 1); y++)
+			if (_content_length[y] && !isdigit(_content_length[y]))
 				return (400);
 	}
 	else if (tab.find("Content-Type:") != std::string::npos)

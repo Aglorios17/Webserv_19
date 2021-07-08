@@ -357,6 +357,7 @@ bool Parser::save_data(void)
 	_client_max_body_size = 0;
 	_tab_size = 0;
 	_add_size = 0;
+	_nport = 0;
 	if (!server_norme(tab_conf, size_file))
 		return (0);
 	if (!server_parser(tab_conf, size_file))
