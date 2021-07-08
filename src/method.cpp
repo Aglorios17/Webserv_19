@@ -2,8 +2,10 @@
 
 bool method_error(int *fd, Socket &sock, t_data *data)
 {
+	std::string s;
 	std::cout<< "HELLO IM ERROR" <<std::endl;
-	send_header(sock, *fd, 0, NULL, data);
+	s = send_header(sock, *fd, 0, NULL, data);
+	send(*fd, &s[0], strlen(&s[0]), 0);
 	std::cout<<"done erroring"<<std::endl;
 	return (1);
 }
@@ -27,9 +29,6 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 	std::string source = get_path_info(sock, 1);
 	std::string extension = source;
 
-	std::cout << " file extension >>>>>>>>>>>>>>> " << get_extension(strtrim(extension, '.')) << std::endl;
-	std::cout << "cgi extension	>>>>>>>>>>>>> " << sock.get_parser().get_cgi_extension();
-
 	if (!get_extension(strtrim(extension, '.')).compare(sock.get_parser().get_cgi_extension()))
 	{
 		std::cout<<"LAUNCH CGI!!!"<<std::endl;	
@@ -37,7 +36,7 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 		cgi.execute_cgi();
 	}		
 	
-	send_html(*fd, &source[0], sock, data);//should send_file
+	send_html(*fd, &source[0], sock, data);
 	std::cout<<"done getting"<<std::endl;
 	return (1);
 }
@@ -51,12 +50,8 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	
 	std::fstream file;
 	file.open(path_info, std::ios::out);
-	/*
-	 * check if:
-	 * file string empty -> 405
-	 * path/to/file is forbidden -> 405
-	 */
-
+	
+	std::string s;
 	if (!file)// Check whether exist or empty (404 or 405)
 		data->status = 405;
 	else
@@ -66,7 +61,8 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	}
 	//------------------------------------------
 	file.close();
-	send_header(sock, *fd, 0, NULL, data);
+	s = send_header(sock, *fd, 0, NULL, data);
+	send(*fd, &s[0], strlen(&s[0]), 0);
 	std::cout<<"done posting"<<std::endl;
 	return (1);
 }
@@ -81,6 +77,7 @@ bool method_delete(int *fd, Socket &sock, t_data *data)
 // Check whether exist or empty (404 or 405) (cant delete whole dir or sensitive files
 	std::fstream file;
 	file.open(path_info, std::ios::out);
+	std::string s;
 	if (!file)// Check whether exist or empty (404 or 405)
 		data->status = 404;
 	else
@@ -91,6 +88,7 @@ bool method_delete(int *fd, Socket &sock, t_data *data)
 		else
 			std::cout<<"done deleting"<<std::endl;
 	}
-	send_header(sock, *fd, 0, NULL, data);
+	s = send_header(sock, *fd, 0, NULL, data);
+	send(*fd, &s[0], strlen(&s[0]), 0);
 	return (1);
 }
