@@ -46,13 +46,14 @@ clean:
 
 fclean: clean
 	rm -rf $(TARGET)
-	rm ./client | true
+	rm ./tester/client | true
 
 run: all
 	./webserver includes/conf/tester.conf
 client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
 	echo "./webserver includes/conf/tester.conf" 
+	mv ./client ./tester
 valgrind: all
 	valgrind ./webserver includes/conf/tester.conf
 tester: all
