@@ -55,7 +55,7 @@
 #define PORT 8080
 #define MAX_FD 100 /*shoudl find it through limits.h or something*/
 #define O_NOFLAG 0
-#define BUFFER_SIZE 1024 
+#define BUFFER_SIZE 4096 
 #define SET 0
 #define GET 1
 

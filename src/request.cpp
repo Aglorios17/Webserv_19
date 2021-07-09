@@ -32,7 +32,7 @@ std::string *Request::stotab(void)
 		tab[i] += str.substr(0);
 	//for (int i = 0; str[i]; i++)
 	//	tab[j] += str[i];
-	std::cout<<"_____"<<tab[i]<<"_____"<<std::endl;
+	//std::cout<<"_____"<<tab[i]<<"_____"<<std::endl;
 	for (int i = 0; i < _size_buf; i++)
 		std::cout<<"["<<tab[i]<<"]"<<std::endl;
 	return (tab);
@@ -67,12 +67,12 @@ void Request::add(char *buffer)
 //		tab[i++][pos - 1] = '\0';
 		str.erase(0, pos + 1);// + delimiter.length());
 	}
-	str[pos - 1]= '\0';
-	std::cout<<(int)str[0]<<std::endl;
-	std::cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$str"<<"["<<str<<"]"<<std::endl;
-	//if (str.size())
-	//	++_size_buf;
-	//for (int j = 0; str[j]; i++)
+	//str[pos - 1]= '\0';
+	//std::cout<<(int)str[0]<<std::endl;
+	//std::cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$str"<<"["<<str<<"]"<<std::endl;
+
+	if (str.size())
+		++_size_buf;
 
 }
 
