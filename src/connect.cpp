@@ -42,6 +42,8 @@ std::string get_header_message(int status)
 			return "HTTP/1.1 408 Request Time-out\n";
 		case 411:
 			return "HTTP/1.1 411 Length Required\n";
+		case 413:
+			return "HTTP/1.1 413 Request Entity Too Large\n";
 		case 415:
 			return "HTTP/1.1 415 Unsupported Media Type\n";
 		case 500:
