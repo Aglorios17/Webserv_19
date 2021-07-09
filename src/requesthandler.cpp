@@ -32,6 +32,7 @@ void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 {
 	request.add(buffer);
 	request.request_data();
+
 	sock.set_request(request);
 	if ((data->status = sock.get_request().get_status()) != 200)
 		return ;
@@ -41,6 +42,14 @@ void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 
 int apply_request(int *fd, Socket &sock, t_data *data)
 {
+	int request_port = sock.get_request().get_port();
+	int server_port =  sock.get_port(); 	
+
+	if (request_port != server_port)
+	{
+		reset_sock_request(sock);
+		return 0;
+	}
 	if (data->status != 200)
 		return (method_error(fd, sock, data));
 	if (sock.get_request().get_method() == "POST")
@@ -61,19 +70,15 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 
 	printf("[POLLIN] read from %s(%d)\n", poll->fd == server ? "server" : "client", poll->fd);
 	fflush(stdout);
-	//std::cout<<"<<<<<is server: "<< (is_server(poll->fd) ? "yes" : "no") ;
 	is_server(poll->fd);
+
+
 	if (poll->fd != server)
 	{
 		while ((ret = recv(poll->fd, buffer, BUFFER_SIZE, 0)) > 0){}
-
-		printf("----------------\n");
-		printf("Client Request:\n%s", buffer);
-		printf("----------------\n\n");
 		free(data->buffer);
 		data->buffer = strdup(&buffer[0]);
 	 	set_request(sock.get_request(), sock, data->buffer, data);
-		std::cout << "STATUS CODE : ||" << data->status << "||\n";
 	}
 	else
 	{
@@ -96,8 +101,8 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 
 	if (*fd != server)
 	{
-		apply_request(fd, sock, data);
-		poller_handler(fd, server, s_poll, addr, sock);
+		if (apply_request(fd, sock, data))
+			poller_handler(fd, server, s_poll, addr, sock);
 	}
 	msleep(150);
 	printf("==========\n");

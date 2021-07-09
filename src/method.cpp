@@ -30,6 +30,7 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 	std::string extension ;
 
 
+	std::cout<< "[[[[[[SOCKET PORT: "<< sock.get_port()<<std::endl;
 	if (source.find('?') != std::string::npos)
 		extension= source.substr(0, source.find('?') );
 
@@ -55,6 +56,7 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 {
 	std::cout<< "POST METHOD: " <<std::endl;
 
+	std::cout<< "[[[[[[SOCKET PORT: "<< sock.get_port()<<std::endl;
 	std::string path_info = get_path_info(sock, 0);
 	std::cout << ">>>>>>>>>>>>>>>file name:" << path_info << std::endl;
 	

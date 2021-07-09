@@ -30,7 +30,7 @@ class Request
 		std::string _buffer;
 		std::string _host;
 		std::string _referer;
-		std::string	_connection;
+		std::string _connection;
 		std::string _content_type;
 		std::string	_content_length;
 		std::string	_content_encoding;
@@ -38,6 +38,7 @@ class Request
 		std::string	_transfer_encoding;
 		std::string	_accept_encoding;
 		std::string _body;
+		int  _port;
 		int			_size_buf;
 		int			_status;
 	public:
@@ -62,6 +63,7 @@ class Request
 				_accept_encoding = cpy._accept_encoding;
 				_cgi = cpy._cgi;
 				_body = cpy._body;
+				_port = cpy._port;
 			}
 			return (*this);
 		}
@@ -75,6 +77,7 @@ class Request
 		int			int_ret(std::string str, std::string cmd);
 		std::string	stock_body(std::string *tab, int y, int max);
 
+		int		get_port(void) {return (_port);}
 		std::string	get_host(void) {return (_host);}
 		std::string	get_method(void) {return (_method);}
 		std::string	get_arg_method(void) {return (_arg_method);}
@@ -83,8 +86,8 @@ class Request
 		std::string	get_referer(void) {return (_referer);}
 		std::string	get_connection(void) {return (_connection);}
 		std::string	get_content_type(void) {return (_content_type);}
-		std::string get_body(void) {return (_body);}
-		int			get_content_length(void)
+		std::string	get_body(void) {return (_body);}
+		int		get_content_length(void)
 		{
 			if (_content_length != "")
 				return (stoi(_content_length));

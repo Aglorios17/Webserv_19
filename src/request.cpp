@@ -131,6 +131,8 @@ int Request::add_request_data(std::string tab)
 			return (400);
 		if ((_host = str_ret(tab, "Host:")) == "")
 			return (400);
+		std::string tmp = _host.substr(_host.find(':') + 1);
+		_port = stoi(tmp);
 	}
 	else if (tab.find("Referer:") != std::string::npos)
 	{
@@ -249,6 +251,7 @@ void Request::init(void)
 	_http_method = "";
 	_cgi = "";
 	_host = "";
+	_port = 0;
 	_referer = "";
 	_connection = "";
 	_content_type = "";

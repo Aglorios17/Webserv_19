@@ -15,15 +15,6 @@
 /*
  * queue should be defined in the conf and store in a class
  */
-# define QUEUE 3
-
-/*
- * ENV VARIABLES:
- *
- *	REQUEST_METHOD (GET/POST/DELETE)
- *	SERVER_PROTOCOL (HTTP/1.1)
- *	PATH_INFO (arg method)
- */
 
 std::string get_header_message(int status)
 {
@@ -216,7 +207,6 @@ void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 
 		for (int i = 0; i < nport; i++)
 		{
-
 			direct_request(sock[i], addr, s_poll, &data);
 			free(data.buffer);
 			data.buffer = strdup("no request");
