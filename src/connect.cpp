@@ -187,7 +187,7 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_
 void init_data(t_data *data)
 {
 	data->last = strdup("");
-	data->buffer = strdup("no request");
+	data->buffer = (char*)"no request";
 	data->status = 0;
 }
 
@@ -208,10 +208,8 @@ void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 		for (int i = 0; i < nport; i++)
 		{
 			direct_request(sock[i], addr, s_poll, &data);
-			free(data.buffer);
-			data.buffer = strdup("no request");
+			data.buffer = (char*)"no request";
 		}
 	}
 	free(data.last);
-	free(data.buffer);
 }

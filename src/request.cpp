@@ -28,6 +28,13 @@ std::string *Request::stotab(void)
 		tab[i++][pos - 1] = '\0';
 		str.erase(0, pos + delimiter.length());
 	}
+	if (str.size())
+		tab[i] += str.substr(0);
+	//for (int i = 0; str[i]; i++)
+	//	tab[j] += str[i];
+	std::cout<<"_____"<<tab[i]<<"_____"<<std::endl;
+	for (int i = 0; i < _size_buf; i++)
+		std::cout<<"["<<tab[i]<<"]"<<std::endl;
 	return (tab);
 }
 
@@ -39,9 +46,34 @@ void Request::add(char *buffer)
 		return ;
 	std::string add(buffer);
 	_buffer = add;
-	for (int i = 0; _buffer[i] ; i++)
-		if (_buffer[i] == '\n')
-			_size_buf++;
+//	for (int i = 0; _buffer[i] ; i++)
+//		if (_buffer[i] == '\n')
+//			_size_buf++;
+//
+//	_size_buf++;
+//
+	std::cout<<"@@@"<<buffer<<"@@@"<<std::endl;
+	std::string str(buffer);
+
+	str[strlen(buffer)] = '\0';
+	int i = 0;
+	size_t pos = 0;
+	std::string delimiter = "\n";
+	while((pos = str.find(delimiter)) != std::string::npos)
+	{
+		_size_buf++;
+		i++;
+//		tab[i] = str.substr(0, pos);
+//		tab[i++][pos - 1] = '\0';
+		str.erase(0, pos + 1);// + delimiter.length());
+	}
+	str[pos - 1]= '\0';
+	std::cout<<(int)str[0]<<std::endl;
+	std::cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$str"<<"["<<str<<"]"<<std::endl;
+	//if (str.size())
+	//	++_size_buf;
+	//for (int j = 0; str[j]; i++)
+
 }
 
 std::string Request::str_ret(std::string str, std::string cmd)

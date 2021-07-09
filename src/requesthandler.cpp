@@ -65,7 +65,7 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock, t_data *data)
 {
 	int ret;
-	char buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE + 1];
 	Request request;
 
 	printf("[POLLIN] read from %s(%d)\n", poll->fd == server ? "server" : "client", poll->fd);
@@ -76,8 +76,12 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 	if (poll->fd != server)
 	{
 		while ((ret = recv(poll->fd, buffer, BUFFER_SIZE, 0)) > 0){}
-		free(data->buffer);
-		data->buffer = strdup(&buffer[0]);
+		buffer[BUFFER_SIZE] = 0;
+		//free(data->buffer);
+		//data->buffer = strdup(&buffer[0]);
+		std::string tmp(buffer);	
+		data->buffer = (char*)tmp.c_str();
+		std::cout<<"*******\n"<<data->buffer<<"\n*******\n";
 	 	set_request(sock.get_request(), sock, data->buffer, data);
 	}
 	else
