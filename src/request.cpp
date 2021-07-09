@@ -30,11 +30,8 @@ std::string *Request::stotab(void)
 	}
 	if (str.size())
 		tab[i] += str.substr(0);
-	//for (int i = 0; str[i]; i++)
-	//	tab[j] += str[i];
-	//std::cout<<"_____"<<tab[i]<<"_____"<<std::endl;
-	for (int i = 0; i < _size_buf; i++)
-		std::cout<<"["<<tab[i]<<"]"<<std::endl;
+//	for (int i = 0; i < _size_buf; i++)
+//		std::cout<<"["<<tab[i]<<"]"<<std::endl;
 	return (tab);
 }
 
@@ -46,13 +43,6 @@ void Request::add(char *buffer)
 		return ;
 	std::string add(buffer);
 	_buffer = add;
-//	for (int i = 0; _buffer[i] ; i++)
-//		if (_buffer[i] == '\n')
-//			_size_buf++;
-//
-//	_size_buf++;
-//
-	std::cout<<"@@@"<<buffer<<"@@@"<<std::endl;
 	std::string str(buffer);
 
 	str[strlen(buffer)] = '\0';
@@ -63,14 +53,8 @@ void Request::add(char *buffer)
 	{
 		_size_buf++;
 		i++;
-//		tab[i] = str.substr(0, pos);
-//		tab[i++][pos - 1] = '\0';
-		str.erase(0, pos + 1);// + delimiter.length());
+		str.erase(0, pos + 1);
 	}
-	//str[pos - 1]= '\0';
-	//std::cout<<(int)str[0]<<std::endl;
-	//std::cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$str"<<"["<<str<<"]"<<std::endl;
-
 	if (str.size())
 		++_size_buf;
 
@@ -239,7 +223,7 @@ std::string Request::stock_body(std::string *tab, int y, int max)
 	{
 		for (int i = y + 1; i < max; i++)
 		{
-			body += tab[i].substr(0, tab[i].size() - 1);
+			body += tab[i].substr(0);
 			if (i + 1 < max)
 				body += "\n";
 		}
@@ -297,6 +281,7 @@ void Request::init(void)
 bool Request::request_data(void)
 {
 	std::string *tab = stotab();
+	int			error_method = 0;
 	init();
 	if (_buffer.find("no request") != std::string::npos)
 	{
@@ -309,28 +294,45 @@ bool Request::request_data(void)
 		return (0);
 	}
 	if (!request_method_check(tab[0]))
-		return (0);
+		error_method = _status;
 	for (int y = 1; y < _size_buf - 1; y++)
 	{
 		if ((_status = add_request_data(tab[y])) != 200)
 		{
-			if (_status == 1)
+			if (error_method)
+			{
+				_status = error_method;
+				delete[] tab;
+				return (0);
+			}
+			else if (_status == 1)
 			{
 				if (_method == "POST")
 				{
 					_body = stock_body(tab, y, _size_buf);
 					_status = 200;
+					delete[] tab;
 					return (1);
 				}
 				else
 				{
 					_status = 400;
+					delete[] tab;
 					return (0);
 				}
 			}
 			else
+			{
+				delete[] tab;
 				return (0);
+			}
 		}
+	}
+	if (error_method)
+	{
+		_status = error_method;
+		delete[] tab;
+		return (0);
 	}
 	delete[] tab;
 	return (1);
