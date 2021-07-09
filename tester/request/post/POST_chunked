@@ -1,0 +1,19 @@
+POST /index_chunked.html HTTP/1.1
+User-Agent: custom-client
+Host: weebserv
+Accept-Language: en-US
+Connection: Keep-Alive
+Content-type: text/html
+Transfer-Encoding: chunked
+Content-length: 16
+
+4
+Wiki
+6
+pedia 
+E
+in 
+
+chunks.
+0
+

@@ -57,7 +57,7 @@ std::string Request::str_ret(std::string str, std::string cmd)
 	std::string add;
 	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
 		i++;
-	while (str[i] && str[i] != ' ')
+	while (i < (int)str.size() && str[i] != ' ')
 		add += str[i++];
 	add += '\0';
 	return (add);
@@ -76,7 +76,7 @@ int Request::int_ret(std::string str, std::string cmd)
 	std::string add;
 	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
 		i++;
-	while (str[i] && str[i] != ' ')
+	while (i < (int)str.size() && str[i] != ' ')
 		add += str[i++];
 	add += '\0';
 	for (size_t y = 0; y < add.size(); y++)
@@ -152,8 +152,8 @@ int Request::add_request_data(std::string tab)
 			return (400);
 		if ((_content_length = str_ret(tab, "Content-Length:")) == "")
 			return (411);
-		for (size_t y = 0; y < _content_length.size(); y++)
-			if (!isdigit(_content_length[y]))
+		for (size_t y = 0; y < (_content_length.size() - 1); y++)
+			if (_content_length[y] && !isdigit(_content_length[y]))
 				return (400);
 	}
 	else if (tab.find("Content-Type:") != std::string::npos)
@@ -200,12 +200,11 @@ std::string Request::stock_body(std::string *tab, int y, int max)
 {
 	std::string body;
 
-//	std::cout << "encoding : |" << _transfer_encoding << "|"<<std::endl;
+	std::cout << "encoding : |" << _transfer_encoding << "|"<<std::endl;
 	if (_transfer_encoding.find("chunked") == std::string::npos)
 	{
 		for (int i = y + 1; i < max; i++)
 		{
-			std::cout << "tab : |" << tab[i] << "|"<<std::endl;
 			body += tab[i].substr(0, tab[i].size() - 1);
 			if (i + 1 < max)
 				body += "\n";
@@ -213,23 +212,29 @@ std::string Request::stock_body(std::string *tab, int y, int max)
 	}
 	else
 	{
+		std::cout << "chunked" <<std::endl;
 		int size;
 		for (int i = y + 1; i < max - 1; i++)
 		{
 			size = hexa_to_decimal(tab[i]);
 			if (size == 0)
 			{
-				body += "\r\n";
+				body += "\n";
 				break ;	
 			}
 			i++;
 			if (tab[i] == "")
 				break ;
+			int u = 0;
 			for (int a = 0; a < size; a++)
 			{
-				if (!tab[i][a])
+				int b = (int)tab[i].size();
+				if (u > b)
+				{
+					u = 0;
 					i++;
-				body += tab[i][a];
+				}
+				body += tab[i][u++];
 			}
 		}
 	}

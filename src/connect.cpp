@@ -82,7 +82,9 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 //		buf += ("Last-Modified: " + str);
 //	}
 	if (type)
-	{
+	{;
+		if (strcmp(type, "text") == 0)
+			buf += "Content-Type: plain/text\r\n";
 		if (strcmp(type, "php") == 0)
 			buf += "Content-Type: text/html\r\n";
 		else if (strcmp(type, "jpg") == 0)
