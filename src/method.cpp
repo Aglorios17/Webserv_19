@@ -27,17 +27,27 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 	std::cout<< "GET METHOD: " <<std::endl;
 
 	std::string source = get_path_info(sock, 1);
-	std::string extension = source;
+	std::string extension ;
+
+
+	if (source.find('?') != std::string::npos)
+		extension= source.substr(0, source.find('?') );
+
+	std::cout<<"file is: "<< extension<<std::endl;
+
 
 	if (!get_extension(strtrim(extension, '.')).compare(sock.get_parser().get_cgi_extension()))
 	{
 		std::cout<<"LAUNCH CGI!!!"<<std::endl;	
+		std::cout<<"arg method in CGI "<< sock.get_request().get_arg_method()<<std::endl;
 		CGI cgi(sock.get_request(), sock.get_parser());
 		cgi.execute_cgi();
 	}		
 	
 	send_html(*fd, &source[0], sock, data);
 	std::cout<<"done getting"<<std::endl;
+
+	reset_sock_request(sock);
 	return (1);
 }
 
@@ -64,6 +74,8 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	s = send_header(sock, *fd, 0, NULL, data);
 	send(*fd, &s[0], strlen(&s[0]), 0);
 	std::cout<<"done posting"<<std::endl;
+
+	reset_sock_request(sock);
 	return (1);
 }
 
@@ -90,5 +102,7 @@ bool method_delete(int *fd, Socket &sock, t_data *data)
 	}
 	s = send_header(sock, *fd, 0, NULL, data);
 	send(*fd, &s[0], strlen(&s[0]), 0);
+
+	reset_sock_request(sock);
 	return (1);
 }

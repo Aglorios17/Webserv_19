@@ -176,15 +176,18 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_
 	{
 		fd = &s_poll->fds[i].fd;
 
-		if (s_poll->fds[i].revents&POLLIN)
-			pollin_handler(&s_poll->fds[i], server, s_poll,
-						addr, sock, data);
-		else if (s_poll->fds[i].revents&POLLOUT)
-			pollout_handler(fd, server, s_poll,
-						addr, sock, data);
-		else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
-			poller_handler(fd, server, s_poll,
-						addr, sock);
+		if (!is_server(*fd) || server == *fd)
+		{
+			if (s_poll->fds[i].revents&POLLIN)
+				pollin_handler(&s_poll->fds[i], server, s_poll,
+							addr, sock, data);
+			else if (s_poll->fds[i].revents&POLLOUT)
+				pollout_handler(fd, server, s_poll,
+							addr, sock, data);
+			else if (s_poll->fds[i].revents&(POLLHUP|POLLERR))
+				poller_handler(fd, server, s_poll,
+							addr, sock);
+		}
 	}
 }
 
@@ -204,12 +207,14 @@ void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 
 	nport = sock[0].get_parser().get_nport();
 	int timeout = sock[0].get_timeout();
+
 	init_data(&data);
 	while ((ret = poll(s_poll->fds, s_poll->nfds, timeout)) >= 0)
 	{
 
 		for (int i = 0; i < nport; i++)
 		{
+
 			direct_request(sock[i], addr, s_poll, &data);
 			free(data.buffer);
 			data.buffer = strdup("no request");

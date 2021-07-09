@@ -22,6 +22,12 @@ void receive_data(int fd,Socket &sock)
 	return ;
 }
 
+void reset_sock_request(Socket &sock)
+{
+	Request request;
+	sock.set_request(request);
+}
+
 void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 {
 	request.add(buffer);

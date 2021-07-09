@@ -115,6 +115,7 @@ bool method_post(int *fd, Socket &sock, t_data *data);
 bool method_delete(int *fd, Socket &sock, t_data *data);
 void set_request(Request request, Socket &sock, char *buffer, t_data *data);
 int apply_request(int *fd, Socket &sock, t_data *data);
+void reset_sock_request(Socket &sock);
 
 /*
  * poll handlers

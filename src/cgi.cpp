@@ -56,21 +56,25 @@ void	CGI::set_var(Request& request, Parser& parser)
 	GATEWAY_INTERFACE = "CGI/1.1";
 	SCRIPT_FILENAME = parser.get_cgi_path();
 	PATH_TRANSLATED = (char*)full_path.c_str();
-	std::string referer = request.get_referer();
+	std::string referer = request.get_arg_method();
 	if (referer.find('?') != std::string::npos)
+	{
 		QUERY_STRING = referer.substr(referer.find('?') + 1);
+		PATH_INFO = referer.substr(0, referer.find('?') );
+		PATH_TRANSLATED += PATH_INFO;
+	}
 	SERVER_NAME = "http://localhost";
 	REDIRECT_STATUS =  "200";
 
 
 //------------------------------------
-	std::cout<<"REQUEST_METHOD:["<<REQUEST_METHOD<<"]"<<std::endl;
 	std::cout<<"PATH_INFO:	["<<PATH_INFO<<"]"<<std::endl;
+	std::cout<<"QUERY_STRING ["<<QUERY_STRING<<"]"<<std::endl;
+	std::cout<<"REQUEST_METHOD:["<<REQUEST_METHOD<<"]"<<std::endl;
 	std::cout<<"SERVER_PORT	["<<SERVER_PORT<<"]"<<std::endl;
 	std::cout<<"GATEWAY_INTERFACE["<<GATEWAY_INTERFACE<<"]"<<std::endl;
 	std::cout<<"SCRIPT_FILENAME["<<SCRIPT_FILENAME<<"]"<<std::endl;
 	std::cout<<"PATH_TRANSLATED["<<PATH_TRANSLATED<<"]"<<std::endl;
-	std::cout<<"QUERY_STRING ["<<QUERY_STRING<<"]"<<std::endl;
 	std::cout<<"SERVER_NAME	["<<SERVER_NAME<<"]"<<std::endl;
 	std::cout<<"REDIRECT_STATUS ["<<REDIRECT_STATUS<<"]"<<std::endl;
 	//REMOTE_ADDR = 
