@@ -52,7 +52,7 @@ void	CGI::set_var(Request& request, Parser& parser)
 	REQUEST_METHOD = request.get_method();
 	PATH_INFO = request.get_arg_method();
 	SERVER_PORT = parser.get_port()[0];
-	SERVER_SOFTWARE = "webserver/1.0";
+	SERVER_SOFTWARE = parser.get_server_name();
 	GATEWAY_INTERFACE = "CGI/1.1";
 	SCRIPT_FILENAME = parser.get_cgi_path();
 	PATH_TRANSLATED = (char*)full_path.c_str();

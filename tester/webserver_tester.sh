@@ -37,3 +37,10 @@ curl -X POST -H "Content-Type: plain/text" --data "iiiiiiiiiiiiiiiiiiiiiiiiiiiii
 
 sleep 4
 clear
+
+
+echo "Testing GET METHOD with hostname (SHOULD RETURN 200 OK)"
+
+curl --resolve webserver:$1:127.0.0.1 http://localhost/
+
+

@@ -70,11 +70,7 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 
 	Request request;
 
-	printf("[POLLIN] read from %s(%d)\n", poll->fd == server ? "server" : "client", poll->fd);
-	fflush(stdout);
 	is_server(poll->fd);
-
-
 	if (poll->fd != server)
 	{
 		while ((ret = recv(poll->fd, buffer, BUFFER_SIZE, 0)) > 0)
@@ -96,32 +92,23 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 		msleep(50);
 		return 1;
 	}
-	printf("==========\n");
 	return 0;
 }
 
 void pollout_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock, t_data *data)
 {
-	printf("[POLLOUT] send to %s(%d)\n", *fd == server ? "server" : "client", *fd);
-	fflush(stdout);
-	(void)s_poll;
-	(void)addr;
-
 	if (*fd != server)
 	{
 		if (apply_request(fd, sock, data))
 			poller_handler(fd, server, s_poll, addr, sock);
 	}
 	msleep(150);
-	printf("==========\n");
 }
 
 void poller_handler(int *fd, int server, struct poll* s_poll,
 		struct sockaddr *addr, Socket &sock)
 {
-	printf("%s CONNECTION INTERRUPTED\n", *fd == server ? "SERVER" : "CLIENT");
-	fflush(stdout);
 	(void)sock;
 	(void)addr;
 	if (*fd != server && s_poll->nfds > 1)
@@ -131,5 +118,4 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	    delete_last(s_poll);
 	}
 	msleep(50);
-	printf("==========\n");
 }

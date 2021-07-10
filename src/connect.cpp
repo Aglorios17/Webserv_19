@@ -148,10 +148,11 @@ void send_html(int fd, char *path, Socket &sock, t_data *data)
 	s1 = send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], data);
 
 	while(std::getline(file, line))
+	{
 		s1 += &line[0];
+		s1 += "\n";
+	}
 	send(fd, &s1[0], strlen(&s1[0]), 0);
-	//
-	//output function would come handy
 	std::cout<<"++++++++++++\n"<<std::endl;
 	std::cout<<s1<<std::endl;
 	std::cout<<"++++++++++++\n"<<std::endl;

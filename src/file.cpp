@@ -12,7 +12,7 @@ int	get_file_size(const char *path)
 	{
 		while (std::getline(file, line))
 		{
-			count += line.length();
+			count += line.length() + 1;
 		}
 		file.close();
 	}
