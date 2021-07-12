@@ -216,7 +216,6 @@ void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 	init_data(&data);
 	while ((ret = poll(s_poll->fds, s_poll->nfds, timeout)) >= 0)
 	{
-
 		for (int i = 0; i < nport; i++)
 		{
 			direct_request(sock[i], addr, s_poll, &data);
