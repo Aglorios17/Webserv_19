@@ -59,7 +59,7 @@ valgrind: all
 tester: all
 	chmod +x ./tester/old_tester
 	./tester/old_tester http://localhost:8080
-siege:
+siege: all
 	./webserver includes/conf/siege.conf
 
 re:	fclean all

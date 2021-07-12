@@ -45,7 +45,7 @@ void Request::add(char *buffer)
 	_buffer = add;
 	std::string str(buffer);
 
-	str[strlen(buffer)] = '\0';
+//	str[strlen(buffer)] = '\0';
 	int i = 0;
 	size_t pos = 0;
 	std::string delimiter = "\n";
