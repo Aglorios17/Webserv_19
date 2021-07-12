@@ -38,7 +38,6 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 	std::string extension ;
 
 
-	//std::cout<< "[[[[[[SOCKET PORT: "<< sock.get_port()<<std::endl;
 	if (source.find('?') != std::string::npos)
 		extension= source.substr(0, source.find('?') );
 
@@ -47,10 +46,12 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 
 	if (!get_extension(strtrim(extension, '.')).compare(sock.get_parser().get_cgi_extension()))
 	{
-		//std::cout<<"LAUNCH CGI!!!"<<std::endl;	
-		//std::cout<<"arg method in CGI "<< sock.get_request().get_arg_method()<<std::endl;
 		CGI cgi(sock.get_request(), sock.get_parser());
 		cgi.execute_cgi();
+		std::string body = cgi.get_body();
+		send(*fd, &body[0], strlen(&body[0]), 0);
+		reset_sock_request(sock);
+		return (0);
 	}		
 	
 	std::string s = file2socket(*fd, &source[0], sock, data);
@@ -103,9 +104,9 @@ bool method_delete(int *fd, Socket &sock, t_data *data)
 
 // Check whether exist or empty (404 or 405) (cant delete whole dir or sensitive files
 	std::fstream file;
-	file.open(path_info, std::ios::out);
+	file.open(path_info);//, std::ios::out);
 	std::string s;
-	if (!file.is_open())// Check whether exist or empty (404 or 405)
+	if (!file.good())// Check whether exist or empty (404 or 405)
 	{
 		data->status = 404;
 		return (method_error(fd, sock, data));
