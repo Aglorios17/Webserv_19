@@ -14,6 +14,7 @@ bool method_error(int *fd, Socket &sock, t_data *data)
 	s = send_header(sock, *fd, 0, NULL, data);
 	print_reponse(s);
 	send(*fd, &s[0], strlen(&s[0]), 0);
+	reset_sock_request(sock);
 	return (1);
 }
 

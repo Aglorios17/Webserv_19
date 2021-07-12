@@ -221,6 +221,7 @@ void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 			direct_request(sock[i], addr, s_poll, &data);
 			data.buffer = (char*)"no request";
 		}
+//		msleep(50);
 	}
 	free(data.last);
 }
