@@ -64,6 +64,8 @@ std::string Request::str_ret(std::string str, std::string cmd)
 {
 	int i = 0;
 	std::string cmp;
+
+	cmp = "";
 	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
 		i++;
 	while (str[i] && str[i] != ' ')
@@ -83,6 +85,8 @@ int Request::int_ret(std::string str, std::string cmd)
 {
 	int i = 0;
 	std::string cmp;
+
+	cmp = "";
 	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
 		i++;
 	while (str[i] && str[i] != ' ')
@@ -105,6 +109,7 @@ bool Request::request_method_check(std::string line)
 {
 	char *token = strtok(&line[0], " ");
 	int i = 0;
+
 	while (token != NULL)
 	{
 		if (i == 0)
@@ -218,7 +223,6 @@ std::string Request::stock_body(std::string *tab, int y, int max)
 {
 	std::string body;
 
-//	std::cout << "encoding : |" << _transfer_encoding << "|"<<std::endl;
 	if (_transfer_encoding.find("chunked") == std::string::npos)
 	{
 		for (int i = y + 1; i < max; i++)
@@ -230,7 +234,6 @@ std::string Request::stock_body(std::string *tab, int y, int max)
 	}
 	else
 	{
-//		std::cout << "chunked" <<std::endl;
 		int size;
 		for (int i = y + 1; i < max - 1; i++)
 		{
