@@ -4,17 +4,12 @@ int	get_file_size(const char *path)
 {
 	std::ifstream	file(path);
 	std::string	line;
+	struct stat result;
 	int 		count;
 
 	count = 0;
-	std::cout<<"file size path: "<<path<<std::endl;
-	if (file.is_open())
-	{
-		while (std::getline(file, line))
-		{
-			count += line.length() + 1;
-		}
-		file.close();
-	}
+	if (stat(path, &result) == 0)
+		return result.st_size;
+	std::cout<<"AN ERROR OCCURED READING FILE SIZE of "<<path<<std::endl;
 	return count;
 }

@@ -47,7 +47,6 @@ int apply_request(int *fd, Socket &sock, t_data *data)
 
 	if (request_port != server_port)
 	{
-		std::cout << "ERROR\n";
 		reset_sock_request(sock);
 		return 0;
 	}

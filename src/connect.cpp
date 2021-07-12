@@ -75,7 +75,7 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 //		buf += ("Last-Modified: " + str);
 //	}
 	if (type)
-	{;
+	{
 		if (strcmp(type, "text") == 0)
 			buf += "Content-Type: plain/text\r\n";
 		if (strcmp(type, "php") == 0)
@@ -124,39 +124,47 @@ void set_env(Socket &sock, std::string path_info)
 	setenv("PATH_INFO", PATH_INFO, 1);
 }
 
-
-
-void send_html(int fd, char *path, Socket &sock, t_data *data)
+void file2socket(int fd, char *path, Socket &sock, t_data *data)
 {
 	std::string s1;
 	std::string line;
-	std::ifstream file;
-	
-	if (file_exists(path) == false)//check if file exists
+
+	if (file_exists(path) == false)
 	{
 		printf("ERROR: FILE NOT FOUND\n");	
 		fflush(stdout);
 		data->status = 404;
-		std::string error = sock.get_parser().get_root() + sock.get_parser().get_error_page();
+		std::string error =
+			sock.get_parser().get_root() +
+			sock.get_parser().get_error_page();
 		path = (char*)malloc(strlen(&error[0]) + 1);
 		strcpy(path, &error[0]);
 	}
 	std::string s_path(path);
 	std::string s_file = s_path.substr(s_path.find_last_of('/') + 1);
-	file.open(path);
+	std::string extension = get_extension(s_file);
 
-	s1 = send_header(sock, fd, get_file_size(path), &get_extension(s_file)[0], data);
 
-	while(std::getline(file, line))
+	std::ifstream file; 
+	file.open(path,  std::ios::out | std::ios::binary | std::ios::ate);
+
+	if (file.is_open())
 	{
-		s1 += &line[0];
-		s1 += "\n";
+		std::string mem;
+		unsigned long size = file.tellg();
+		file.seekg(0);
+		while(!file.eof())
+		{
+			char tmp = file.get();
+			mem += tmp;
+		}
+		file.close();
+		s1 = send_header(sock, fd, size, &get_extension(s_file)[0], data);
+		size += s1.length() + 4;
+		s1 += mem;
+		s1 += "\r\n\r\n";
+		send(fd, &s1[0], size, 0);
 	}
-	send(fd, &s1[0], strlen(&s1[0]), 0);
-	std::cout<<"++++++++++++\n"<<std::endl;
-	std::cout<<s1<<std::endl;
-	std::cout<<"++++++++++++\n"<<std::endl;
-
 	file.close();
 }
 

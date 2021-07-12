@@ -32,6 +32,7 @@
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/event.h>
 #include <sys/time.h>
 #include <netinet/in.h>
@@ -102,7 +103,7 @@ void	run_server(Socket sock [] , struct sockaddr *addr, struct poll* poll);
  */
 
 int	get_file_size(char const *path);
-void	send_html(int fd, char *path, Socket &sock, t_data *data);
+void	file2socket(int fd, char *path, Socket &sock, t_data *data);
 std::string send_header(Socket &sock, int fd, int size, char *type, t_data *data);
 
 /*
