@@ -76,6 +76,7 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	if (!file.is_open())// Check whether exist or empty (404 or 405)
 	{
 		data->status = 405;
+		reset_sock_request(sock);
 		return (method_error(fd, sock, data));
 	}
 	else
@@ -122,7 +123,6 @@ bool method_delete(int *fd, Socket &sock, t_data *data)
 	}
 	s = send_header(sock, *fd, 0, NULL, data);
 	send(*fd, &s[0], strlen(&s[0]), 0);
-
 	reset_sock_request(sock);
 	return (1);
 }
