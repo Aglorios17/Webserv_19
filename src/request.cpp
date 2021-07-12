@@ -218,7 +218,7 @@ std::string Request::stock_body(std::string *tab, int y, int max)
 {
 	std::string body;
 
-	std::cout << "encoding : |" << _transfer_encoding << "|"<<std::endl;
+//	std::cout << "encoding : |" << _transfer_encoding << "|"<<std::endl;
 	if (_transfer_encoding.find("chunked") == std::string::npos)
 	{
 		for (int i = y + 1; i < max; i++)
@@ -230,7 +230,7 @@ std::string Request::stock_body(std::string *tab, int y, int max)
 	}
 	else
 	{
-		std::cout << "chunked" <<std::endl;
+//		std::cout << "chunked" <<std::endl;
 		int size;
 		for (int i = y + 1; i < max - 1; i++)
 		{

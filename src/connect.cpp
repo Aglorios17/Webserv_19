@@ -97,9 +97,9 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 	buf += "Cache-Control: no-store\r\n";
 	buf += "Content-Length: " + std::to_string(size) + "\r\n\r\n";
 
-	std::cout<<"------------"<<std::endl;
-	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
-	std::cout<<"------------"<<std::endl;
+//	std::cout<<"------------"<<std::endl;
+//	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
+//	std::cout<<"------------"<<std::endl;
 	s1 = &buf[0];
 	//ret = send(fd, s1, strlen(s1), 0);
 	return (s1);
@@ -124,7 +124,7 @@ void set_env(Socket &sock, std::string path_info)
 	setenv("PATH_INFO", PATH_INFO, 1);
 }
 
-void file2socket(int fd, char *path, Socket &sock, t_data *data)
+std::string file2socket(int fd, char *path, Socket &sock, t_data *data)
 {
 	std::string s1;
 	std::string line;
@@ -163,9 +163,10 @@ void file2socket(int fd, char *path, Socket &sock, t_data *data)
 		size += s1.length() + 4;
 		s1 += mem;
 		s1 += "\r\n\r\n";
-		send(fd, &s1[0], size, 0);
+	//	send(fd, &s1[0], size, 0);
 	}
 	file.close();
+	return (s1);
 }
 
 

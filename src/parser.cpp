@@ -362,22 +362,24 @@ bool Parser::save_data(void)
 		return (0);
 	if (!server_parser(tab_conf, size_file))
 		return (0);
-	std::cout << "PORT : ";
+	std::cout << CYAN << "========= SERVEUR SETUP =========" << RESET << std::endl;
+	std::cout << GREEN << "Server_name : " << _server_name << RESET << std::endl;
+	std::cout << GREEN << "PORT : " << RESET;
 	for (int i = 0; i < _tab_size ; i++)
 	{
-		std::cout << _listen_port[i] << " ";
+		std::cout << YELLOW << _listen_port[i] << RESET << " ";
 		_nport += 1;
 	}
 	std::cout << std::endl;
-	std::cout << "NPORT : " << _nport << std::endl;
-	std::cout << "Timeout : " << _timeout << std::endl;
-	std::cout << "Server_name : " << _server_name << std::endl;
-	std::cout << "client_max_body_size : "<< _client_max_body_size << std::endl;
-	std::cout << "root : " << _root << std::endl;
-	std::cout << "index : " << _index << std::endl;
-	std::cout << "error_page : " << _error_page << std::endl;
-	std::cout << "cgi_extension : " << _cgi_extension << std::endl;
-	std::cout << "cgi_path : " << _cgi_path << std::endl;
+	std::cout << MAGENTA << "NPORT : " << _nport << RESET << std::endl;
+	std::cout << GREEN << "root : " << _root << RESET << std::endl;
+	std::cout << GREEN << "index : " << _index << RESET << std::endl;
+	std::cout << RED << "error_page : " << _error_page << RESET << std::endl;
+	std::cout << RED << "Timeout : " << _timeout << RESET << std::endl;
+	std::cout << RED << "client_max_body_size : "<< _client_max_body_size << RESET << std::endl;
+	std::cout << GREEN << "cgi_extension : " << _cgi_extension << RESET << std::endl;
+	std::cout << GREEN << "cgi_path : " << _cgi_path << RESET << std::endl;
+	std::cout << CYAN << "=================================" << RESET << std::endl;
 	delete[] tab_conf;
 	return (1);
 }

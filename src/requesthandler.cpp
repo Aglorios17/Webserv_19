@@ -30,6 +30,9 @@ void reset_sock_request(Socket &sock)
 
 void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 {
+	std::cout << GREEN << "============ REQUEST ============" << RESET << std::endl;
+	std::cout << BLUE << buffer << RESET << std::endl;
+	std::cout << GREEN << "================================="<< RESET << std::endl;
 	request.add(buffer);
 	request.request_data();
 

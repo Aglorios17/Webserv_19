@@ -24,12 +24,12 @@ int main(int argc, char **argv)
 	
 	if (argc != 2)
 	{
-		std::cout << "Need config file" << std::endl;
+		std::cout << RED << "NEED CONFIG FILE" << RESET << std::endl;
 		return (0);
 	}
 	if (!parser.copy_file(argv[1]))
 	{
-		std::cout << "Error config file" << std::endl;
+		std::cout << RED << "ERROR CONFIGURATION FILE" << RESET << std::endl;
 		return (0);
 	}
 	int ip = 0;		
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 		ip = AF_INET;		
 	else
 	{
-		std::cout << "INVALID IP" << std::endl;
+		std::cout << RED << "INVALID IP" << RESET << std::endl;
 		return (0);
 	}
 	int *port = parser.get_port();
