@@ -64,6 +64,7 @@ class Request
 				_cgi = cpy._cgi;
 				_body = cpy._body;
 				_port = cpy._port;
+				_buffer = cpy._buffer;
 			}
 			return (*this);
 		}
@@ -98,6 +99,7 @@ class Request
 		std::string	get_accept_encoding(void) {return (_accept_encoding);}
 		std::string	get_transfer_encoding(void) {return (_transfer_encoding);}
 		std::string	get_user_agent(void) {return (_user_agent);}
+		std::string	get_buffer(void) {return (_buffer);}
 		int			get_status(void) {return (_status);}
 };
 

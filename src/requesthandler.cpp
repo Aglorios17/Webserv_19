@@ -30,9 +30,6 @@ void reset_sock_request(Socket &sock)
 
 void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 {
-	std::cout << GREEN << "============ REQUEST ============" << RESET << std::endl;
-	std::cout << BLUE << buffer << RESET << std::endl;
-	std::cout << GREEN << "================================="<< RESET << std::endl;
 	request.add(buffer);
 	request.request_data();
 
@@ -53,6 +50,9 @@ int apply_request(int *fd, Socket &sock, t_data *data)
 		reset_sock_request(sock);
 		return 0;
 	}
+	std::cout << GREEN << "============ REQUEST ============" << RESET << std::endl;
+	std::cout << YELLOW << sock.get_request().get_buffer() << RESET << std::endl;
+	std::cout << GREEN << "================================="<< RESET << std::endl;
 	if (data->status != 200)
 		return (method_error(fd, sock, data));
 	if (sock.get_request().get_method() == "POST")
