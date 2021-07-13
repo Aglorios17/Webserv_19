@@ -9,14 +9,14 @@ curl http://localhost:$1
 sleep 4
 clear
 
-echo "testing GET /does_not_exist (SHOULD RETURN 404 FILE NOT FOUND + ERROR PAGE)"
+echo "testing GET /does_not_exist (SHOULD RETURN 404 FILE NOT FOUND)"
 
 curl http://localhost:$1/does_not_exist
 
 sleep 4
 clear
 
-echo "testing POST size 0 (SHOULD RETURN 405 METHOD NOT ALLOWED + ERROR PAGE)"
+echo "testing POST size 0 (SHOULD RETURN 405 METHOD NOT ALLOWED)"
 
 curl -X POST http://localhost:$1/
 
@@ -46,15 +46,15 @@ curl -X DELETE http://localhost:$1/plain_text
 sleep 4
 clear
 
-echo "testing DELETE /does_not_exist (SHOULD RETURN 404 FILE NOT FOUND + ERROR PAGE)"
+echo "testing DELETE /does_not_exist (SHOULD RETURN 404 FILE NOT FOUND)"
 
 curl -X DELETE http://localhost:$1/does_not_exist
 
 sleep 4
 clear
 
-echo "Testing GET METHOD with hostname (SHOULD RETURN 200 OK)"
+echo "Testing GET METHOD with hostname"
 
-curl --resolve webserver:$1:127.0.0.1 http://localhost/
+curl --resolve example.com:$1:localhost http://example.com/
 
 
