@@ -22,10 +22,22 @@ std::string	get_path_info(Socket &sock, int method)
 	clean_path(source);
 	if (source.length() == 0 && method != 0)
 		source = sock.get_parser().get_index();
-	source = sock.get_parser().get_root() + source;//PATH_INFO
-
+	source = sock.get_parser().get_root() + source;
 	return source;
 }
+
+int cgi_method(int *fd, Socket &sock, int ret)
+{
+		CGI cgi(sock.get_request(), sock.get_parser());
+		ret = cgi.execute_cgi();
+		std::string body = cgi.get_body();
+
+		if (ret == 0 || ret == 1)
+			return (ret);
+		ret = send(*fd, &body[0], strlen(&body[0]), 0);
+		reset_sock_request(sock);
+		return (ret);
+}		
 
 int		method_get(int *fd, Socket &sock, t_data *data)
 {
@@ -39,17 +51,7 @@ int		method_get(int *fd, Socket &sock, t_data *data)
 
 	std::string cgi_extension = sock.get_parser().get_cgi_extension();
 	if (cgi_extension.size() && !get_extension(strtrim(extension, '.')).compare(cgi_extension))
-	{
-		CGI cgi(sock.get_request(), sock.get_parser());
-		ret = cgi.execute_cgi();
-		std::string body = cgi.get_body();
-
-		if (ret == 0 || ret == 1)
-			return ret;
-		ret = send(*fd, &body[0], strlen(&body[0]), 0);
-		reset_sock_request(sock);
-		return (ret);
-	}		
+		return (cgi_method(fd, sock, ret));
 	
 	ret = file2socket(*fd, &source[0], sock, data);
 	reset_sock_request(sock);
@@ -64,8 +66,13 @@ int		method_post(int *fd, Socket &sock, t_data *data)
 	file.open(path_info, std::ios::out);
 	int ret = 2;
 	std::string s;
+	std::string extension;
 
-	if (!file.is_open())// Check whether exist or empty (404 or 405)
+	std::string cgi_extension = sock.get_parser().get_cgi_extension();
+	if (cgi_extension.size() && !get_extension(strtrim(extension, '.')).compare(cgi_extension))
+		return (cgi_method(fd, sock, ret));
+
+	if (!file.is_open())
 	{
 		data->status = 405;
 		return (method_error(fd, sock, data));
@@ -75,7 +82,6 @@ int		method_post(int *fd, Socket &sock, t_data *data)
 		file << sock.get_request().get_body();
 		std::cout << RED << "FILE : " << path_info << " CREATED !" << RESET << std::endl;
 	}
-	//------------------------------------------
 	file.close();
 	s = send_header(sock, *fd, 0, NULL, data);
 	ret = send(*fd, &s[0], strlen(&s[0]), 0);
