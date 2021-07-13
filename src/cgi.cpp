@@ -149,11 +149,11 @@ int	CGI::execute_cgi()
 	BODY = body;
 	dup2(fdin, STDIN_FILENO);
 	dup2(fdout, STDOUT_FILENO);
-
+/*
 	std::cout<<"CGI OUTPUT ==================\n"<<std::endl;
 	std::cout<<buffer<<std::endl;
 	std::cout<<"==================\n"<<std::endl;
-
+*/
 	return (ret);
 }
 
