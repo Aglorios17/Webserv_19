@@ -186,7 +186,7 @@ bool server_norme(std::string *tab, int size)
 bool Parser::client_body_size_check(std::string tab)
 {
 	std::string add;
-	if (_client_max_body_size != 0 || (add = str_val(tab, "client_max_body_size")) == "")
+	if (_client_max_body_size != -1 || (add = str_val(tab, "client_max_body_size")) == "")
 		return (0);
 	if (!isdigit(add[0]))
 		return (0);
@@ -196,8 +196,9 @@ bool Parser::client_body_size_check(std::string tab)
 		if (!isdigit(add[i]))
 		{
 			if (add[i] == 'M' && !add[i + 1])
-			{	
-				if (!(_client_max_body_size = atoi(&add[0])))
+			{
+				_client_max_body_size = atoi(&add[0]);
+				if (_client_max_body_size < 0)
 					return (0);
 			}
 			else
@@ -212,7 +213,6 @@ bool Parser::put_data(std::string tab, int cgi)
 {
 	if (tab.find("listen") != std::string::npos)
 	{
-		std::cout << std::endl;
 		if (_listen_port != NULL)
 		{
 			int *port_tab = 0;
@@ -221,7 +221,6 @@ bool Parser::put_data(std::string tab, int cgi)
 				return (0);
 			_add_size = _tab_size - save_port;
 			_listen_port = int_add_back(_listen_port, port_tab, save_port, _add_size);
-//			delete[] port_tab;
 		}
 		else
 		{
@@ -328,8 +327,13 @@ bool Parser::location_parser(std::string *tab_conf, int start, int end)
 	if (!location_end(tab_conf, end))
 		return (0);
 	for (int x = start + 1; x < end; x++)
+	{
+		if (cgi == 1)
+			if (tab_conf[x].find("root") == std::string::npos)
+				return (0);
 		if (!put_data(tab_conf[x], cgi))
 			return (0);
+	}
 	return (1);
 }
 
@@ -385,7 +389,7 @@ bool Parser::save_data(void)
 	std::string *tab_conf = stotab();
 	_listen_port = 0;
 	_timeout = 0;
-	_client_max_body_size = 0;
+	_client_max_body_size = -1;
 	_tab_size = 0;
 	_add_size = 0;
 	_nport = 0;
@@ -394,6 +398,9 @@ bool Parser::save_data(void)
 	if (!server_parser(tab_conf, size_file))
 		return (0);
 	if (!check_port())
+		return (0);
+	if (!_listen_port || _index == "" || _root == "" || _error_page == ""
+		|| _client_max_body_size == -1)
 		return (0);
 	std::cout << CYAN << "========= SERVEUR SETUP =========" << RESET << std::endl;
 	std::cout << GREEN << "Server_name : " << _server_name << RESET << std::endl;

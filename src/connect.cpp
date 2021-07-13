@@ -59,11 +59,10 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 	std::string	buf;
 	(void)fd;
 
-	std::string last = data->last;
-
 	buf = get_header_message(data->status);
 	buf += get_time(data);
-	buf += "Server: " + sock.get_parser().get_server_name() + "\r\n"; 
+	if (sock.get_parser().get_server_name().size())
+		buf += "Server: " + sock.get_parser().get_server_name() + "\r\n"; 
 	if (type)
 	{
 		if (strcmp(type, "text") == 0)
