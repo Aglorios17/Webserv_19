@@ -12,7 +12,10 @@
 
 TARGET = webserver
 
+CONF = default.conf
+
 SRC_DIR = src
+
 
 CC = clang++
 
@@ -50,7 +53,7 @@ fclean: clean
 	rm ./tester/client | true
 
 run: all
-	./webserver includes/conf/default.conf
+	./webserver includes/conf/$(CONF)
 client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
 	mv ./client ./tester
