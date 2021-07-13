@@ -69,6 +69,7 @@ int main(int argc, char **argv)
 				sizeof(struct sockaddr_in));
 		if (listen(socket[i].get_fd(), 1) < 0)
 			exit (EXIT_FAILURE);
+		delete address;
 	}
 	get_server(socket, NULL, SET);
 	run_server(socket, (struct sockaddr*)address, poll);

@@ -105,10 +105,6 @@ void set_env(Socket &sock, std::string path_info)
 	SERVER_PROTOCOL = sock.get_request().get_http_method().c_str();
 	PATH_INFO = path_info.c_str();
 
-	std::cout<<"-------\nCGI ENV VAR:\n"<<"REQUEST METHOD: "<<REQUEST_METHOD<<std::endl;
-	std::cout<<"SERVER PROTOCOL: "<< SERVER_PROTOCOL<<std::endl;
-	std::cout<<"PATH INFO: "<< PATH_INFO <<std::endl;
-
 	setenv("REQUEST_METHOD", REQUEST_METHOD, 1);
 	setenv("SERVER_PROTOCOL", SERVER_PROTOCOL, 1);
 	setenv("PATH_INFO", PATH_INFO, 1);

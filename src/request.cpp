@@ -30,8 +30,7 @@ std::string *Request::stotab(void)
 	}
 	if (str.size())
 		tab[i] += str.substr(0);
-//	for (int i = 0; i < _size_buf; i++)
-//		std::cout<<"["<<tab[i]<<"]"<<std::endl;
+
 	return (tab);
 }
 
@@ -45,7 +44,6 @@ void Request::add(char *buffer)
 	_buffer = add;
 	std::string str(buffer);
 
-//	str[strlen(buffer)] = '\0';
 	int i = 0;
 	size_t pos = 0;
 	std::string delimiter = "\n";

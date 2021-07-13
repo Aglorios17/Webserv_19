@@ -55,7 +55,7 @@ client: all
 	echo "./webserver includes/conf/tester.conf" 
 	mv ./client ./tester
 valgrind: all
-	valgrind ./webserver includes/conf/tester.conf
+	valgrind --leak-check=full ./webserver includes/conf/tester.conf
 tester: all
 	chmod +x ./tester/old_tester
 	./tester/old_tester http://localhost:8080
