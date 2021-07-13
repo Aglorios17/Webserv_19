@@ -230,6 +230,8 @@ void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 			direct_request(sock[i], addr, s_poll, data);
 			data->buffer = (char*)"no request";
 		}
+		if (nport < 4)
+			msleep(10);
 	}
 	free(data->last);
 }
