@@ -119,11 +119,12 @@ std::string get_good_path(Socket &sock, char *path, t_data *data)
 	return path;
 }
 
-std::string file2socket(int fd, char *path, Socket &sock, t_data *data)
+int file2socket(int fd, char *path, Socket &sock, t_data *data)
 {
 	std::string line;
 	std::string s_path;
 	std::string s1;
+	int ret = 1;
 
 	s_path = get_good_path(sock, path, data);
 	path = &s_path[0];
@@ -150,8 +151,10 @@ std::string file2socket(int fd, char *path, Socket &sock, t_data *data)
 		s1 += mem;
 		s1 += "\r\n\r\n";
 	}
+	ret = send(fd, &s1[0], strlen(&s1[0]), 0);
+	print_reponse(s1);
 	file.close();
-	return (s1);
+	return (ret);
 }
 
 void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_data *data)

@@ -36,8 +36,7 @@ int	end_line(int i, std::string cmp)
 		i++;
 	}
 	return (1);
-}
-
+} 
 int *Parser::int_tab_val(std::string cmp, std::string cmd)
 {
 	char *token = strtok(&cmp[0], " ");

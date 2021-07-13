@@ -169,7 +169,7 @@ int	CGI::execute_cgi()
 	std::cout<<buffer<<std::endl;
 	std::cout<<"==================\n"<<std::endl;
 
-	return (0);
+	return (ret);
 }
 
 std::string CGI::get_body(){return BODY;}
