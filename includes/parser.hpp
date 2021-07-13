@@ -36,6 +36,7 @@ class Parser
 		std::string _root;
 		std::string _cgi_extension;
 		std::string _cgi_path;
+		std::string _upload_dir;
 		int _client_max_body_size;
 		int	_tab_size;
 		int _add_size;
@@ -59,6 +60,7 @@ class Parser
 				_client_max_body_size = cpy._client_max_body_size;
 				_cgi_path = cpy._cgi_path;
 				_cgi_extension = cpy._cgi_extension;
+				_upload_dir = cpy._upload_dir;
 			}
 			return (*this);
 		}
@@ -84,6 +86,13 @@ class Parser
 		std::string get_root(void) {return (_root);}
 		std::string get_cgi_path(void) {return (_cgi_path);}
 		std::string get_cgi_extension(void) {return (_cgi_extension);}
+		std::string get_upload_dir(void)
+		{
+			std::string path = "";
+			if (_upload_dir.size())
+				path = _root + _upload_dir.substr(2, _upload_dir.size());
+			return (path);
+		}
 };
 
 #endif

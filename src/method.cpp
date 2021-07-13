@@ -15,10 +15,27 @@ int		method_error(int *fd, Socket &sock, t_data *data)
 	return (ret);
 }
 
+std::string	get_path_info_post(Socket &sock)
+{
+	std::string source = sock.get_request().get_arg_method();
+
+	if (source.find('?') != std::string::npos)
+		source = source.substr(0, source.find('?'));
+	clean_path(source);
+	std::string upload = sock.get_parser().get_upload_dir();
+	if (upload.size())
+		source = upload + source;
+	else
+		source = sock.get_parser().get_root() + source;
+	return source;
+}
+
 std::string	get_path_info(Socket &sock, int method)
 {
 	std::string source = sock.get_request().get_arg_method();
 
+	if (method == 1 && source.find('?') != std::string::npos)
+		source = source.substr(0, source.find('?'));
 	clean_path(source);
 	if (source.length() == 0 && method != 0)
 		source = sock.get_parser().get_index();
@@ -61,7 +78,7 @@ int		method_get(int *fd, Socket &sock, t_data *data)
 int		method_post(int *fd, Socket &sock, t_data *data)
 {
 
-	std::string path_info = get_path_info(sock, 0);
+	std::string path_info = get_path_info_post(sock);
 	std::fstream file;
 	file.open(path_info, std::ios::out);
 	int ret = 2;

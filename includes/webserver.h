@@ -56,6 +56,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <dirent.h>
 
 #include "socket.h"
 #include "parser.hpp"
@@ -181,6 +182,7 @@ std::string	strtrim(std::string &s,char c);
 int		get_server(Socket sock [],int **holdr, int mode);
 int		is_server(int fd);
 int		tab_len(int *tab);
+void clean_substring(std::string &main, std::string to_delete);
 
 /*
  * PRINT

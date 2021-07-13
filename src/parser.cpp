@@ -12,12 +12,6 @@
 
 #include "../includes/webserver.h"
 
-/* It could be possible to implement 
- * more compatibilities see:
- * https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/aixprggd/progcomc/skt_types.htm
- */
-/////////////////////////////////////////////////////////////// Parser
-
 int	end_line(int i, std::string cmp)
 {
 	int end = 0;
@@ -249,6 +243,8 @@ bool Parser::put_data(std::string tab, int cgi)
 		{
 			if (_root != "" || (_root = str_val(tab, "root")) == "")
 				return (0);
+			if (_root[_root.size() - 1] != '/')
+				return (0);
 		}
 		else
 			if (_cgi_path != "" || (_cgi_path = str_val(tab, "root")) == "")
@@ -262,6 +258,13 @@ bool Parser::put_data(std::string tab, int cgi)
 	else if (tab.find("error_page") != std::string::npos)
 	{	
 		if (_error_page != "" || (_error_page = str_val(tab, "error_page")) == "")
+			return (0);
+	}
+	else if (tab.find("upload_dir") != std::string::npos)
+	{	
+		if (_upload_dir != "" || (_upload_dir = str_val(tab, "upload_dir")) == "")
+			return (0);
+		if (_upload_dir[_upload_dir.size() - 1] != '/')
 			return (0);
 	}
 	else if (tab != "")
@@ -393,6 +396,7 @@ bool Parser::save_data(void)
 	_tab_size = 0;
 	_add_size = 0;
 	_nport = 0;
+	_upload_dir = "";
 	if (!server_norme(tab_conf, size_file))
 		return (0);
 	if (!server_parser(tab_conf, size_file))
@@ -402,6 +406,20 @@ bool Parser::save_data(void)
 	if (!_listen_port || _index == "" || _root == "" || _error_page == ""
 		|| _client_max_body_size == -1)
 		return (0);
+	if (_upload_dir.size())
+	{
+		std::string tmp = _upload_dir;
+		if (_upload_dir.find("./") == std::string::npos)
+			return (0);
+		if (_upload_dir == "./")
+			return (0);
+		std::string create = tmp.substr(2, tmp.size());
+		tmp = _root + create;
+		DIR* dir = opendir(&tmp[0]);
+		if (!dir)
+			if (mkdir(&tmp[0], 0777) == -1) 
+				return (0);
+	}
 	std::cout << CYAN << "========= SERVEUR SETUP =========" << RESET << std::endl;
 	std::cout << GREEN << "Server_name : " << _server_name << RESET << std::endl;
 	std::cout << GREEN << "PORT : " << RESET;
@@ -414,6 +432,8 @@ bool Parser::save_data(void)
 	std::cout << GREEN << "root : " << _root << RESET << std::endl;
 	std::cout << GREEN << "index : " << _index << RESET << std::endl;
 	std::cout << RED << "error_page : " << _error_page << RESET << std::endl;
+	if (_upload_dir.size())
+		std::cout << RED << "upload_dir : " << _upload_dir << RESET << std::endl;
 	std::cout << RED << "Timeout : " << _timeout << RESET << std::endl;
 	std::cout << RED << "client_max_body_size : "<< _client_max_body_size << RESET << std::endl;
 	std::cout << GREEN << "cgi_extension : " << _cgi_extension << RESET << std::endl;
@@ -450,14 +470,10 @@ bool Parser::copy_file(char *file)
 		}
 	}
 	copy.close();
-//	std::cout << size_file << std::endl;
-//	std::cout << _conf_file;
 	if (!save_data())
 		return (0);
 	return (1);
 }
-
-////////////////////////////////////////////////////////////////
 
 bool	domain_is_valid(int domain)
 {
