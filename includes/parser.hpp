@@ -64,6 +64,7 @@ class Parser
 		}
 		bool copy_file(char *file);
 		bool save_data(void);
+		bool check_port(void);
 		bool put_data(std::string tab, int cgi);
 		bool server_parser(std::string *tab_conf, int size_file);
 		bool location_parser(std::string *tab_conf, int start, int end);

@@ -37,7 +37,8 @@ int		method_get(int *fd, Socket &sock, t_data *data)
 	if (source.find('?') != std::string::npos)
 		extension= source.substr(0, source.find('?') );
 
-	if (!get_extension(strtrim(extension, '.')).compare(sock.get_parser().get_cgi_extension()))
+	std::string cgi_extension = sock.get_parser().get_cgi_extension();
+	if (cgi_extension.size() && !get_extension(strtrim(extension, '.')).compare(cgi_extension))
 	{
 		CGI cgi(sock.get_request(), sock.get_parser());
 		ret = cgi.execute_cgi();

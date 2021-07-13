@@ -265,6 +265,8 @@ bool Parser::put_data(std::string tab, int cgi)
 		if (_error_page != "" || (_error_page = str_val(tab, "error_page")) == "")
 			return (0);
 	}
+	else if (tab != "")
+		return (0);
 	return (1);
 }
 
@@ -285,17 +287,15 @@ bool location_end(std::string *tab_conf, int end)
 
 std::string ret_extension(std::string ext)
 {
-	std::string ret;
-	char *token = strtok(&ext[0], ".");
-	int i = 0;
-	while (token != NULL)
+	std::string ret = "";
+	size_t pos = 0;
+	if ((pos = ext.find(".")) != std::string::npos)
 	{
-		if (i == 1)
-			ret = bypass_tab(token);
-		if (i == 2)
-			return (0);
-		i++;
-		token = strtok(NULL, " ");
+		std::string first = ext.substr(0, pos + 1);
+		if (first != "*.")
+			return (ret);
+		ext.erase(0, pos + 1);
+		ret = ext;
 	}
 	return (ret);
 }
@@ -322,6 +322,9 @@ bool Parser::location_parser(std::string *tab_conf, int start, int end)
 		i++;
 		token = strtok(NULL, " ");
 	}
+	token = NULL;
+	if (i != 3)
+		return (0);
 	if (!location_end(tab_conf, end))
 		return (0);
 	for (int x = start + 1; x < end; x++)
@@ -338,11 +341,40 @@ bool Parser::server_parser(std::string *tab_conf, int size_file)
 		{
 			int start = y;
 			while (y < size_file && tab_conf[y].find("}") == std::string::npos)
+			{
+				if (y != start && tab_conf[y].find("location ") != std::string::npos)
+					return (0);
 				y++;
+			}
+			if (y == size_file - 1)
+				return (0);
 			if (!location_parser(tab_conf, start, y))
 				return (0);
 		}
-		if (!put_data(tab_conf[y], 0))
+		else if (!put_data(tab_conf[y], 0))
+			return (0);
+	}
+	return (1);
+}
+
+bool Parser::check_port(void)
+{
+	int	y;
+	int	count;
+
+	y = 0;
+	count = 0;
+	for (int i = 0; i < _tab_size ; i++)
+	{
+		y = 0;
+		count = 0;
+		while (y < _tab_size)
+		{
+			if (_listen_port[i] == _listen_port[y])
+				count++;
+			y++;
+		}
+		if (count > 1)
 			return (0);
 	}
 	return (1);
@@ -361,6 +393,8 @@ bool Parser::save_data(void)
 		return (0);
 	if (!server_parser(tab_conf, size_file))
 		return (0);
+	if (!check_port())
+		return (0);
 	std::cout << CYAN << "========= SERVEUR SETUP =========" << RESET << std::endl;
 	std::cout << GREEN << "Server_name : " << _server_name << RESET << std::endl;
 	std::cout << GREEN << "PORT : " << RESET;
@@ -370,7 +404,6 @@ bool Parser::save_data(void)
 		_nport += 1;
 	}
 	std::cout << std::endl;
-	std::cout << MAGENTA << "NPORT : " << _nport << RESET << std::endl;
 	std::cout << GREEN << "root : " << _root << RESET << std::endl;
 	std::cout << GREEN << "index : " << _index << RESET << std::endl;
 	std::cout << RED << "error_page : " << _error_page << RESET << std::endl;

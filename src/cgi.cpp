@@ -65,21 +65,6 @@ void	CGI::set_var(Request& request, Parser& parser)
 	}
 	SERVER_NAME = "http://localhost";
 	REDIRECT_STATUS =  "200";
-
-
-//------------------------------------
-	std::cout<<"PATH_INFO:	["<<PATH_INFO<<"]"<<std::endl;
-	std::cout<<"QUERY_STRING ["<<QUERY_STRING<<"]"<<std::endl;
-	std::cout<<"REQUEST_METHOD:["<<REQUEST_METHOD<<"]"<<std::endl;
-	std::cout<<"SERVER_PORT	["<<SERVER_PORT<<"]"<<std::endl;
-	std::cout<<"GATEWAY_INTERFACE["<<GATEWAY_INTERFACE<<"]"<<std::endl;
-	std::cout<<"SCRIPT_FILENAME["<<SCRIPT_FILENAME<<"]"<<std::endl;
-	std::cout<<"PATH_TRANSLATED["<<PATH_TRANSLATED<<"]"<<std::endl;
-	std::cout<<"SERVER_NAME	["<<SERVER_NAME<<"]"<<std::endl;
-	std::cout<<"REDIRECT_STATUS ["<<REDIRECT_STATUS<<"]"<<std::endl;
-	//REMOTE_ADDR = 
-	//REMOTE_USER = 
-//------------------------------------
 }
 
 void CGI::init_var()
