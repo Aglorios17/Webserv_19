@@ -47,12 +47,13 @@ int main(int argc, char **argv)
 
 	poll = (struct poll*)malloc(sizeof(struct poll));
 	init_poll_struct(poll);
+
+	address = new struct sockaddr_in;
 	for (int i = 0; i < nport; i++)
 	{
 		socket[i].set_sock(ip, SOCK_STREAM, 0, port[i], INADDR_ANY, parser.get_timeout());	
 
 		socket[i].set_parser(parser);
-		address = new struct sockaddr_in;
 
 
 		add_fd_to_poll(
@@ -69,7 +70,6 @@ int main(int argc, char **argv)
 				sizeof(struct sockaddr_in));
 		if (listen(socket[i].get_fd(), 1) < 0)
 			exit (EXIT_FAILURE);
-		delete address;
 	}
 	get_server(socket, NULL, SET);
 	run_server(socket, (struct sockaddr*)address, poll);

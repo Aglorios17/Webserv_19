@@ -54,8 +54,6 @@ client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
 	echo "./webserver includes/conf/tester.conf" 
 	mv ./client ./tester
-valgrind: all
-	valgrind --leak-check=full ./webserver includes/conf/tester.conf
 tester: all
 	chmod +x ./tester/old_tester
 	./tester/old_tester http://localhost:8080
