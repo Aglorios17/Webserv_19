@@ -32,16 +32,12 @@ std::string get_path_info(Socket &sock, int method)
 
 bool method_get(int *fd, Socket &sock, t_data *data)
 {
-	std::cout << MAGENTA << "============== GET ==============" << RESET << std::endl;
-
 	std::string source = get_path_info(sock, 1);
 	std::string extension ;
 
 
 	if (source.find('?') != std::string::npos)
 		extension= source.substr(0, source.find('?') );
-
-	std::cout<<"file is: "<< extension<<std::endl;
 
 
 	if (!get_extension(strtrim(extension, '.')).compare(sock.get_parser().get_cgi_extension()))
@@ -64,11 +60,8 @@ bool method_get(int *fd, Socket &sock, t_data *data)
 
 bool method_post(int *fd, Socket &sock, t_data *data)
 {
-	std::cout << MAGENTA << "============= POST ==============" << RESET << std::endl;
 
-	//std::cout<< "[[[[[[SOCKET PORT: "<< sock.get_port()<<std::endl;
 	std::string path_info = get_path_info(sock, 0);
-	//std::cout << ">>>>>>>>>>>>>>>file name:" << path_info << std::endl;
 	
 	std::fstream file;
 	file.open(path_info, std::ios::out);
@@ -82,9 +75,8 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	}
 	else
 	{
-//		std::cout << "BODY : ||" << sock.get_request().get_body() << "||\n";
 		file << sock.get_request().get_body();
-		std::cout << GREEN << "FILE : " << path_info << " CREATE !" << RESET << std::endl;
+		std::cout << RED << "FILE : " << path_info << " CREATED !" << RESET << std::endl;
 	}
 	//------------------------------------------
 	file.close();
@@ -97,10 +89,8 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 
 bool method_delete(int *fd, Socket &sock, t_data *data)
 {
-	std::cout << MAGENTA << "============ DELETE =============" << RESET << std::endl;
 
 	std::string path_info = get_path_info(sock, 0);
-	//std::cout << ">>>>>>>>>>>>>>>file name:" << path_info << std::endl;
 
 // Check whether exist or empty (404 or 405) (cant delete whole dir or sensitive files
 	std::fstream file;

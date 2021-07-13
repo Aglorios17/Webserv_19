@@ -51,7 +51,7 @@ int apply_request(int *fd, Socket &sock, t_data *data)
 		return 0;
 	}
 	std::cout << GREEN << "============ REQUEST ============" << RESET << std::endl;
-	std::cout << YELLOW << sock.get_request().get_buffer() << RESET << std::endl;
+	std::cout << GREEN << sock.get_request().get_buffer() << RESET << std::endl;
 	std::cout << GREEN << "================================="<< RESET << std::endl;
 	if (data->status != 200)
 		return (method_error(fd, sock, data));
@@ -89,9 +89,8 @@ int pollin_handler(POLLFD *poll, int server, struct poll* s_poll,
 	}
 	else
 	{
-		printf("adding new connection.\n");
+		std::cout << MAGENTA<< "ADDING NEW CONNECTION." << RESET << std::endl;
 		add_connection(sock, addr, s_poll);
-//		msleep(50);
 		return 1;
 	}
 	return 0;
@@ -105,7 +104,6 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 		if (apply_request(fd, sock, data))
 			poller_handler(fd, server, s_poll, addr, sock);
 	}
-//	msleep(50);
 }
 
 void poller_handler(int *fd, int server, struct poll* s_poll,
@@ -119,5 +117,4 @@ void poller_handler(int *fd, int server, struct poll* s_poll,
 	    *fd = -1;
 	    delete_last(s_poll);
 	}
-//	msleep(50);
 }

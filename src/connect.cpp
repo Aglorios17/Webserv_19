@@ -61,19 +61,13 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 {
 	char const	*s1;
 	std::string	buf;
-	//int		ret;
 	(void)fd;
+
 	std::string last = data->last;
 
 	buf = get_header_message(data->status);
-	//-----------------switch function
 	buf += get_time(data);
 	buf += "Server: " + sock.get_parser().get_server_name() + "\r\n"; 
-//	if (last != "") /////////// pas ouf lol
-//	{
-//		std::string str(data->last);
-//		buf += ("Last-Modified: " + str);
-//	}
 	if (type)
 	{
 		if (strcmp(type, "text") == 0)
@@ -97,11 +91,7 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 	buf += "Cache-Control: no-store\r\n";
 	buf += "Content-Length: " + std::to_string(size) + "\r\n\r\n";
 
-//	std::cout<<"------------"<<std::endl;
-//	std::cout<<"HTTP HEADER:"<<std::endl<<buf;
-//	std::cout<<"------------"<<std::endl;
 	s1 = &buf[0];
-	//ret = send(fd, s1, strlen(s1), 0);
 	return (s1);
 }
 
@@ -124,27 +114,30 @@ void set_env(Socket &sock, std::string path_info)
 	setenv("PATH_INFO", PATH_INFO, 1);
 }
 
-std::string file2socket(int fd, char *path, Socket &sock, t_data *data)
+std::string get_good_path(Socket &sock, char *path, t_data *data)
 {
-	std::string s1;
-	std::string line;
-
 	if (file_exists(path) == false)
 	{
-		printf("ERROR: FILE NOT FOUND\n");	
-		fflush(stdout);
 		data->status = 404;
 		std::string error =
 			sock.get_parser().get_root() +
 			sock.get_parser().get_error_page();
-		path = (char*)malloc(strlen(&error[0]) + 1);
-		strcpy(path, &error[0]);
+		path = &error[0];
 	}
-	std::string s_path(path);
+	return path;
+}
+
+std::string file2socket(int fd, char *path, Socket &sock, t_data *data)
+{
+	std::string line;
+	std::string s_path;
+	std::string s1;
+
+	s_path = get_good_path(sock, path, data);
+	path = &s_path[0];
+
 	std::string s_file = s_path.substr(s_path.find_last_of('/') + 1);
 	std::string extension = get_extension(s_file);
-
-
 	std::ifstream file; 
 	file.open(path,  std::ios::out | std::ios::binary | std::ios::ate);
 
@@ -152,6 +145,7 @@ std::string file2socket(int fd, char *path, Socket &sock, t_data *data)
 	{
 		std::string mem;
 		unsigned long size = file.tellg();
+
 		file.seekg(0);
 		while(!file.eof())
 		{
@@ -163,12 +157,10 @@ std::string file2socket(int fd, char *path, Socket &sock, t_data *data)
 		size += s1.length() + 4;
 		s1 += mem;
 		s1 += "\r\n\r\n";
-	//	send(fd, &s1[0], size, 0);
 	}
 	file.close();
 	return (s1);
 }
-
 
 void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_data *data)
 {
@@ -221,7 +213,6 @@ void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 			direct_request(sock[i], addr, s_poll, &data);
 			data.buffer = (char*)"no request";
 		}
-//		msleep(50);
 	}
 	free(data.last);
 }

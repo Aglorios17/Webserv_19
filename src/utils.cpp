@@ -40,9 +40,6 @@ void clean_path(std::string &path)
 bool	file_exists(char const* name)
 {
 
-	printf("INDEX QUERY: [%s]\n", name);
-	fflush(stdout);
-
 	std::ifstream f(name);
 	return f.good();
 }
