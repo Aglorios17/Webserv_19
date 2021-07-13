@@ -191,6 +191,9 @@ void	signalhandler(int signum)
 {
 	t_data		*data;
 
+	std::cout << GREEN << "\n=====================================" << RESET << std::endl;
+	std::cout << GREEN << "====== EXIT WEBSERVER THANKS ! ======" << RESET << std::endl;
+	std::cout << GREEN << "=====================================\n" << RESET << std::endl;
 	data = initglobal();
 	(void)signum;
 	free(data->ref);
