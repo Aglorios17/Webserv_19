@@ -50,10 +50,9 @@ fclean: clean
 	rm ./tester/client | true
 
 run: all
-	./webserver includes/conf/conf1.conf
+	./webserver includes/conf/default.conf
 client: all
 	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
-	echo "./webserver includes/conf/tester.conf" 
 	mv ./client ./tester
 tester: all
 	chmod +x ./tester/old_tester
