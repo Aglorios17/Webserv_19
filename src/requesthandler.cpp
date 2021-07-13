@@ -50,9 +50,7 @@ int apply_request(int *fd, Socket &sock, t_data *data)
 		reset_sock_request(sock);
 		return 0;
 	}
-	std::cout << GREEN << "============ REQUEST ============" << RESET << std::endl;
-	std::cout << GREEN << sock.get_request().get_buffer() << RESET << std::endl;
-	std::cout << GREEN << "================================="<< RESET << std::endl;
+	print_request(sock.get_request().get_buffer());
 	if (data->status != 200)
 		return (method_error(fd, sock, data));
 	if (sock.get_request().get_method() == "POST")
@@ -101,8 +99,9 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 {
 	if (*fd != server)
 	{
-		if (apply_request(fd, sock, data))
+		if (apply_request(fd, sock, data) > 1)
 			poller_handler(fd, server, s_poll, addr, sock);
+
 	}
 	usleep(70);
 }

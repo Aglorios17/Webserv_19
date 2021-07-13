@@ -114,17 +114,17 @@ void	run_server(Socket sock [] , struct sockaddr *addr, struct poll* poll);
  */
 
 int	get_file_size(char const *path);
-std::string	file2socket(int fd, char *path, Socket &sock, t_data *data);
+int	file2socket(int fd, char *path, Socket &sock, t_data *data);
 std::string send_header(Socket &sock, int fd, int size, char *type, t_data *data);
 
 /*
  * method 
  */
 
-bool method_error(int *fd, Socket &sock, t_data *data);
-bool method_get(int *fd, Socket &sock, t_data *data);
-bool method_post(int *fd, Socket &sock, t_data *data);
-bool method_delete(int *fd, Socket &sock, t_data *data);
+int method_error(int *fd, Socket &sock, t_data *data);
+int method_get(int *fd, Socket &sock, t_data *data);
+int method_post(int *fd, Socket &sock, t_data *data);
+int method_delete(int *fd, Socket &sock, t_data *data);
 void set_request(Request request, Socket &sock, char *buffer, t_data *data);
 int apply_request(int *fd, Socket &sock, t_data *data);
 void reset_sock_request(Socket &sock);
@@ -181,5 +181,12 @@ std::string	strtrim(std::string &s,char c);
 int		get_server(Socket sock [],int **holdr, int mode);
 int		is_server(int fd);
 int		tab_len(int *tab);
+
+/*
+ * PRINT
+ */
+
+void print_request(std::string str);
+void print_reponse(std::string str);
 
 #endif
