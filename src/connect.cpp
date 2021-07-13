@@ -12,10 +12,6 @@
 
 #include "../includes/webserver.h"
 
-/*
- * queue should be defined in the conf and store in a class
- */
-
 std::string get_header_message(int status)
 {
 	switch (status)

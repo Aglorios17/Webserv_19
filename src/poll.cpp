@@ -78,7 +78,6 @@ void delete_last(struct poll * poll)
 
 int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 {
-
 	int len;
 	int sender;
 	int optval = 1;
@@ -87,9 +86,7 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 	if ((sender = accept(sock.get_fd(),
 			addr, (socklen_t*)&len)) < 0)
 		exit (EXIT_FAILURE);
-
 	setsockopt(sender, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
-
 	add_fd_to_poll(
 					s_poll,
 					set_poll(
@@ -99,6 +96,5 @@ int add_connection(Socket &sock, struct sockaddr *addr, struct poll* s_poll)
 							POLLHUP|
 							POLLERR,
 							O_NONBLOCK));
-
 	return sender;
 }
