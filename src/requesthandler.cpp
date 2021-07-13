@@ -104,6 +104,7 @@ void pollout_handler(int *fd, int server, struct poll* s_poll,
 		if (apply_request(fd, sock, data))
 			poller_handler(fd, server, s_poll, addr, sock);
 	}
+	usleep(70);
 }
 
 void poller_handler(int *fd, int server, struct poll* s_poll,

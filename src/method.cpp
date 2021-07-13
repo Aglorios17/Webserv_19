@@ -70,7 +70,6 @@ bool method_post(int *fd, Socket &sock, t_data *data)
 	if (!file.is_open())// Check whether exist or empty (404 or 405)
 	{
 		data->status = 405;
-		reset_sock_request(sock);
 		return (method_error(fd, sock, data));
 	}
 	else
@@ -92,9 +91,9 @@ bool method_delete(int *fd, Socket &sock, t_data *data)
 
 	std::string path_info = get_path_info(sock, 0);
 
-// Check whether exist or empty (404 or 405) (cant delete whole dir or sensitive files
+//  Check whether exist or empty (404 or 405) (cant delete whole dir or sensitive files
 	std::fstream file;
-	file.open(path_info);//, std::ios::out);
+	file.open(path_info);
 	std::string s;
 	if (!file.good())// Check whether exist or empty (404 or 405)
 	{
