@@ -52,7 +52,7 @@
 #include <poll.h>
 #include <time.h>
 #include <ctime>
-
+#include <signal.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -75,6 +75,7 @@ typedef struct	s_data
 		char		*last;
 		int		status;
 		char		*buffer;
+		struct sockaddr *ref;
 }				t_data;
 
 bool	conf_is_valid(std::string &conf_path);

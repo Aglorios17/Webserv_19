@@ -180,6 +180,24 @@ void direct_request(Socket &sock, struct sockaddr *addr, struct poll* s_poll, t_
 	}
 }
 
+t_data	*initglobal(void)
+{
+	static t_data	data;
+
+	return (&data);
+}
+
+void	signalhandler(int signum)
+{
+	t_data		*data;
+
+	data = initglobal();
+	(void)signum;
+	free(data->ref);
+	free(data->last);
+	exit(0);
+}
+
 void init_data(t_data *data)
 {
 	data->last = strdup("");
@@ -187,24 +205,26 @@ void init_data(t_data *data)
 	data->status = 0;
 }
 
-
 void run_server(Socket sock [] , struct sockaddr *addr, struct poll* s_poll)
 {
 	int	ret;
 	int	nport;
-	t_data data;
+	t_data *data;
 
 	nport = sock[0].get_parser().get_nport();
 	int timeout = sock[0].get_timeout();
 
-	init_data(&data);
+	data = initglobal();
+	data->ref = addr;
+	init_data(data);
+	signal(SIGINT, signalhandler);
 	while ((ret = poll(s_poll->fds, s_poll->nfds, timeout)) >= 0)
 	{
 		for (int i = 0; i < nport; i++)
 		{
-			direct_request(sock[i], addr, s_poll, &data);
-			data.buffer = (char*)"no request";
+			direct_request(sock[i], addr, s_poll, data);
+			data->buffer = (char*)"no request";
 		}
 	}
-	free(data.last);
+	free(data->last);
 }
