@@ -34,16 +34,18 @@ std::string *Request::stotab(void)
 	return (tab);
 }
 
-
-void Request::add(char *buffer)
+void Request::add(char *buffer, int *port, int nport)
 {
 	_size_buf = 0;
+	_listen_port = 0;
+	_nport = 0;
 	if (!buffer)
 		return ;
 	std::string add(buffer);
 	_buffer = add;
 	std::string str(buffer);
 
+//	str[strlen(buffer)] = '\0';
 	int i = 0;
 	size_t pos = 0;
 	std::string delimiter = "\n";
@@ -55,7 +57,9 @@ void Request::add(char *buffer)
 	}
 	if (str.size())
 		++_size_buf;
-
+	_listen_port = port;
+	_nport = nport;
+	_port = _listen_port[0];
 }
 
 std::string Request::str_ret(std::string str, std::string cmd)
@@ -150,8 +154,26 @@ int Request::add_request_data(std::string tab)
 			return (400);
 		if ((_host = str_ret(tab, "Host:")) == "")
 			return (400);
-		std::string tmp = _host.substr(_host.find(':') + 1);
-		_port = stoi(tmp);
+		if (_host.find(":") != std::string::npos)
+		{
+			std::string tmp = _host.substr(_host.find(':') + 1);
+			for (size_t y = 0; y < tmp.length() - 2; y++)
+				if (!isdigit(tmp[y]))
+					return (200);
+			int tp = 0;
+			if ((tp = stoi(tmp)))
+			{
+				int y = 0;
+				while (y++ < _nport)
+				{
+					if (tp == _listen_port[y])
+					{
+						_port = tp;
+						break;
+					}
+				}
+			}
+		}
 	}
 	else if (tab.find("Referer:") != std::string::npos)
 	{
@@ -268,7 +290,6 @@ void Request::init(void)
 	_http_method = "";
 	_cgi = "";
 	_host = "";
-	_port = 0;
 	_referer = "";
 	_connection = "";
 	_content_type = "";

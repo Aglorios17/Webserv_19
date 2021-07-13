@@ -38,9 +38,11 @@ class Request
 		std::string	_transfer_encoding;
 		std::string	_accept_encoding;
 		std::string _body;
-		int  _port;
+		int  		_port;
 		int			_size_buf;
 		int			_status;
+		int			*_listen_port;
+		int			_nport;
 	public:
 		Request(void) {}
 		~Request(void) {}
@@ -65,6 +67,8 @@ class Request
 				_body = cpy._body;
 				_port = cpy._port;
 				_buffer = cpy._buffer;
+				_listen_port = cpy._listen_port;
+				_nport = cpy._nport;
 			}
 			return (*this);
 		}
@@ -72,7 +76,7 @@ class Request
 		bool		request_data(void);
 		int			add_request_data(std::string tab);
 		bool		request_method_check(std::string line);
-		void		add(char *buffer);
+		void		add(char *buffer, int *port, int nport);
 		std::string	*stotab(void);
 		std::string str_ret(std::string str, std::string cmd);
 		int			int_ret(std::string str, std::string cmd);

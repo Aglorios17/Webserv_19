@@ -30,7 +30,7 @@ void reset_sock_request(Socket &sock)
 
 void set_request(Request request, Socket &sock, char *buffer, t_data *data)
 {
-	request.add(buffer);
+	request.add(buffer, sock.get_parser().get_port(), sock.get_parser().get_nport());
 	request.request_data();
 
 	sock.set_request(request);
