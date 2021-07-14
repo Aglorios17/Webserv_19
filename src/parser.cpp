@@ -12,12 +12,6 @@
 
 #include "../includes/webserver.h"
 
-/* It could be possible to implement 
- * more compatibilities see:
- * https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/aixprggd/progcomc/skt_types.htm
- */
-/////////////////////////////////////////////////////////////// Parser
-
 int	end_line(int i, std::string cmp)
 {
 	int end = 0;
@@ -37,6 +31,45 @@ int	end_line(int i, std::string cmp)
 	}
 	return (1);
 } 
+
+int Parser::rewrite_http(std::string cmp, std::string cmd)
+{
+	char *token = strtok(&cmp[0], " ");
+	int  i = 0;
+	int end = 0;
+	while (token != NULL)
+	{
+		std::string tok = bypass_tab(token);
+		if (tok == ";")
+			end = 1;
+		else if ((i == 0 && tok != cmd) || i == 3)
+			return (0);
+		else if (i != 0)
+		{
+			if (tok.find(";") != std::string::npos)
+			{
+				for (size_t y = 0; y < tok.size(); y++)
+					if (!isdigit(tok[y]) && (tok[y] != ';' && !tok[y + 1]))
+						return (0);
+				end = 1;
+			}
+			else
+				for (size_t y = 0; y < tok.size(); y++)
+					if (!isdigit(tok[y]))
+						return (0);
+			if (i == 1)
+				_http_redirection[0] = std::stoi(tok);
+			if (i == 2)
+				_http_redirection[1] = std::stoi(tok);
+		}
+		i++;
+		token = strtok(NULL, " ");
+	}
+	if (i != 3)
+		return (0);
+	return (1);
+}
+
 int *Parser::int_tab_val(std::string cmp, std::string cmd)
 {
 	char *token = strtok(&cmp[0], " ");
@@ -211,6 +244,14 @@ bool Parser::client_body_size_check(std::string tab)
 
 bool Parser::put_data(std::string tab, int cgi)
 {
+	std::string tmp = tab; 
+	if (tmp.size())
+	{
+		strtrim_end(tmp, ' ');
+		tmp = tmp.substr(tmp.size() - 1, tmp.size()); 
+		if (tmp != ";")
+			return (0);
+	}
 	if (tab.find("listen") != std::string::npos)
 	{
 		if (_listen_port != NULL)
@@ -249,6 +290,8 @@ bool Parser::put_data(std::string tab, int cgi)
 		{
 			if (_root != "" || (_root = str_val(tab, "root")) == "")
 				return (0);
+			if (_root[_root.size() - 1] != '/')
+				return (0);
 		}
 		else
 			if (_cgi_path != "" || (_cgi_path = str_val(tab, "root")) == "")
@@ -262,6 +305,18 @@ bool Parser::put_data(std::string tab, int cgi)
 	else if (tab.find("error_page") != std::string::npos)
 	{	
 		if (_error_page != "" || (_error_page = str_val(tab, "error_page")) == "")
+			return (0);
+	}
+	else if (tab.find("upload_dir") != std::string::npos)
+	{	
+		if (_upload_dir != "" || (_upload_dir = str_val(tab, "upload_dir")) == "")
+			return (0);
+		if (_upload_dir[_upload_dir.size() - 1] != '/')
+			return (0);
+	}
+	else if (tab.find("rewrite") != std::string::npos)
+	{	
+		if (_http_redirection[0] || _http_redirection[1] || !rewrite_http(tab, "rewrite"))
 			return (0);
 	}
 	else if (tab != "")
@@ -384,6 +439,32 @@ bool Parser::check_port(void)
 	return (1);
 }
 
+bool Parser::check_port_exist(void)
+{
+	int	y;
+	int	valid;
+
+	y = 0;
+	valid = 0;
+	if (_http_redirection[0] == 0 && _http_redirection[1] == 0)
+		return (1);
+	if (_http_redirection[0] == _http_redirection[1])
+		return (0);
+	for (int i = 0; i < 2 ; i++)
+	{
+		y = 0;
+		while (y < _tab_size)
+		{
+			if (_listen_port[y] == _http_redirection[i])
+				valid++; 
+			y++;
+		}
+	}
+	if (valid == 2)
+		return (1);
+	return (0);
+}
+
 bool Parser::save_data(void)
 {
 	std::string *tab_conf = stotab();
@@ -393,15 +474,34 @@ bool Parser::save_data(void)
 	_tab_size = 0;
 	_add_size = 0;
 	_nport = 0;
+	_upload_dir = "";
+	_http_redirection[0] = 0;
+	_http_redirection[1] = 0;
 	if (!server_norme(tab_conf, size_file))
 		return (0);
 	if (!server_parser(tab_conf, size_file))
 		return (0);
 	if (!check_port())
 		return (0);
+	if (!check_port_exist())
+		return (0);
 	if (!_listen_port || _index == "" || _root == "" || _error_page == ""
 		|| _client_max_body_size == -1)
 		return (0);
+	if (_upload_dir.size())
+	{
+		std::string tmp = _upload_dir;
+		if (_upload_dir.find("./") == std::string::npos)
+			return (0);
+		if (_upload_dir == "./")
+			return (0);
+		std::string create = tmp.substr(2, tmp.size());
+		tmp = _root + create;
+		DIR* dir = opendir(&tmp[0]);
+		if (!dir)
+			if (mkdir(&tmp[0], 0777) == -1) 
+				return (0);
+	}
 	std::cout << CYAN << "========= SERVEUR SETUP =========" << RESET << std::endl;
 	std::cout << GREEN << "Server_name : " << _server_name << RESET << std::endl;
 	std::cout << GREEN << "PORT : " << RESET;
@@ -411,9 +511,18 @@ bool Parser::save_data(void)
 		_nport += 1;
 	}
 	std::cout << std::endl;
+	if (_http_redirection[0] || _http_redirection[1])
+	{
+		std::cout << GREEN << "HTTP redirection : " << RESET;
+		for (int i = 0; i < 2 ; i++)
+			std::cout << YELLOW << _http_redirection[i] << RESET << " ";
+		std::cout << std::endl;
+	}
 	std::cout << GREEN << "root : " << _root << RESET << std::endl;
 	std::cout << GREEN << "index : " << _index << RESET << std::endl;
 	std::cout << RED << "error_page : " << _error_page << RESET << std::endl;
+	if (_upload_dir.size())
+		std::cout << RED << "upload_dir : " << _upload_dir << RESET << std::endl;
 	std::cout << RED << "Timeout : " << _timeout << RESET << std::endl;
 	std::cout << RED << "client_max_body_size : "<< _client_max_body_size << RESET << std::endl;
 	std::cout << GREEN << "cgi_extension : " << _cgi_extension << RESET << std::endl;
@@ -450,14 +559,10 @@ bool Parser::copy_file(char *file)
 		}
 	}
 	copy.close();
-//	std::cout << size_file << std::endl;
-//	std::cout << _conf_file;
 	if (!save_data())
 		return (0);
 	return (1);
 }
-
-////////////////////////////////////////////////////////////////
 
 bool	domain_is_valid(int domain)
 {

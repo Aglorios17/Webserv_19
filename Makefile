@@ -53,14 +53,16 @@ fclean: clean
 	rm ./tester/client | true
 
 run: all
-	./webserver includes/conf/$(CONF)
+	clear
+	@./webserver includes/conf/$(CONF)
 client: all
-	clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
-	mv ./client ./tester
+	@clang++ -Wall -Wextra -Werror -std=c++98 src/client.cpp -o client
+	@mv ./client ./tester
 tester: all
-	chmod +x ./tester/old_tester
-	./tester/old_tester http://localhost:8080
+	@chmod +x ./tester/old_tester
+	@./tester/old_tester http://localhost:8080
 siege: all
-	./webserver includes/conf/siege.conf
+	clear
+	@./webserver includes/conf/siege.conf
 
 re:	fclean all
