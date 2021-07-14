@@ -40,6 +40,7 @@ class Parser
 		int _client_max_body_size;
 		int	_tab_size;
 		int _add_size;
+		int	_http_redirection[2];
 	public:
 		Parser(void) {}
 		~Parser(void) {}
@@ -61,12 +62,15 @@ class Parser
 				_cgi_path = cpy._cgi_path;
 				_cgi_extension = cpy._cgi_extension;
 				_upload_dir = cpy._upload_dir;
+				_http_redirection[0] = cpy._http_redirection[0];
+				_http_redirection[1] = cpy._http_redirection[1];
 			}
 			return (*this);
 		}
 		bool copy_file(char *file);
 		bool save_data(void);
 		bool check_port(void);
+		bool check_port_exist(void);
 		bool put_data(std::string tab, int cgi);
 		bool server_parser(std::string *tab_conf, int size_file);
 		bool location_parser(std::string *tab_conf, int start, int end);
@@ -75,7 +79,9 @@ class Parser
 		bool client_body_size_check(std::string tab);
 		std::string str_val(std::string cmp, std::string cmd);
 		std::string *stotab(void);
+		int	rewrite_http(std::string cmp, std::string cmd);
 		int	*get_port(void) {return (_listen_port);}
+		int	*get_http_redirection(void) {return (&_http_redirection[0]);}
 		int	get_nport(void) {return (_nport);}
 		int	get_timeout(void) {return (_timeout);}
 		int get_client_max_body_size(void) {return (_client_max_body_size);}

@@ -28,6 +28,8 @@ std::string get_header_message(int status)
 			return "HTTP/1.1 204 No Content\n";
 		case 206:
 			return "HTTP/1.1 206 Partial Content\n";
+		case 301:
+			return "HTTP/1.1 301 Moved Permanently\n";
 		case 400:
 			return "HTTP/1.1 400 Bad Request\n";
 		case 404:
@@ -59,8 +61,14 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 	std::string	buf;
 	(void)fd;
 
+	int request_port = sock.get_request().get_port();
+	int *redirection = sock.get_parser().get_http_redirection();
+    if (redirection[0] && request_port == redirection[0])
+		data->status = 301;
 	buf = get_header_message(data->status);
 	buf += get_time(data);
+	if (data->status == 301)
+		buf += "Location: http://localhost:" + std::to_string(redirection[1]) + "\r\n";
 	if (sock.get_parser().get_server_name().size())
 		buf += "Server: " + sock.get_parser().get_server_name() + "\r\n"; 
 	if (type)
@@ -82,7 +90,6 @@ std::string send_header(Socket &sock, int fd, int size, char* type, t_data *data
 		else
 			buf += "Content-Type: text/html\r\n";
 	}
-	//-----------------------------------
 	buf += "Cache-Control: no-store\r\n";
 	buf += "Content-Length: " + std::to_string(size) + "\r\n\r\n";
 

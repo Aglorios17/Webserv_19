@@ -12,6 +12,15 @@
 
 #include "../includes/webserver.h"
 
+std::string strtrim_end(std::string &s, char c)
+{
+	size_t i = s.size() - 1;
+	while (s[i] == c)
+		i--;
+	s.erase(i + 1, s.size());
+	return s;
+}
+
 std::string strtrim(std::string &s, char c)
 {
 	s.erase(0, s.find_first_not_of(c));

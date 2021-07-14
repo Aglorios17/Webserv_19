@@ -45,6 +45,10 @@ int apply_request(int *fd, Socket &sock, t_data *data)
 	int request_port = sock.get_request().get_port();
 	int server_port =  sock.get_port(); 	
 
+	int *redirection = sock.get_parser().get_http_redirection();
+  	if (redirection[0] && request_port == redirection[0])
+        request_port = redirection[1];
+//	std::cout << "request port : " << request_port << " server port : "<< server_port << std::endl;
 	if (request_port != server_port)
 	{
 		reset_sock_request(sock);

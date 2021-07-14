@@ -179,6 +179,7 @@ std::string	bypass_tab(char *str);
 int		hexa_to_decimal(std::string value);
 std::string	get_extension(std::string file);
 std::string	strtrim(std::string &s,char c);
+std::string	strtrim_end(std::string &s,char c);
 int		get_server(Socket sock [],int **holdr, int mode);
 int		is_server(int fd);
 int		tab_len(int *tab);
